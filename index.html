@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>成分表ジェネレーター</title>
+<meta name="description" content="原料とその INCI 構成比を登録し、処方 (原料 × 配合%) から化粧品の全成分表示の記載順を作るツール。ブラウザ内で完結し、データは端末の外に出ません。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">🏷 成分表ジェネレーター</div>
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="label" role="tab">成分表生成</button>
+    <button class="tab" data-tab="materials" role="tab">原料登録 <span id="mat-count" class="pill">0</span></button>
+    <button class="tab" data-tab="ingredients" role="tab">成分登録 <span id="ing-count" class="pill">0</span></button>
+    <button class="tab" data-tab="help" role="tab">使い方</button>
+  </nav>
+</header>
+
+<main>
+<!-- ═══════════════ 成分表生成 ═══════════════ -->
+<section id="tab-label" class="panel active">
+  <div class="cols">
+    <div class="col left">
+      <div class="card">
+        <h2>処方入力 (原料 × 配合%)</h2>
+        <details class="paste" open>
+          <summary>📋 処方をコピペで入力</summary>
+          <p class="muted small">1 行 1 原料で「原料名 配合%」。区切りは空白・タブ・カンマ・コロン、% 記号は任意。Excel の 2 列コピーもそのまま可。原料名は登録済み原料と照合します (完全一致 → 部分一致 1 件)。現在の処方を置き換えます。</p>
+          <textarea id="paste-input" rows="6" placeholder="精製水	55&#10;SLES-27	40&#10;フェノキシエタノール	2"></textarea>
+          <div class="row gap">
+            <button id="paste-btn" class="primary">解析して反映</button>
+            <button id="sample-shampoo-btn" class="ghost">サンプル: シャンプー</button>
+            <button id="sample-cream-btn" class="ghost">サンプル: クリーム</button>
+          </div>
+          <div id="paste-feedback"></div>
+        </details>
+        <div class="row gap add-row">
+          <input id="add-material" list="material-list" placeholder="登録済み原料を選択 / 入力" autocomplete="off">
+          <datalist id="material-list"></datalist>
+          <datalist id="inci-list"></datalist>
+          <input id="add-pct" type="number" min="0" max="100" step="0.01" placeholder="%">
+          <button id="add-btn" class="primary">追加</button>
+        </div>
+        <table id="formula-table" class="grid">
+          <thead><tr><th>原料</th><th>構成</th><th class="num">配合 %</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="row between">
+          <span id="formula-total" class="badge">0%</span>
+          <button id="clear-formula-btn" class="ghost danger">処方をクリア</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>表示規則 / 規制チェック</h2>
+        <label>順不同とする濃度閾値 (%) <input id="opt-threshold" type="number" value="1" min="0" max="100" step="0.1"></label>
+        <label class="check"><input id="opt-colorants" type="checkbox" checked> 着色剤を末尾にまとめる</label>
+        <label class="check"><input id="opt-normalize" type="checkbox"> 合計が 100% でなければ正規化する</label>
+        <label>剤型 (規制上限のスコープ)
+          <select id="opt-product-class">
+            <option value="">指定なし (最も緩い上限)</option>
+            <option value="rinse_off">洗い流す (rinse-off)</option>
+            <option value="leave_on">洗い流さない (leave-on)</option>
+          </select>
+        </label>
+        <div class="row gap">対象地域:
+          <label class="check"><input type="checkbox" class="opt-jur" value="JP" checked> JP</label>
+          <label class="check"><input type="checkbox" class="opt-jur" value="EU"> EU</label>
+          <label class="check"><input type="checkbox" class="opt-jur" value="US"> US</label>
+          <label class="check"><input type="checkbox" class="opt-jur" value="KR"> KR</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="col right">
+      <div id="label-output" class="card">
+        <p class="muted">左で原料と配合% を入力すると、ここに全成分表示の順で成分表が出ます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 原料登録 ═══════════════ -->
+<section id="tab-materials" class="panel">
+  <div class="cols">
+    <div class="col left">
+      <div class="card">
+        <h2>登録済み原料</h2>
+        <input id="mat-search" placeholder="🔎 原料名・メーカー・INCI で検索">
+        <table id="mat-table" class="grid clickable">
+          <thead><tr><th>原料名</th><th>メーカー</th><th class="num">成分数</th><th class="num">構成計%</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="row gap">
+          <button id="mat-new-btn" class="primary">＋ 新規</button>
+          <button id="mat-del-btn" class="ghost danger">選択を削除</button>
+        </div>
+        <hr>
+        <div class="row gap wrap">
+          <label class="filebtn">CSV 取込<input id="mat-import-csv" type="file" accept=".csv,text/csv" hidden></label>
+          <button id="mat-export-csv" class="ghost">CSV 書出</button>
+          <label class="filebtn">JSON 取込<input id="mat-import-json" type="file" accept=".json,application/json" hidden></label>
+          <button id="mat-export-json" class="ghost">JSON 書出 (バックアップ)</button>
+          <button id="mat-sample-btn" class="ghost">サンプル原料を読込</button>
+          <button id="mat-clear-btn" class="ghost danger">全削除</button>
+        </div>
+        <p class="muted small">CSV 列: name, inci_name, pct (任意: display_name, is_colorant, maker, note)。同名原料は上書き。データはこのブラウザにだけ保存されます。別端末へは CSV / JSON で持ち運んでください。</p>
+        <div id="mat-list-feedback"></div>
+      </div>
+    </div>
+
+    <div class="col right">
+      <div class="card">
+        <h2 id="mat-edit-title">原料の新規登録</h2>
+        <div class="row gap">
+          <label class="grow">原料名 (商品名) <input id="mat-name" placeholder="例: SLES-27 / 精製水"></label>
+          <label class="grow">メーカー <input id="mat-maker"></label>
+        </div>
+        <label>メモ <input id="mat-note" placeholder="ロット・仕様書の出典など"></label>
+        <h3>構成成分 (INCI / 表示名称 / 原料中の %)</h3>
+        <table id="comp-table" class="grid editable">
+          <thead><tr><th>INCI</th><th>表示名称</th><th class="num">原料中 %</th><th>着色剤</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="row between">
+          <span id="comp-total" class="badge">成分なし</span>
+          <button id="comp-add-btn" class="ghost">＋ 成分行を追加</button>
+        </div>
+        <p class="muted small">表示名称は成分表に載せる日本語名。空なら INCI 名で表示します。構成比は原料 100 g 中の質量%。ブレンド原料 (界面活性剤水溶液など) は活性分と水を分けて登録すると、成分表で水が正しく合算されます。不開示成分がある場合は合計 100% 未満でも保存できますが、不足分は成分表に載りません。</p>
+        <div class="row gap">
+          <button id="mat-save-btn" class="primary">保存</button>
+          <span id="mat-edit-feedback"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 成分登録 ═══════════════ -->
+<section id="tab-ingredients" class="panel">
+  <div class="cols">
+    <div class="col left">
+      <div class="card">
+        <h2>成分マスタ (INCI ↔ 表示名称)</h2>
+        <p class="muted small">自分で育てる INCI 辞書。ここに登録した表示名称は、原料登録で INCI を入れたときに自動で入り、成分表の表示名称の既定値になります (原料側で個別に入れた表示名称があればそちらを優先)。原料を保存すると、その構成成分は自動でここにも追加されます。</p>
+        <input id="ing-search" placeholder="🔎 INCI・表示名称で検索">
+        <table id="ing-table" class="grid clickable">
+          <thead><tr><th>INCI</th><th>表示名称</th><th>着色剤</th><th>メモ</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="row gap wrap">
+          <label class="filebtn">CSV 取込<input id="ing-import-csv" type="file" accept=".csv,text/csv" hidden></label>
+          <button id="ing-export-csv" class="ghost">CSV 書出</button>
+          <button id="ing-absorb-btn" class="ghost">登録済み原料から取り込む</button>
+          <button id="ing-clear-btn" class="ghost danger">全削除</button>
+        </div>
+        <p class="muted small">CSV 列: inci_name, display_name (任意: is_colorant, note)。「INCI名」「表示名称」などの日本語ヘッダ (工業会の成分表示名称リストを CSV にしたもの) もそのまま読めます。同じ INCI は上書き。</p>
+        <div id="ing-list-feedback"></div>
+      </div>
+    </div>
+    <div class="col right">
+      <div class="card">
+        <h2 id="ing-edit-title">成分の登録</h2>
+        <label>INCI 名 <input id="ing-inci" placeholder="例: Sodium Laureth Sulfate"></label>
+        <label>表示名称 (日本語) <input id="ing-display" placeholder="例: ラウレス硫酸Na"></label>
+        <label class="check"><input id="ing-colorant" type="checkbox"> 着色剤 (成分表で末尾にまとめる)</label>
+        <label>メモ <input id="ing-note" placeholder="表示名称の出典など"></label>
+        <div class="row gap">
+          <button id="ing-save-btn" class="primary">保存</button>
+          <button id="ing-new-btn" class="ghost">＋ 新規</button>
+          <button id="ing-del-btn" class="ghost danger">削除</button>
+          <span id="ing-edit-feedback"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 使い方 ═══════════════ -->
+<section id="tab-help" class="panel">
+  <div class="card prose">
+    <h2>使い方</h2>
+    <ol>
+      <li><b>成分登録</b>で INCI 名と表示名称 (日本語) の対応を登録します (自分で育てる辞書)。原料を保存すると構成成分は自動でここにも入るので、後からまとめて表示名称を付けることもできます。</li>
+      <li><b>原料登録</b>で、使う原料 (商品名) と、その原料 100 g 中の各 INCI の質量% を登録します。INCI を入れると成分マスタの表示名称が自動で入ります。まず「サンプル原料を読込」で 33 件の例を入れて試せます。</li>
+      <li><b>成分表生成</b>で、原料と配合% を並べます。「処方をコピペで入力」に 1 行 1 原料で貼り付けるのが速いです。</li>
+      <li>右に全成分表示の記載順が出ます。日本語 / INCI の 1 行テキストはボタンでコピーできます。</li>
+    </ol>
+    <h3>記載順の規則</h3>
+    <ul>
+      <li>配合量の多い順 (質量% 降順)。同じ INCI が複数原料から来る場合は合算します。</li>
+      <li>1% 以下の成分は順不同で記載できます (本表は降順のまま「順不同可」と表示)。閾値は変更できます。</li>
+      <li>着色剤は配合量に関わらず末尾にまとめられます。原料登録の「着色剤」チェック、または CI 番号表記 (CI 77891 など) が対象です。</li>
+    </ul>
+    <h3>規制チェック</h3>
+    <p>EU 1223/2009 Annex、化粧品基準 (厚生労働省告示第331号)、KFDA、21 CFR 352 由来の配合上限・配合禁止 (595 行) と突き合わせます。剤型や地域を指定しない場合は最も緩い上限を採用します (真値を切り落とさない保守側)。<b>規制は改正されます。最新の規制原文を必ず確認してください。</b></p>
+    <h3>扱わないこと</h3>
+    <p>香料の「香料」一括表記、キャリーオーバー成分の省略可否、医薬部外品の有効成分の表記順などの法規判断は行いません。最終的な表示は担当者が確認してください。</p>
+    <h3>データの保存場所</h3>
+    <p>すべてブラウザ内で処理され、原料データはこのブラウザの localStorage にだけ保存されます。サーバーには何も送りません。ブラウザのサイトデータを消すと原料も消えるので、JSON 書出でバックアップしてください。</p>
+  </div>
+</section>
+</main>
+
+<footer class="muted small">成分表ジェネレーター · Apache-2.0 · ブラウザ内で完結 (データは送信されません)</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

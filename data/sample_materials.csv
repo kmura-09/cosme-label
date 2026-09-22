@@ -1,0 +1,43 @@
+name,maker,note,inci_name,pct,display_name,is_colorant
+精製水,,,Water,100,水,0
+グリセリン,サンプル化学,濃グリセリン,Glycerin,100,グリセリン,0
+BG,サンプル化学,"1,3-ブチレングリコール",Butylene Glycol,100,ＢＧ,0
+SLES-27,サンプル界面,AES 27% 水溶液,Sodium Laureth Sulfate,27,ラウレス硫酸Ｎａ,0
+SLES-27,サンプル界面,AES 27% 水溶液,Water,73,水,0
+CAPB-30,サンプル界面,ベタイン 30% 水溶液,Cocamidopropyl Betaine,30,コカミドプロピルベタイン,0
+CAPB-30,サンプル界面,ベタイン 30% 水溶液,Sodium Chloride,5,塩化Ｎａ,0
+CAPB-30,サンプル界面,ベタイン 30% 水溶液,Water,65,水,0
+ココイルグルタミン酸Na-25,サンプル界面,アミノ酸系 25% 水溶液,Sodium Cocoyl Glutamate,25,ココイルグルタミン酸Ｎａ,0
+ココイルグルタミン酸Na-25,サンプル界面,アミノ酸系 25% 水溶液,Water,75,水,0
+ココグルコシド-50,サンプル界面,APG 50% 水溶液,Coco-Glucoside,50,ヤシ油アルキルグルコシド,0
+ココグルコシド-50,サンプル界面,APG 50% 水溶液,Water,50,水,0
+ポリソルベート80,サンプル界面,,Polysorbate 80,100,ポリソルベート８０,0
+乳化剤ブレンド CS-20,サンプル界面,自己乳化型 O/W 乳化剤,Cetearyl Alcohol,70,セテアリルアルコール,0
+乳化剤ブレンド CS-20,サンプル界面,自己乳化型 O/W 乳化剤,Ceteareth-20,30,セテアレス－２０,0
+ステアリン酸グリセリルSE,サンプル界面,,Glyceryl Stearate SE,100,ステアリン酸グリセリル（ＳＥ）,0
+セテアリルアルコール,サンプル油脂,,Cetearyl Alcohol,100,セテアリルアルコール,0
+ステアリン酸,サンプル油脂,,Stearic Acid,100,ステアリン酸,0
+スクワラン,サンプル油脂,植物性,Squalane,100,スクワラン,0
+ホホバ油,サンプル油脂,,Simmondsia Chinensis (Jojoba) Seed Oil,100,ホホバ種子油,0
+シアバター,サンプル油脂,,Butyrospermum Parkii (Shea) Butter,100,シア脂,0
+MCT オイル,サンプル油脂,,Caprylic/Capric Triglyceride,100,トリ（カプリル酸／カプリン酸）グリセリル,0
+ジメチコン 350cs,サンプルシリコーン,,Dimethicone,100,ジメチコン,0
+カルボマー,サンプルポリマー,,Carbomer,100,カルボマー,0
+キサンタンガム,サンプルポリマー,,Xanthan Gum,100,キサンタンガム,0
+ヒアルロン酸Na 1%液,サンプルポリマー,,Sodium Hyaluronate,1,ヒアルロン酸Ｎａ,0
+ヒアルロン酸Na 1%液,サンプルポリマー,,Water,99,水,0
+ポリクオタニウム-10,サンプルポリマー,コンディショニング剤,Polyquaternium-10,100,ポリクオタニウム－１０,0
+ナイアシンアミド,サンプル有効,,Niacinamide,100,ナイアシンアミド,0
+パンテノール,サンプル有効,,Panthenol,100,パンテノール,0
+アラントイン,サンプル有効,,Allantoin,100,アラントイン,0
+トコフェロール,サンプル有効,,Tocopherol,100,トコフェロール,0
+フェノキシエタノール,サンプル防腐,,Phenoxyethanol,100,フェノキシエタノール,0
+防腐剤ブレンド PE-9010,サンプル防腐,,Phenoxyethanol,90,フェノキシエタノール,0
+防腐剤ブレンド PE-9010,サンプル防腐,,Ethylhexylglycerin,10,エチルヘキシルグリセリン,0
+EDTA-2Na,サンプル化学,,Disodium EDTA,100,ＥＤＴＡ－２Ｎａ,0
+クエン酸,サンプル化学,,Citric Acid,100,クエン酸,0
+水酸化Na 10%液,サンプル化学,,Sodium Hydroxide,10,水酸化Ｎａ,0
+水酸化Na 10%液,サンプル化学,,Water,90,水,0
+塩化Na,サンプル化学,,Sodium Chloride,100,塩化Ｎａ,0
+酸化チタン,サンプル顔料,,Titanium Dioxide,100,酸化チタン,1
+酸化鉄 (赤),サンプル顔料,EU 表記の CI 番号。辞書外だが着色剤として末尾に送られる,CI 77491,100,酸化鉄,1

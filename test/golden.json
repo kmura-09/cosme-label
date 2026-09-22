@@ -1,0 +1,2038 @@
+{
+ "label_cases": [
+  {
+   "name": "shampoo",
+   "formula": {
+    "精製水": 54.9,
+    "SLES-27": 30.0,
+    "CAPB-30": 8.0,
+    "ココグルコシド-50": 2.0,
+    "グリセリン": 2.0,
+    "ポリクオタニウム-10": 0.3,
+    "パンテノール": 0.5,
+    "防腐剤ブレンド PE-9010": 1.0,
+    "EDTA-2Na": 0.1,
+    "クエン酸": 0.2,
+    "塩化Na": 1.0
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "グリセリン": {
+     "Glycerin": 100.0
+    },
+    "SLES-27": {
+     "Sodium Laureth Sulfate": 27.0,
+     "Water": 73.0
+    },
+    "CAPB-30": {
+     "Cocamidopropyl Betaine": 30.0,
+     "Sodium Chloride": 5.0,
+     "Water": 65.0
+    },
+    "ココグルコシド-50": {
+     "Coco-Glucoside": 50.0,
+     "Water": 50.0
+    },
+    "ポリクオタニウム-10": {
+     "Polyquaternium-10": 100.0
+    },
+    "パンテノール": {
+     "Panthenol": 100.0
+    },
+    "防腐剤ブレンド PE-9010": {
+     "Phenoxyethanol": 90.0,
+     "Ethylhexylglycerin": 10.0
+    },
+    "EDTA-2Na": {
+     "Disodium EDTA": 100.0
+    },
+    "クエン酸": {
+     "Citric Acid": 100.0
+    },
+    "塩化Na": {
+     "Sodium Chloride": 100.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 83.0,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 54.9,
+       "SLES-27": 21.9,
+       "CAPB-30": 5.2,
+       "ココグルコシド-50": 1.0
+      }
+     },
+     {
+      "inci": "Sodium Laureth Sulfate",
+      "pct": 8.1,
+      "display": "ラウレス硫酸Ｎａ",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "SLES-27": 8.1
+      }
+     },
+     {
+      "inci": "Cocamidopropyl Betaine",
+      "pct": 2.4,
+      "display": "コカミドプロピルベタイン",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "CAPB-30": 2.4
+      }
+     },
+     {
+      "inci": "Glycerin",
+      "pct": 2.0,
+      "display": "グリセリン",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "グリセリン": 2.0
+      }
+     },
+     {
+      "inci": "Sodium Chloride",
+      "pct": 1.4,
+      "display": "塩化Ｎａ",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "CAPB-30": 0.4,
+       "塩化Na": 1.0
+      }
+     },
+     {
+      "inci": "Coco-Glucoside",
+      "pct": 1.0,
+      "display": "ヤシ油アルキルグルコシド",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "ココグルコシド-50": 1.0
+      }
+     },
+     {
+      "inci": "Phenoxyethanol",
+      "pct": 0.9,
+      "display": "フェノキシエタノール",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "防腐剤ブレンド PE-9010": 0.9
+      }
+     },
+     {
+      "inci": "Panthenol",
+      "pct": 0.5,
+      "display": "パンテノール",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "パンテノール": 0.5
+      }
+     },
+     {
+      "inci": "Polyquaternium-10",
+      "pct": 0.3,
+      "display": "ポリクオタニウム－１０",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "ポリクオタニウム-10": 0.3
+      }
+     },
+     {
+      "inci": "Citric Acid",
+      "pct": 0.2,
+      "display": "クエン酸",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "クエン酸": 0.2
+      }
+     },
+     {
+      "inci": "Ethylhexylglycerin",
+      "pct": 0.1,
+      "display": "エチルヘキシルグリセリン",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "防腐剤ブレンド PE-9010": 0.1
+      }
+     },
+     {
+      "inci": "Disodium EDTA",
+      "pct": 0.1,
+      "display": "ＥＤＴＡ－２Ｎａ",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "EDTA-2Na": 0.1
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "水、ラウレス硫酸Ｎａ、コカミドプロピルベタイン、グリセリン、塩化Ｎａ、ヤシ油アルキルグルコシド、フェノキシエタノール、パンテノール、ポリクオタニウム－１０、クエン酸、エチルヘキシルグリセリン、ＥＤＴＡ－２Ｎａ",
+    "inci_text": "Water, Sodium Laureth Sulfate, Cocamidopropyl Betaine, Glycerin, Sodium Chloride, Coco-Glucoside, Phenoxyethanol, Panthenol, Polyquaternium-10, Citric Acid, Ethylhexylglycerin, Disodium EDTA"
+   }
+  },
+  {
+   "name": "cream",
+   "formula": {
+    "精製水": 65.3,
+    "グリセリン": 5.0,
+    "BG": 3.0,
+    "乳化剤ブレンド CS-20": 4.0,
+    "ステアリン酸グリセリルSE": 2.0,
+    "セテアリルアルコール": 2.0,
+    "スクワラン": 6.0,
+    "シアバター": 3.0,
+    "MCT オイル": 4.0,
+    "ジメチコン 350cs": 1.5,
+    "カルボマー": 0.3,
+    "水酸化Na 10%液": 0.6,
+    "ナイアシンアミド": 2.0,
+    "トコフェロール": 0.2,
+    "防腐剤ブレンド PE-9010": 1.0,
+    "EDTA-2Na": 0.1
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "グリセリン": {
+     "Glycerin": 100.0
+    },
+    "BG": {
+     "Butylene Glycol": 100.0
+    },
+    "乳化剤ブレンド CS-20": {
+     "Cetearyl Alcohol": 70.0,
+     "Ceteareth-20": 30.0
+    },
+    "ステアリン酸グリセリルSE": {
+     "Glyceryl Stearate SE": 100.0
+    },
+    "セテアリルアルコール": {
+     "Cetearyl Alcohol": 100.0
+    },
+    "スクワラン": {
+     "Squalane": 100.0
+    },
+    "シアバター": {
+     "Butyrospermum Parkii (Shea) Butter": 100.0
+    },
+    "MCT オイル": {
+     "Caprylic/Capric Triglyceride": 100.0
+    },
+    "ジメチコン 350cs": {
+     "Dimethicone": 100.0
+    },
+    "カルボマー": {
+     "Carbomer": 100.0
+    },
+    "ナイアシンアミド": {
+     "Niacinamide": 100.0
+    },
+    "トコフェロール": {
+     "Tocopherol": 100.0
+    },
+    "防腐剤ブレンド PE-9010": {
+     "Phenoxyethanol": 90.0,
+     "Ethylhexylglycerin": 10.0
+    },
+    "EDTA-2Na": {
+     "Disodium EDTA": 100.0
+    },
+    "水酸化Na 10%液": {
+     "Sodium Hydroxide": 10.0,
+     "Water": 90.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 65.84,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 65.3,
+       "水酸化Na 10%液": 0.54
+      }
+     },
+     {
+      "inci": "Squalane",
+      "pct": 6.0,
+      "display": "スクワラン",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "スクワラン": 6.0
+      }
+     },
+     {
+      "inci": "Glycerin",
+      "pct": 5.0,
+      "display": "グリセリン",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "グリセリン": 5.0
+      }
+     },
+     {
+      "inci": "Cetearyl Alcohol",
+      "pct": 4.8,
+      "display": "セテアリルアルコール",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "乳化剤ブレンド CS-20": 2.8,
+       "セテアリルアルコール": 2.0
+      }
+     },
+     {
+      "inci": "Caprylic/Capric Triglyceride",
+      "pct": 4.0,
+      "display": "トリ（カプリル酸／カプリン酸）グリセリル",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "MCT オイル": 4.0
+      }
+     },
+     {
+      "inci": "Butylene Glycol",
+      "pct": 3.0,
+      "display": "ＢＧ",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "BG": 3.0
+      }
+     },
+     {
+      "inci": "Butyrospermum Parkii (Shea) Butter",
+      "pct": 3.0,
+      "display": "シア脂",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "シアバター": 3.0
+      }
+     },
+     {
+      "inci": "Glyceryl Stearate SE",
+      "pct": 2.0,
+      "display": "ステアリン酸グリセリル（ＳＥ）",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "ステアリン酸グリセリルSE": 2.0
+      }
+     },
+     {
+      "inci": "Niacinamide",
+      "pct": 2.0,
+      "display": "ナイアシンアミド",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "ナイアシンアミド": 2.0
+      }
+     },
+     {
+      "inci": "Dimethicone",
+      "pct": 1.5,
+      "display": "ジメチコン",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "ジメチコン 350cs": 1.5
+      }
+     },
+     {
+      "inci": "Ceteareth-20",
+      "pct": 1.2,
+      "display": "セテアレス－２０",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "乳化剤ブレンド CS-20": 1.2
+      }
+     },
+     {
+      "inci": "Phenoxyethanol",
+      "pct": 0.9,
+      "display": "フェノキシエタノール",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "防腐剤ブレンド PE-9010": 0.9
+      }
+     },
+     {
+      "inci": "Carbomer",
+      "pct": 0.3,
+      "display": "カルボマー",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "カルボマー": 0.3
+      }
+     },
+     {
+      "inci": "Tocopherol",
+      "pct": 0.2,
+      "display": "トコフェロール",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "トコフェロール": 0.2
+      }
+     },
+     {
+      "inci": "Ethylhexylglycerin",
+      "pct": 0.1,
+      "display": "エチルヘキシルグリセリン",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "防腐剤ブレンド PE-9010": 0.1
+      }
+     },
+     {
+      "inci": "Disodium EDTA",
+      "pct": 0.1,
+      "display": "ＥＤＴＡ－２Ｎａ",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "EDTA-2Na": 0.1
+      }
+     },
+     {
+      "inci": "Sodium Hydroxide",
+      "pct": 0.06,
+      "display": "水酸化Ｎａ",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "水酸化Na 10%液": 0.06
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "水、スクワラン、グリセリン、セテアリルアルコール、トリ（カプリル酸／カプリン酸）グリセリル、ＢＧ、シア脂、ステアリン酸グリセリル（ＳＥ）、ナイアシンアミド、ジメチコン、セテアレス－２０、フェノキシエタノール、カルボマー、トコフェロール、エチルヘキシルグリセリン、ＥＤＴＡ－２Ｎａ、水酸化Ｎａ",
+    "inci_text": "Water, Squalane, Glycerin, Cetearyl Alcohol, Caprylic/Capric Triglyceride, Butylene Glycol, Butyrospermum Parkii (Shea) Butter, Glyceryl Stearate SE, Niacinamide, Dimethicone, Ceteareth-20, Phenoxyethanol, Carbomer, Tocopherol, Ethylhexylglycerin, Disodium EDTA, Sodium Hydroxide"
+   }
+  },
+  {
+   "name": "colorants_last",
+   "formula": {
+    "精製水": 55,
+    "SLES-27": 40,
+    "フェノキシエタノール": 2,
+    "酸化チタン": 3
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "SLES-27": {
+     "Sodium Laureth Sulfate": 27.0,
+     "Water": 73.0
+    },
+    "フェノキシエタノール": {
+     "Phenoxyethanol": 100.0
+    },
+    "酸化チタン": {
+     "Titanium Dioxide": 100.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 84.2,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 55.0,
+       "SLES-27": 29.2
+      }
+     },
+     {
+      "inci": "Sodium Laureth Sulfate",
+      "pct": 10.8,
+      "display": "ラウレス硫酸Ｎａ",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "SLES-27": 10.8
+      }
+     },
+     {
+      "inci": "Phenoxyethanol",
+      "pct": 2.0,
+      "display": "フェノキシエタノール",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "フェノキシエタノール": 2.0
+      }
+     },
+     {
+      "inci": "Titanium Dioxide",
+      "pct": 3.0,
+      "display": "酸化チタン",
+      "unordered_ok": false,
+      "is_colorant": true,
+      "sources": {
+       "酸化チタン": 3.0
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "水、ラウレス硫酸Ｎａ、フェノキシエタノール、酸化チタン",
+    "inci_text": "Water, Sodium Laureth Sulfate, Phenoxyethanol, Titanium Dioxide"
+   }
+  },
+  {
+   "name": "colorants_off",
+   "formula": {
+    "精製水": 55,
+    "SLES-27": 40,
+    "フェノキシエタノール": 2,
+    "酸化チタン": 3
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "SLES-27": {
+     "Sodium Laureth Sulfate": 27.0,
+     "Water": 73.0
+    },
+    "フェノキシエタノール": {
+     "Phenoxyethanol": 100.0
+    },
+    "酸化チタン": {
+     "Titanium Dioxide": 100.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": null,
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 84.2,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 55.0,
+       "SLES-27": 29.2
+      }
+     },
+     {
+      "inci": "Sodium Laureth Sulfate",
+      "pct": 10.8,
+      "display": "ラウレス硫酸Ｎａ",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "SLES-27": 10.8
+      }
+     },
+     {
+      "inci": "Titanium Dioxide",
+      "pct": 3.0,
+      "display": "酸化チタン",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "酸化チタン": 3.0
+      }
+     },
+     {
+      "inci": "Phenoxyethanol",
+      "pct": 2.0,
+      "display": "フェノキシエタノール",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "フェノキシエタノール": 2.0
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "水、ラウレス硫酸Ｎａ、酸化チタン、フェノキシエタノール",
+    "inci_text": "Water, Sodium Laureth Sulfate, Titanium Dioxide, Phenoxyethanol"
+   }
+  },
+  {
+   "name": "threshold_edge",
+   "formula": {
+    "精製水": 99,
+    "フェノキシエタノール": 1
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "フェノキシエタノール": {
+     "Phenoxyethanol": 100.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 99.0,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 99.0
+      }
+     },
+     {
+      "inci": "Phenoxyethanol",
+      "pct": 1.0,
+      "display": "フェノキシエタノール",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "フェノキシエタノール": 1.0
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "水、フェノキシエタノール",
+    "inci_text": "Water, Phenoxyethanol"
+   }
+  },
+  {
+   "name": "not_100_warn",
+   "formula": {
+    "精製水": 60,
+    "SLES-27": 20
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "SLES-27": {
+     "Sodium Laureth Sulfate": 27.0,
+     "Water": 73.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 74.6,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 60.0,
+       "SLES-27": 14.6
+      }
+     },
+     {
+      "inci": "Sodium Laureth Sulfate",
+      "pct": 5.4,
+      "display": "ラウレス硫酸Ｎａ",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "SLES-27": 5.4
+      }
+     }
+    ],
+    "total_pct": 80.0,
+    "labeled_pct": 80.0,
+    "n_warnings": 1,
+    "jp_text": "水、ラウレス硫酸Ｎａ",
+    "inci_text": "Water, Sodium Laureth Sulfate"
+   }
+  },
+  {
+   "name": "not_100_normalize",
+   "formula": {
+    "精製水": 60,
+    "SLES-27": 20
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "SLES-27": {
+     "Sodium Laureth Sulfate": 27.0,
+     "Water": 73.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": true,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 93.25,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 75.0,
+       "SLES-27": 18.25
+      }
+     },
+     {
+      "inci": "Sodium Laureth Sulfate",
+      "pct": 6.75,
+      "display": "ラウレス硫酸Ｎａ",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "SLES-27": 6.75
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "水、ラウレス硫酸Ｎａ",
+    "inci_text": "Water, Sodium Laureth Sulfate"
+   }
+  },
+  {
+   "name": "tie_input_order",
+   "formula": {
+    "グリセリン": 30,
+    "BG": 30,
+    "精製水": 40
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "グリセリン": {
+     "Glycerin": 100.0
+    },
+    "BG": {
+     "Butylene Glycol": 100.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 40.0,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 40.0
+      }
+     },
+     {
+      "inci": "Glycerin",
+      "pct": 30.0,
+      "display": "グリセリン",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "グリセリン": 30.0
+      }
+     },
+     {
+      "inci": "Butylene Glycol",
+      "pct": 30.0,
+      "display": "ＢＧ",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "BG": 30.0
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "水、グリセリン、ＢＧ",
+    "inci_text": "Water, Glycerin, Butylene Glycol"
+   }
+  },
+  {
+   "name": "complete_blend",
+   "formula": {
+    "ヒアルロン酸Na 1%液": 100
+   },
+   "materials": {
+    "ヒアルロン酸Na 1%液": {
+     "Sodium Hyaluronate": 1.0,
+     "Water": 99.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 99.0,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "ヒアルロン酸Na 1%液": 99.0
+      }
+     },
+     {
+      "inci": "Sodium Hyaluronate",
+      "pct": 1.0,
+      "display": "ヒアルロン酸Ｎａ",
+      "unordered_ok": true,
+      "is_colorant": false,
+      "sources": {
+       "ヒアルロン酸Na 1%液": 1.0
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "水、ヒアルロン酸Ｎａ",
+    "inci_text": "Water, Sodium Hyaluronate"
+   }
+  },
+  {
+   "name": "incomplete_blend_warn",
+   "formula": {
+    "Blend": 10,
+    "精製水": 90
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "Blend": {
+     "Squalane": 40.0,
+     "Dimethicone": 20.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 90.0,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 90.0
+      }
+     },
+     {
+      "inci": "Squalane",
+      "pct": 4.0,
+      "display": "スクワラン",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "Blend": 4.0
+      }
+     },
+     {
+      "inci": "Dimethicone",
+      "pct": 2.0,
+      "display": "ジメチコン",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "Blend": 2.0
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 96.0,
+    "n_warnings": 1,
+    "jp_text": "水、スクワラン、ジメチコン",
+    "inci_text": "Water, Squalane, Dimethicone"
+   }
+  },
+  {
+   "name": "case_insensitive_material",
+   "formula": {
+    "sles-27": 100
+   },
+   "materials": {
+    "SLES-27": {
+     "Sodium Laureth Sulfate": 27.0,
+     "Water": 73.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 73.0,
+      "display": "水",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "sles-27": 73.0
+      }
+     },
+     {
+      "inci": "Sodium Laureth Sulfate",
+      "pct": 27.0,
+      "display": "ラウレス硫酸Ｎａ",
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "sles-27": 27.0
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "水、ラウレス硫酸Ｎａ",
+    "inci_text": "Water, Sodium Laureth Sulfate"
+   }
+  },
+  {
+   "name": "no_display_names",
+   "formula": {
+    "精製水": 90,
+    "グリセリン": 10
+   },
+   "materials": {
+    "精製水": {
+     "Water": 100.0
+    },
+    "グリセリン": {
+     "Glycerin": 100.0
+    }
+   },
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": null
+   },
+   "expected": {
+    "entries": [
+     {
+      "inci": "Water",
+      "pct": 90.0,
+      "display": null,
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "精製水": 90.0
+      }
+     },
+     {
+      "inci": "Glycerin",
+      "pct": 10.0,
+      "display": null,
+      "unordered_ok": false,
+      "is_colorant": false,
+      "sources": {
+       "グリセリン": 10.0
+      }
+     }
+    ],
+    "total_pct": 100.0,
+    "labeled_pct": 100.0,
+    "n_warnings": 0,
+    "jp_text": "Water、Glycerin",
+    "inci_text": "Water, Glycerin"
+   }
+  },
+  {
+   "name": "unknown_material_error",
+   "formula": {
+    "Nope": 100
+   },
+   "materials": {},
+   "options": {
+    "threshold_pct": 1.0,
+    "colorants": [
+     "CI 77491",
+     "Titanium Dioxide"
+    ],
+    "normalize": false,
+    "display_names": {
+     "Water": "水",
+     "Glycerin": "グリセリン",
+     "Butylene Glycol": "ＢＧ",
+     "Sodium Laureth Sulfate": "ラウレス硫酸Ｎａ",
+     "Cocamidopropyl Betaine": "コカミドプロピルベタイン",
+     "Sodium Chloride": "塩化Ｎａ",
+     "Sodium Cocoyl Glutamate": "ココイルグルタミン酸Ｎａ",
+     "Coco-Glucoside": "ヤシ油アルキルグルコシド",
+     "Polysorbate 80": "ポリソルベート８０",
+     "Cetearyl Alcohol": "セテアリルアルコール",
+     "Ceteareth-20": "セテアレス－２０",
+     "Glyceryl Stearate SE": "ステアリン酸グリセリル（ＳＥ）",
+     "Stearic Acid": "ステアリン酸",
+     "Squalane": "スクワラン",
+     "Simmondsia Chinensis (Jojoba) Seed Oil": "ホホバ種子油",
+     "Butyrospermum Parkii (Shea) Butter": "シア脂",
+     "Caprylic/Capric Triglyceride": "トリ（カプリル酸／カプリン酸）グリセリル",
+     "Dimethicone": "ジメチコン",
+     "Carbomer": "カルボマー",
+     "Xanthan Gum": "キサンタンガム",
+     "Sodium Hyaluronate": "ヒアルロン酸Ｎａ",
+     "Polyquaternium-10": "ポリクオタニウム－１０",
+     "Niacinamide": "ナイアシンアミド",
+     "Panthenol": "パンテノール",
+     "Allantoin": "アラントイン",
+     "Tocopherol": "トコフェロール",
+     "Phenoxyethanol": "フェノキシエタノール",
+     "Ethylhexylglycerin": "エチルヘキシルグリセリン",
+     "Disodium EDTA": "ＥＤＴＡ－２Ｎａ",
+     "Citric Acid": "クエン酸",
+     "Sodium Hydroxide": "水酸化Ｎａ",
+     "Titanium Dioxide": "酸化チタン",
+     "CI 77491": "酸化鉄"
+    }
+   },
+   "expected_error": true
+  }
+ ],
+ "parse_cases": [
+  {
+   "text": "精製水\t55\nSLES-27, 40%\nフェノキシ：２\n3.5 グリセリン\nGlycerin 99 1\n# c\n\n香料A; 酸化チタン 0.1",
+   "expected": [
+    [
+     "精製水",
+     55.0
+    ],
+    [
+     "SLES-27",
+     40.0
+    ],
+    [
+     "フェノキシ",
+     2.0
+    ],
+    [
+     "グリセリン",
+     3.5
+    ],
+    [
+     "Glycerin 99",
+     1.0
+    ],
+    [
+     "香料A",
+     null
+    ],
+    [
+     "酸化チタン",
+     0.1
+    ]
+   ]
+  },
+  {
+   "text": "",
+   "expected": []
+  }
+ ],
+ "regulatory_cases": [
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": null,
+   "jurisdictions": null,
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Methylparaben": 0.4,
+     "Salicylic Acid": 3.0,
+     "Triclosan": 0.3,
+     "Zinc Pyrithione": 0.1
+    },
+    "groups": [
+     [
+      "parabens",
+      [
+       "Methylparaben",
+       "Propylparaben"
+      ],
+      0.8
+     ],
+     [
+      "parabens_long_chain",
+      [
+       "Propylparaben"
+      ],
+      0.14
+     ]
+    ]
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": null,
+   "jurisdictions": [
+    "JP"
+   ],
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Salicylic Acid": 0.2,
+     "Triclosan": 0.1,
+     "Zinc Pyrithione": 0.1
+    },
+    "groups": []
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": null,
+   "jurisdictions": [
+    "JP",
+    "EU"
+   ],
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Methylparaben": 0.4,
+     "Salicylic Acid": 3.0,
+     "Triclosan": 0.3,
+     "Zinc Pyrithione": 0.1
+    },
+    "groups": [
+     [
+      "parabens",
+      [
+       "Methylparaben",
+       "Propylparaben"
+      ],
+      0.8
+     ],
+     [
+      "parabens_long_chain",
+      [
+       "Propylparaben"
+      ],
+      0.14
+     ]
+    ]
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": null,
+   "jurisdictions": [
+    "EU"
+   ],
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Methylparaben": 0.4,
+     "Salicylic Acid": 3.0,
+     "Triclosan": 0.3
+    },
+    "groups": [
+     [
+      "parabens",
+      [
+       "Methylparaben",
+       "Propylparaben"
+      ],
+      0.8
+     ],
+     [
+      "parabens_long_chain",
+      [
+       "Propylparaben"
+      ],
+      0.14
+     ]
+    ]
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": "rinse_off",
+   "jurisdictions": null,
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Methylparaben": 0.4,
+     "Salicylic Acid": 3.0,
+     "Triclosan": 0.1,
+     "Zinc Pyrithione": 0.1
+    },
+    "groups": [
+     [
+      "parabens",
+      [
+       "Methylparaben",
+       "Propylparaben"
+      ],
+      0.8
+     ],
+     [
+      "parabens_long_chain",
+      [
+       "Propylparaben"
+      ],
+      0.14
+     ]
+    ]
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": "rinse_off",
+   "jurisdictions": [
+    "JP"
+   ],
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Salicylic Acid": 0.2,
+     "Triclosan": 0.1,
+     "Zinc Pyrithione": 0.1
+    },
+    "groups": []
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": "rinse_off",
+   "jurisdictions": [
+    "JP",
+    "EU"
+   ],
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Methylparaben": 0.4,
+     "Salicylic Acid": 3.0,
+     "Triclosan": 0.1,
+     "Zinc Pyrithione": 0.1
+    },
+    "groups": [
+     [
+      "parabens",
+      [
+       "Methylparaben",
+       "Propylparaben"
+      ],
+      0.8
+     ],
+     [
+      "parabens_long_chain",
+      [
+       "Propylparaben"
+      ],
+      0.14
+     ]
+    ]
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": "rinse_off",
+   "jurisdictions": [
+    "EU"
+   ],
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Methylparaben": 0.4,
+     "Salicylic Acid": 3.0
+    },
+    "groups": [
+     [
+      "parabens",
+      [
+       "Methylparaben",
+       "Propylparaben"
+      ],
+      0.8
+     ],
+     [
+      "parabens_long_chain",
+      [
+       "Propylparaben"
+      ],
+      0.14
+     ]
+    ]
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": "leave_on",
+   "jurisdictions": null,
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Methylparaben": 0.4,
+     "Salicylic Acid": 2.0,
+     "Triclosan": 0.1,
+     "Zinc Pyrithione": 0.01
+    },
+    "groups": [
+     [
+      "parabens",
+      [
+       "Methylparaben",
+       "Propylparaben"
+      ],
+      0.8
+     ],
+     [
+      "parabens_long_chain",
+      [
+       "Propylparaben"
+      ],
+      0.14
+     ]
+    ]
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": "leave_on",
+   "jurisdictions": [
+    "JP"
+   ],
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Salicylic Acid": 0.2,
+     "Triclosan": 0.1,
+     "Zinc Pyrithione": 0.01
+    },
+    "groups": []
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": "leave_on",
+   "jurisdictions": [
+    "JP",
+    "EU"
+   ],
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Methylparaben": 0.4,
+     "Salicylic Acid": 2.0,
+     "Triclosan": 0.1,
+     "Zinc Pyrithione": 0.01
+    },
+    "groups": [
+     [
+      "parabens",
+      [
+       "Methylparaben",
+       "Propylparaben"
+      ],
+      0.8
+     ],
+     [
+      "parabens_long_chain",
+      [
+       "Propylparaben"
+      ],
+      0.14
+     ]
+    ]
+   }
+  },
+  {
+   "inci_names": [
+    "Phenoxyethanol",
+    "Methylparaben",
+    "Propylparaben",
+    "Salicylic Acid",
+    "Water",
+    "Triclosan",
+    "Zinc Pyrithione"
+   ],
+   "product_class": "leave_on",
+   "jurisdictions": [
+    "EU"
+   ],
+   "expected": {
+    "individual": {
+     "Phenoxyethanol": 1.0,
+     "Methylparaben": 0.4,
+     "Salicylic Acid": 2.0
+    },
+    "groups": [
+     [
+      "parabens",
+      [
+       "Methylparaben",
+       "Propylparaben"
+      ],
+      0.8
+     ],
+     [
+      "parabens_long_chain",
+      [
+       "Propylparaben"
+      ],
+      0.14
+     ]
+    ]
+   }
+  }
+ ],
+ "check_case": {
+  "formula": {
+   "精製水": 98.0,
+   "フェノキシエタノール": 1.2,
+   "MP": 0.5,
+   "PP": 0.3
+  },
+  "materials": {
+   "精製水": {
+    "Water": 100.0
+   },
+   "フェノキシエタノール": {
+    "Phenoxyethanol": 100.0
+   },
+   "MP": {
+    "Methylparaben": 100.0
+   },
+   "PP": {
+    "Propylparaben": 100.0
+   }
+  },
+  "product_class": "leave_on",
+  "jurisdictions": [
+   "EU"
+  ],
+  "expected": [
+   {
+    "inci": "Methylparaben",
+    "pct": 0.5,
+    "limit": 0.4,
+    "exceeded": true,
+    "group": null
+   },
+   {
+    "inci": "Phenoxyethanol",
+    "pct": 1.2,
+    "limit": 1.0,
+    "exceeded": true,
+    "group": null
+   },
+   {
+    "inci": "Propylparaben",
+    "pct": 0.3,
+    "limit": 0.14,
+    "exceeded": true,
+    "group": "parabens_long_chain"
+   },
+   {
+    "inci": "Methylparaben",
+    "pct": 0.8,
+    "limit": 0.8,
+    "exceeded": false,
+    "group": "parabens"
+   },
+   {
+    "inci": "Propylparaben",
+    "pct": 0.8,
+    "limit": 0.8,
+    "exceeded": false,
+    "group": "parabens"
+   }
+  ]
+ }
+}
