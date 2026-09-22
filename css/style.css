@@ -19,7 +19,7 @@ main { padding: 16px; max-width: 1400px; margin: 0 auto; }
 .col.left { flex: 0 0 44%; min-width: 0; }
 .col.right { flex: 1; min-width: 0; }
 @media (max-width: 900px) { .cols { flex-direction: column; } .col.left { flex: 1 1 auto; width: 100%; } }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; min-width: 0; overflow: hidden; }
 .card h2 { margin: 0 0 10px; font-size: 1.02rem; }
 .card h3 { margin: 14px 0 6px; font-size: .95rem; }
 .row { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
@@ -43,7 +43,7 @@ button.ghost.danger { color: var(--danger); border-color: var(--danger); }
 button:hover { filter: brightness(.95); }
 .filebtn { display: inline-block; padding: 6px 12px; border: 1px solid #b8c2cc; border-radius: 6px; cursor: pointer; margin: 0; font-size: 14px; }
 table.grid { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: .9rem; }
-table.grid th, table.grid td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: middle; }
+table.grid th, table.grid td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: middle; overflow-wrap: anywhere; }
 table.grid th { background: #f7f9fb; font-weight: 600; color: #374151; }
 table.grid .num, table.grid td.num { text-align: right; white-space: nowrap; }
 table.grid td.small { font-size: .8rem; color: var(--muted); }
@@ -80,3 +80,9 @@ dialog#reg-dialog { border: 1px solid var(--line); border-radius: var(--radius);
 dialog#reg-dialog::backdrop { background: rgba(0,0,0,.35); }
 .dialog-body { padding: 16px 18px; }
 .dialog-body h2 { margin: 0 0 8px; font-size: 1.05rem; }
+/* 長い一覧はカード内でスクロール (右のフォームと高さを揃える) */
+.scroll { max-height: 62vh; overflow: auto; border: 1px solid var(--line); border-radius: 6px; margin: 8px 0; }
+.scroll table.grid { margin: 0; }
+.scroll table.grid thead th { position: sticky; top: 0; z-index: 1; }
+.tabs { flex-wrap: wrap; }
+.tab .pill { max-width: 6em; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: middle; }

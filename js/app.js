@@ -2,9 +2,9 @@
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError,
-} from "./label.js?v=202609222325";
-import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222325";
-import { parseCsvRecords } from "./csv.js?v=202609222325";
+} from "./label.js?v=202609222329";
+import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222329";
+import { parseCsvRecords } from "./csv.js?v=202609222329";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -379,7 +379,7 @@ function renderInciDatalist(q = "") {
 function renderIngredientList() {
   const q = $("#ing-search").value.trim();
   const all = q ? ingredients.search(q, 100000) : ingredients.listAll();
-  const LIMIT = 300;
+  const LIMIT = 200;
   const list = all.slice(0, LIMIT);
   const tb = $("#ing-table tbody"); tb.replaceChildren();
   if (all.length > LIMIT) tb.append(el("tr", {}, el("td", { colspan: 4, class: "small muted" }, `${all.length} 件中 ${LIMIT} 件を表示。検索で絞り込んでください。`)));
