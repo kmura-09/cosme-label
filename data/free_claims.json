@@ -1,0 +1,313 @@
+{
+ "schema": "free_claims/1",
+ "note": "「〇〇フリー」表示の根拠チェック用ルール。ng: 該当すれば表示できない INCI (正規表現, 大小無視)。caution: 定義や解釈によって該当しうるもの (要確認)。exclude: ng/caution に一致しても除外する INCI。フリー表示の可否は景品表示法・公正競争規約・各社基準にも依るため、本ルールは一般的な慣行に基づく目安。",
+ "claims": [
+  {
+   "id": "paraben_free",
+   "label": "パラベンフリー",
+   "description": "パラオキシ安息香酸エステル類 (メチル/エチル/プロピル/ブチルパラベン等) が無いこと。",
+   "ng": [
+    "paraben"
+   ],
+   "caution": [],
+   "exclude": []
+  },
+  {
+   "id": "phenoxyethanol_free",
+   "label": "フェノキシエタノールフリー",
+   "description": "フェノキシエタノールが無いこと。",
+   "ng": [
+    "^phenoxyethanol$"
+   ],
+   "caution": [],
+   "exclude": []
+  },
+  {
+   "id": "preservative_free",
+   "label": "防腐剤フリー",
+   "description": "化粧品基準の防腐剤 (パラベン、フェノキシエタノール、安息香酸/ソルビン酸とその塩、デヒドロ酢酸、ベンジルアルコール、クロルフェネシン、イソチアゾリノン、ホルムアルデヒド供与体、IPBC、トリクロサン、第四級アンモニウム殺菌剤等) が無いこと。1,2-ヘキサンジオール、カプリリルグリコール、ペンチレングリコール、エチルヘキシルグリセリン等の防腐補助剤は規制上の防腐剤ではないが、表示の根拠として指摘されやすいので注意扱い。",
+   "ng": [
+    "paraben",
+    "^phenoxyethanol$",
+    "^benzoic acid$",
+    "benzoate$",
+    "^sorbic acid$",
+    "sorbate$",
+    "dehydroacetic acid",
+    "dehydroacetate",
+    "^benzyl alcohol$",
+    "^chlorphenesin$",
+    "isothiazolinone",
+    "imidazolidinyl urea",
+    "diazolidinyl urea",
+    "dmdm hydantoin",
+    "iodopropynyl butylcarbamate",
+    "^triclosan$",
+    "^triclocarban$",
+    "chlorhexidine",
+    "cetylpyridinium chloride",
+    "benzalkonium chloride",
+    "benzethonium chloride",
+    "^formaldehyde$",
+    "quaternium-15",
+    "^chloroxylenol$",
+    "^o-cymen-5-ol$",
+    "^bronopol$",
+    "2-bromo-2-nitropropane-1,3-diol",
+    "^hexamidine",
+    "^sodium hydroxymethylglycinate$",
+    "^polyaminopropyl biguanide$"
+   ],
+   "caution": [
+    "^1,2-hexanediol$",
+    "^caprylyl glycol$",
+    "^pentylene glycol$",
+    "^ethylhexylglycerin$",
+    "^caprylhydroxamic acid$",
+    "^glyceryl caprylate$",
+    "^p-anisic acid$",
+    "^levulinic acid$",
+    "^sodium levulinate$",
+    "^sodium anisate$",
+    "^salicylic acid$",
+    "^zinc pyrithione$",
+    "^piroctone olamine$",
+    "^climbazole$"
+   ],
+   "exclude": [
+    "^sodium (lauroyl|cocoyl|methyl cocoyl) .*",
+    "^ethylhexyl salicylate$",
+    "^butyloctyl salicylate$",
+    "^tridecyl salicylate$",
+    "^homosalate$",
+    "^(c12-15 alkyl|benzyl|phenethyl) benzoate$",
+    "^alkyl benzoate$"
+   ]
+  },
+  {
+   "id": "fragrance_free",
+   "label": "無香料 (香料フリー)",
+   "description": "調合香料 (Fragrance / Parfum / 香料) が無いこと。精油・植物エキスの香気成分や、香料アレルゲン表示成分 (リナロール、リモネン等) は「香料」ではないが無香料の解釈に関わるため注意扱い。",
+   "ng": [
+    "^(parfum|fragrance|flavor|flavour|aroma)$",
+    "^香料$"
+   ],
+   "caution": [
+    "^(linalool|limonene|citral|geraniol|citronellol|eugenol|coumarin|benzyl benzoate|benzyl salicylate|hexyl cinnamal|butylphenyl methylpropional|alpha-isomethyl ionone|hydroxycitronellal|cinnamal|cinnamyl alcohol|farnesol|benzyl alcohol|amyl cinnamal|anise alcohol|isoeugenol|benzyl cinnamate|methyl 2-octynoate|evernia .*)$",
+    "(flower|leaf|peel|wood|bark|rind|herb|needle|resin|root|twig) oil$",
+    "essential oil"
+   ],
+   "exclude": []
+  },
+  {
+   "id": "colorant_free",
+   "label": "無着色 (着色剤フリー)",
+   "description": "着色剤 (CI 番号、法定色素、酸化鉄等) が無いこと。原料側で「着色剤」にした成分も対象。酸化チタン・マイカ・カラメル等は用途 (紫外線散乱剤、パール剤、着色) で扱いが変わるため注意扱い。",
+   "ng": [
+    "^ci\\s*\\d{5}",
+    "^iron oxides?$",
+    "^(red|yellow|blue|green|orange|violet|brown|black) \\d+",
+    "^(d&c|fd&c) ",
+    "^chromium (oxide|hydroxide) green",
+    "^ultramarines?$",
+    "^manganese violet$",
+    "^carmine$",
+    "^ferric ferrocyanide$",
+    "^bismuth oxychloride$"
+   ],
+   "caution": [
+    "^titanium dioxide$",
+    "^mica$",
+    "^caramel$",
+    "^zinc oxide$",
+    "^tin oxide$",
+    "^calcium aluminum borosilicate$",
+    "^synthetic fluorphlogopite$"
+   ],
+   "exclude": []
+  },
+  {
+   "id": "alcohol_free",
+   "label": "アルコールフリー (エタノール不使用)",
+   "description": "エタノール (Alcohol / Alcohol Denat. / SD Alcohol) が無いこと。セタノール等の高級アルコールやベンジルアルコールは「アルコールフリー」の対象外とするのが一般的。",
+   "ng": [
+    "^alcohol$",
+    "^alcohol denat\\.?$",
+    "^ethanol$",
+    "^ethyl alcohol$",
+    "^sd alcohol"
+   ],
+   "caution": [
+    "^denatured alcohol$",
+    "^benzyl alcohol$",
+    "^isopropyl alcohol$",
+    "^phenethyl alcohol$"
+   ],
+   "exclude": []
+  },
+  {
+   "id": "mineral_oil_free",
+   "label": "鉱物油フリー",
+   "description": "石油由来の炭化水素油・ワックス (ミネラルオイル、ワセリン、パラフィン、マイクロクリスタリンワックス、オゾケライト、セレシン) が無いこと。合成炭化水素 (水添ポリイソブテン、イソドデカン等) は定義次第で注意扱い。",
+   "ng": [
+    "^mineral oil$",
+    "^paraffinum liquidum$",
+    "^petrolatum$",
+    "^paraffin$",
+    "^microcrystalline wax$",
+    "^cera microcristallina$",
+    "^ozokerite$",
+    "^ceresin$",
+    "^(c\\d+-\\d+ )?isoparaffin$",
+    "^petroleum distillates$"
+   ],
+   "caution": [
+    "^hydrogenated polyisobutene$",
+    "^polyisobutene$",
+    "^isododecane$",
+    "^isohexadecane$",
+    "^hydrogenated polydecene$",
+    "^polybutene$",
+    "^synthetic wax$",
+    "^polyethylene$"
+   ],
+   "exclude": []
+  },
+  {
+   "id": "silicone_free",
+   "label": "シリコンフリー",
+   "description": "シリコーン (ジメチコン、シクロメチコン、シロキサン、シルセスキオキサン、シラノール等) が無いこと。シリカ (Silica) はシリコーンではない。",
+   "ng": [
+    "methicone",
+    "siloxane",
+    "silsesquioxane",
+    "silanol",
+    "silylate",
+    "silicone",
+    "trimethylsilyl"
+   ],
+   "caution": [],
+   "exclude": [
+    "^silica",
+    "^hydrated silica$",
+    "silicate"
+   ]
+  },
+  {
+   "id": "sulfate_free",
+   "label": "サルフェートフリー (硫酸系界面活性剤不使用)",
+   "description": "硫酸エステル塩型アニオン界面活性剤 (ラウリル硫酸Na、ラウレス硫酸Na、ラウリル硫酸アンモニウム等) が無いこと。硫酸マグネシウム等の無機塩は対象外。",
+   "ng": [
+    "^(sodium|ammonium|potassium|tea|mea|dea|mipa|magnesium) (lauryl|laureth|coceth|myreth|pareth|trideceth|cetearyl|oleth|deceth|c1[0-9]-1[0-9] (alkyl|pareth)|alkyl) sulfate$",
+    "^(sodium|ammonium) (lauryl|laureth)-\\d+ sulfate$",
+    "lauryl sulfate",
+    "laureth sulfate"
+   ],
+   "caution": [
+    "sulfosuccinate",
+    "^sodium coco-sulfate$",
+    "sulfonate$"
+   ],
+   "exclude": [
+    "^(magnesium|zinc|copper|sodium|potassium|calcium|aluminum|ferrous|manganese|iron) sulfate$"
+   ]
+  },
+  {
+   "id": "peg_free",
+   "label": "PEG フリー (ポリエチレングリコール・エトキシ化物不使用)",
+   "description": "PEG-n 系および -eth-n 系 (ラウレス、セテアレス等) のエトキシ化原料が無いこと。ポリソルベート、ポロキサマー、PEG 化油脂も慣行上含める。",
+   "ng": [
+    "(^|[^a-z])peg-\\d+",
+    "[a-z]eth-\\d+",
+    "^polysorbate",
+    "^poloxamer",
+    "^polyethylene glycol",
+    "peg/ppg"
+   ],
+   "caution": [
+    "^ppg-\\d+"
+   ],
+   "exclude": []
+  },
+  {
+   "id": "edta_free",
+   "label": "EDTA フリー",
+   "description": "エデト酸およびその塩 (EDTA-2Na 等) が無いこと。",
+   "ng": [
+    "edta",
+    "^edetic acid$",
+    "edetate"
+   ],
+   "caution": [],
+   "exclude": []
+  },
+  {
+   "id": "uv_absorber_free",
+   "label": "紫外線吸収剤フリー",
+   "description": "有機系紫外線吸収剤が無いこと。酸化チタン・酸化亜鉛は散乱剤なので対象外 (「紫外線散乱剤不使用」とは別)。",
+   "ng": [
+    "^ethylhexyl methoxycinnamate$",
+    "^octocrylene$",
+    "^oxybenzone$",
+    "^benzophenone-\\d+$",
+    "^butyl methoxydibenzoylmethane$",
+    "^avobenzone$",
+    "^homosalate$",
+    "^ethylhexyl salicylate$",
+    "^octisalate$",
+    "^ethylhexyl triazone$",
+    "^bis-ethylhexyloxyphenol methoxyphenyl triazine$",
+    "^diethylamino hydroxybenzoyl hexyl benzoate$",
+    "^methylene bis-benzotriazolyl tetramethylbutylphenol$",
+    "^polysilicone-15$",
+    "^tris-biphenyl triazine$",
+    "^drometrizole trisiloxane$",
+    "^terephthalylidene dicamphor sulfonic acid$",
+    "^phenylbenzimidazole sulfonic acid$",
+    "^isoamyl p-methoxycinnamate$",
+    "^4-methylbenzylidene camphor$",
+    "^diethylhexyl butamido triazone$",
+    "^ethylhexyl dimethyl paba$",
+    "^padimate o$",
+    "^menthyl anthranilate$",
+    "^cinoxate$",
+    "^ensulizole$",
+    "^dioxybenzone$",
+    "^sulisobenzone$",
+    "^trolamine salicylate$",
+    "^bemotrizinol$",
+    "^bisoctrizole$"
+   ],
+   "caution": [],
+   "exclude": []
+  },
+  {
+   "id": "gluten_free",
+   "label": "グルテンフリー",
+   "description": "小麦・大麦・ライ麦由来原料が無いこと。オーツ麦は交差汚染の観点で注意扱い。",
+   "ng": [
+    "triticum",
+    "wheat",
+    "hordeum",
+    "barley",
+    "secale",
+    "rye "
+   ],
+   "caution": [
+    "avena",
+    "oat"
+   ],
+   "exclude": []
+  },
+  {
+   "id": "urea_free",
+   "label": "尿素フリー",
+   "description": "尿素が無いこと。ジアゾリジニル尿素等の防腐剤も名称に尿素を含むため対象。",
+   "ng": [
+    "urea"
+   ],
+   "caution": [],
+   "exclude": []
+  }
+ ]
+}

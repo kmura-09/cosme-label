@@ -1,10 +1,10 @@
 // 画面の配線。ロジックは label.js、保存は store.js。
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
-  checkRegulatory, findingText, labelInputs, isCiNumber, LabelError,
-} from "./label.js?v=202609222329";
-import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222329";
-import { parseCsvRecords } from "./csv.js?v=202609222329";
+  checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims,
+} from "./label.js?v=202609222345";
+import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222345";
+import { parseCsvRecords } from "./csv.js?v=202609222345";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -25,6 +25,8 @@ const DISCLAIMER_TEXT = "本ツールおよび同梱の規制データは情報�
 const store = new MaterialStore();
 const ingredients = new IngredientStore();
 let regTable = new Map();
+let freeClaims = [];
+fetch("data/free_claims.json").then((r) => r.json()).then((d) => { freeClaims = compileFreeClaims(d); renderLabel(); }).catch(() => {});
 fetch("data/regulatory_limits_inci.json").then((r) => r.json()).then((d) => { regTable = indexRegulatoryRows(d); renderLabel(); })
   .catch(() => { $("#label-output").prepend(alertBox("規制データ (data/regulatory_limits_inci.json) を読めませんでした。規制チェックなしで動作します。", "warn")); });
 
@@ -241,6 +243,20 @@ function renderLabel() {
       el("td", { class: "num" }, e.pct.toFixed(3)),
       el("td", { class: "small" }, Object.entries(e.sources).map(([k, v]) => `${k} (${+v.toPrecision(3)})`).join(" / ")),
       el("td", { class: "flag" }, e.isColorant ? "着色剤" : e.unorderedOk ? "順不同可" : ""))))));
+  if (freeClaims.length) {
+    const results = checkFreeClaims(res.inciOrder, freeClaims, { colorants });
+    const icon = { ok: "✓", ng: "✗", caution: "△" }, cls = { ok: "ok", ng: "bad", caution: "warn" };
+    const nOk = results.filter((r) => r.status === "ok").length;
+    out.append(el("details", { class: "claims", open: "" },
+      el("summary", {}, el("b", {}, "フリー表示チェック"), el("span", { class: "muted small" }, ` 表示できる根拠あり ${nOk} / ${results.length}`)),
+      el("table", { class: "grid" },
+        el("thead", {}, el("tr", {}, el("th", {}, "表示"), el("th", {}, "判定"), el("th", {}, "該当成分"))),
+        el("tbody", {}, results.map((r) => el("tr", {},
+          el("td", { title: r.description }, r.label),
+          el("td", {}, el("span", { class: `badge ${cls[r.status]}` }, `${icon[r.status]} ${r.status === "ok" ? "該当なし" : r.status === "ng" ? "該当あり" : "要確認"}`)),
+          el("td", { class: "small" }, [...r.ng.map((x) => `✗ ${x}`), ...r.caution.map((x) => `△ ${x}`)].join(" / ")))))),
+      el("p", { class: "muted small" }, "✓ は本ルール上の該当成分が無いという意味で、表示の可否は各社基準・公正競争規約・景品表示法の観点で別途判断してください。△ は定義や用途によって該当しうる成分 (防腐補助剤、精油、酸化チタン等)。行にマウスを乗せると定義が出ます。")));
+  }
   out.append(...copyBlock("表示名称 (日本語)", res.asText(), "jp-text"));
   out.append(...copyBlock("INCI (英語)", res.asInciText(), "inci-text"));
   out.append(el("ul", { class: "notes" }, res.notes.map((n) => el("li", {}, n))));

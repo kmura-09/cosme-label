@@ -2034,5 +2034,494 @@
     "group": "parabens"
    }
   ]
- }
+ },
+ "free_claim_cases": [
+  {
+   "inci_names": [
+    "Water",
+    "Sodium Laureth Sulfate",
+    "Cocamidopropyl Betaine",
+    "Glycerin",
+    "Sodium Chloride",
+    "Coco-Glucoside",
+    "Phenoxyethanol",
+    "Panthenol",
+    "Polyquaternium-10",
+    "Citric Acid",
+    "Ethylhexylglycerin",
+    "Disodium EDTA"
+   ],
+   "colorants": [],
+   "expected": [
+    {
+     "id": "paraben_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "phenoxyethanol_free",
+     "status": "ng",
+     "ng": [
+      "Phenoxyethanol"
+     ],
+     "caution": []
+    },
+    {
+     "id": "preservative_free",
+     "status": "ng",
+     "ng": [
+      "Phenoxyethanol"
+     ],
+     "caution": [
+      "Ethylhexylglycerin"
+     ]
+    },
+    {
+     "id": "fragrance_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "colorant_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "alcohol_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "mineral_oil_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "silicone_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "sulfate_free",
+     "status": "ng",
+     "ng": [
+      "Sodium Laureth Sulfate"
+     ],
+     "caution": []
+    },
+    {
+     "id": "peg_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "edta_free",
+     "status": "ng",
+     "ng": [
+      "Disodium EDTA"
+     ],
+     "caution": []
+    },
+    {
+     "id": "uv_absorber_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "gluten_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "urea_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    }
+   ]
+  },
+  {
+   "inci_names": [
+    "Water",
+    "Squalane",
+    "Glycerin",
+    "Cetearyl Alcohol",
+    "Caprylic/Capric Triglyceride",
+    "Butylene Glycol",
+    "Butyrospermum Parkii (Shea) Butter",
+    "Glyceryl Stearate SE",
+    "Niacinamide",
+    "Dimethicone",
+    "Ceteareth-20",
+    "Phenoxyethanol",
+    "Carbomer",
+    "Tocopherol",
+    "Ethylhexylglycerin",
+    "Disodium EDTA",
+    "Sodium Hydroxide"
+   ],
+   "colorants": [],
+   "expected": [
+    {
+     "id": "paraben_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "phenoxyethanol_free",
+     "status": "ng",
+     "ng": [
+      "Phenoxyethanol"
+     ],
+     "caution": []
+    },
+    {
+     "id": "preservative_free",
+     "status": "ng",
+     "ng": [
+      "Phenoxyethanol"
+     ],
+     "caution": [
+      "Ethylhexylglycerin"
+     ]
+    },
+    {
+     "id": "fragrance_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "colorant_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "alcohol_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "mineral_oil_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "silicone_free",
+     "status": "ng",
+     "ng": [
+      "Dimethicone"
+     ],
+     "caution": []
+    },
+    {
+     "id": "sulfate_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "peg_free",
+     "status": "ng",
+     "ng": [
+      "Ceteareth-20"
+     ],
+     "caution": []
+    },
+    {
+     "id": "edta_free",
+     "status": "ng",
+     "ng": [
+      "Disodium EDTA"
+     ],
+     "caution": []
+    },
+    {
+     "id": "uv_absorber_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "gluten_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "urea_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    }
+   ]
+  },
+  {
+   "inci_names": [
+    "Water",
+    "CI 77491"
+   ],
+   "colorants": [
+    "CI 77491"
+   ],
+   "expected": [
+    {
+     "id": "paraben_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "phenoxyethanol_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "preservative_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "fragrance_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "colorant_free",
+     "status": "ng",
+     "ng": [
+      "CI 77491"
+     ],
+     "caution": []
+    },
+    {
+     "id": "alcohol_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "mineral_oil_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "silicone_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "sulfate_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "peg_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "edta_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "uv_absorber_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "gluten_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "urea_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    }
+   ]
+  },
+  {
+   "inci_names": [
+    "Water",
+    "Methylparaben",
+    "Phenoxyethanol",
+    "Dimethicone",
+    "Silica",
+    "Sodium Laureth Sulfate",
+    "Magnesium Sulfate",
+    "PEG-40 Hydrogenated Castor Oil",
+    "Polyglyceryl-4 Laurate",
+    "Alcohol",
+    "Cetearyl Alcohol",
+    "Mineral Oil",
+    "Parfum",
+    "Limonene",
+    "Disodium EDTA",
+    "Titanium Dioxide",
+    "Homosalate",
+    "1,2-Hexanediol",
+    "Urea",
+    "Triticum Vulgare (Wheat) Germ Oil",
+    "Iron Oxides",
+    "Laureth-7",
+    "Lavandula Angustifolia (Lavender) Oil",
+    "Sodium Benzoate",
+    "Silica Silylate"
+   ],
+   "colorants": [
+    "Iron Oxides"
+   ],
+   "expected": [
+    {
+     "id": "paraben_free",
+     "status": "ng",
+     "ng": [
+      "Methylparaben"
+     ],
+     "caution": []
+    },
+    {
+     "id": "phenoxyethanol_free",
+     "status": "ng",
+     "ng": [
+      "Phenoxyethanol"
+     ],
+     "caution": []
+    },
+    {
+     "id": "preservative_free",
+     "status": "ng",
+     "ng": [
+      "Methylparaben",
+      "Phenoxyethanol",
+      "Sodium Benzoate"
+     ],
+     "caution": [
+      "1,2-Hexanediol"
+     ]
+    },
+    {
+     "id": "fragrance_free",
+     "status": "ng",
+     "ng": [
+      "Parfum"
+     ],
+     "caution": [
+      "Limonene"
+     ]
+    },
+    {
+     "id": "colorant_free",
+     "status": "ng",
+     "ng": [
+      "Iron Oxides"
+     ],
+     "caution": [
+      "Titanium Dioxide"
+     ]
+    },
+    {
+     "id": "alcohol_free",
+     "status": "ng",
+     "ng": [
+      "Alcohol"
+     ],
+     "caution": []
+    },
+    {
+     "id": "mineral_oil_free",
+     "status": "ng",
+     "ng": [
+      "Mineral Oil"
+     ],
+     "caution": []
+    },
+    {
+     "id": "silicone_free",
+     "status": "ng",
+     "ng": [
+      "Dimethicone"
+     ],
+     "caution": []
+    },
+    {
+     "id": "sulfate_free",
+     "status": "ng",
+     "ng": [
+      "Sodium Laureth Sulfate"
+     ],
+     "caution": []
+    },
+    {
+     "id": "peg_free",
+     "status": "ng",
+     "ng": [
+      "PEG-40 Hydrogenated Castor Oil",
+      "Laureth-7"
+     ],
+     "caution": []
+    },
+    {
+     "id": "edta_free",
+     "status": "ng",
+     "ng": [
+      "Disodium EDTA"
+     ],
+     "caution": []
+    },
+    {
+     "id": "uv_absorber_free",
+     "status": "ng",
+     "ng": [
+      "Homosalate"
+     ],
+     "caution": []
+    },
+    {
+     "id": "gluten_free",
+     "status": "ng",
+     "ng": [
+      "Triticum Vulgare (Wheat) Germ Oil"
+     ],
+     "caution": [
+      "Sodium Benzoate"
+     ]
+    },
+    {
+     "id": "urea_free",
+     "status": "ng",
+     "ng": [
+      "Urea"
+     ],
+     "caution": []
+    }
+   ]
+  }
+ ]
 }

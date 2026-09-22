@@ -319,6 +319,32 @@ export function findingText(f) {
   return `${f.inciName}: ${f.pct.toFixed(3)}% / ${scope} ${f.limitPct}% → ${f.exceeded ? "超過" : "以内"}`;
 }
 
+// ── 「〇〇フリー」表示の根拠チェック ─────────────────────────────────────────
+// data/free_claims.json のルール (ng / caution / exclude の正規表現) を INCI 名に当てる。
+// status: "ok" (該当なし) / "ng" (該当あり = 表示不可) / "caution" (定義次第、要確認)。
+
+export function compileFreeClaims(data) {
+  const rx = (arr) => (arr || []).map((p) => new RegExp(p, "i"));
+  return (data.claims || []).map((c) => ({
+    id: c.id, label: c.label, description: c.description || "",
+    ng: rx(c.ng), caution: rx(c.caution), exclude: rx(c.exclude),
+  }));
+}
+
+export function checkFreeClaims(inciNames, claims, { colorants = null } = {}) {
+  const colorKeys = new Set([...(colorants || [])].map(normKey));
+  const names = inciNames.map((n) => ({ raw: n, s: String(n).normalize("NFKC").trim() }));
+  return claims.map((c) => {
+    const ng = [], caution = [];
+    for (const { raw, s } of names) {
+      if (c.exclude.some((r) => r.test(s))) continue;
+      if (c.ng.some((r) => r.test(s)) || (c.id === "colorant_free" && colorKeys.has(normKey(raw)))) ng.push(raw);
+      else if (c.caution.some((r) => r.test(s))) caution.push(raw);
+    }
+    return { id: c.id, label: c.label, description: c.description, status: ng.length ? "ng" : caution.length ? "caution" : "ok", ng, caution };
+  });
+}
+
 /** 原料の配列から成分表生成の 3 入力 (構成 / 表示名称 / 着色剤) をまとめる。 */
 export function labelInputs(materials) {
   const comp = {}, names = {}, colorants = new Set();

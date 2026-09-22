@@ -9,7 +9,7 @@ import {
 } from "../js/label.js";
 import { parseCsvRecords, toCsv } from "../js/csv.js";
 import { MaterialStore, IngredientStore } from "../js/store.js";
-import { splitFormulaLines, normKey } from "../js/label.js";
+import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims } from "../js/label.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const golden = JSON.parse(readFileSync(join(here, "golden.json"), "utf8"));
@@ -151,6 +151,16 @@ for (const c of golden.regulatory_cases) {
   assert.equal(res.entries[0].pct, 65);                                          // 15 + 50 合算 (表記は最初に見た方)
   assert.equal(normKey("ＣＥＴＥＡＲＥＴＨ－２０"), normKey("ceteareth 20"));
   n += 12;
+}
+
+// フリー表示チェック (ルール JSON を共有、期待値は golden)
+{
+  const claims = compileFreeClaims(JSON.parse(readFileSync(join(here, "../data/free_claims.json"), "utf8")));
+  for (const c of golden.free_claim_cases) {
+    const got = checkFreeClaims(c.inci_names, claims, { colorants: c.colorants }).map((x) => ({ id: x.id, status: x.status, ng: x.ng, caution: x.caution }));
+    assert.deepEqual(got, c.expected, "free claims: " + c.inci_names.slice(0, 3).join(","));
+    n++;
+  }
 }
 
 console.log(`ok: ${n} checks passed`);
