@@ -312,8 +312,11 @@ function renderInciDatalist() {
 }
 function renderIngredientList() {
   const q = $("#ing-search").value.trim();
-  const list = q ? ingredients.search(q, 1000) : ingredients.listAll();
+  const all = q ? ingredients.search(q, 100000) : ingredients.listAll();
+  const LIMIT = 300;
+  const list = all.slice(0, LIMIT);
   const tb = $("#ing-table tbody"); tb.replaceChildren();
+  if (all.length > LIMIT) tb.append(el("tr", {}, el("td", { colspan: 4, class: "small muted" }, `${all.length} 件中 ${LIMIT} 件を表示。検索で絞り込んでください。`)));
   for (const x of list) {
     tb.append(el("tr", { class: ingEdit && IngredientStore.key(ingEdit) === IngredientStore.key(x.inci) ? "selected" : "", onclick: () => loadIngredient(x) },
       el("td", {}, x.inci), el("td", {}, x.display_name || el("span", { class: "muted" }, "(未設定)")),
