@@ -2090,6 +2090,12 @@
      "caution": []
     },
     {
+     "id": "tar_color_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
      "id": "alcohol_free",
      "status": "ok",
      "ng": [],
@@ -2117,8 +2123,10 @@
     },
     {
      "id": "peg_free",
-     "status": "ok",
-     "ng": [],
+     "status": "ng",
+     "ng": [
+      "Sodium Laureth Sulfate"
+     ],
      "caution": []
     },
     {
@@ -2131,6 +2139,12 @@
     },
     {
      "id": "uv_absorber_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "uv_scatterer_free",
      "status": "ok",
      "ng": [],
      "caution": []
@@ -2208,6 +2222,12 @@
      "caution": []
     },
     {
+     "id": "tar_color_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
      "id": "alcohol_free",
      "status": "ok",
      "ng": [],
@@ -2251,6 +2271,12 @@
     },
     {
      "id": "uv_absorber_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "uv_scatterer_free",
      "status": "ok",
      "ng": [],
      "caution": []
@@ -2311,6 +2337,12 @@
      "caution": []
     },
     {
+     "id": "tar_color_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
      "id": "alcohol_free",
      "status": "ok",
      "ng": [],
@@ -2348,6 +2380,12 @@
     },
     {
      "id": "uv_absorber_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "uv_scatterer_free",
      "status": "ok",
      "ng": [],
      "caution": []
@@ -2447,6 +2485,12 @@
      ]
     },
     {
+     "id": "tar_color_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
      "id": "alcohol_free",
      "status": "ng",
      "ng": [
@@ -2482,6 +2526,7 @@
      "id": "peg_free",
      "status": "ng",
      "ng": [
+      "Sodium Laureth Sulfate",
       "PEG-40 Hydrogenated Castor Oil",
       "Laureth-7"
      ],
@@ -2504,14 +2549,20 @@
      "caution": []
     },
     {
+     "id": "uv_scatterer_free",
+     "status": "ng",
+     "ng": [
+      "Titanium Dioxide"
+     ],
+     "caution": []
+    },
+    {
      "id": "gluten_free",
      "status": "ng",
      "ng": [
       "Triticum Vulgare (Wheat) Germ Oil"
      ],
-     "caution": [
-      "Sodium Benzoate"
-     ]
+     "caution": []
     },
     {
      "id": "urea_free",

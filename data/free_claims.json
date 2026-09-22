@@ -25,7 +25,7 @@
   {
    "id": "preservative_free",
    "label": "防腐剤フリー",
-   "description": "化粧品基準の防腐剤 (パラベン、フェノキシエタノール、安息香酸/ソルビン酸とその塩、デヒドロ酢酸、ベンジルアルコール、クロルフェネシン、イソチアゾリノン、ホルムアルデヒド供与体、IPBC、トリクロサン、第四級アンモニウム殺菌剤等) が無いこと。1,2-ヘキサンジオール、カプリリルグリコール、ペンチレングリコール、エチルヘキシルグリセリン等の防腐補助剤は規制上の防腐剤ではないが、表示の根拠として指摘されやすいので注意扱い。",
+   "description": "化粧品基準 別表第3 および EU Annex V の防腐剤 (パラベン、フェノキシエタノール、安息香酸/ソルビン酸/サリチル酸とその塩、デヒドロ酢酸、ベンジルアルコール、クロルフェネシン、イソチアゾリノン、ホルムアルデヒド供与体、IPBC、トリクロサン、ジンクピリチオン、フェノール類、第四級アンモニウム殺菌剤等) が無いこと。1,2-ヘキサンジオール、カプリリルグリコール、ペンチレングリコール、エチルヘキシルグリセリン等の防腐補助剤は規制上の防腐剤ではないが、表示の根拠として指摘されやすいので注意扱い。",
    "ng": [
     "paraben",
     "^phenoxyethanol$",
@@ -56,7 +56,39 @@
     "2-bromo-2-nitropropane-1,3-diol",
     "^hexamidine",
     "^sodium hydroxymethylglycinate$",
-    "^polyaminopropyl biguanide$"
+    "^polyaminopropyl biguanide$",
+    "^salicylic acid$",
+    "^(sodium|potassium|calcium|magnesium|mea|tea) salicylate$",
+    "^zinc pyrithione$",
+    "^piroctone olamine$",
+    "^climbazole$",
+    "^phenol$",
+    "^resorcinol$",
+    "^thymol$",
+    "^hinokitiol$",
+    "^chlorobutanol$",
+    "^o-phenylphenol$",
+    "^chlorocresol$",
+    "^p-chloro-m-cresol$",
+    "^undecylenic acid$",
+    "undecylenate$",
+    "^boric acid$",
+    "^sodium borate$",
+    "^isopropyl methylphenol$",
+    "^hexachlorophene$",
+    "^p-chlorophenol$",
+    "^chloroacetamide$",
+    "^dichlorobenzyl alcohol$",
+    "^methenamine$",
+    "^glutaral$",
+    "^dimethyl oxazolidine$",
+    "^7-ethylbicyclooxazolidine$",
+    "^sodium iodate$",
+    "^alkyl.*diaminoethylglycine",
+    "^lauryl.*diaminoethylglycine",
+    "^benzylhemiformal$",
+    "^silver chloride$",
+    "^ethyl lauroyl arginate hcl$"
    ],
    "caution": [
     "^1,2-hexanediol$",
@@ -68,11 +100,7 @@
     "^p-anisic acid$",
     "^levulinic acid$",
     "^sodium levulinate$",
-    "^sodium anisate$",
-    "^salicylic acid$",
-    "^zinc pyrithione$",
-    "^piroctone olamine$",
-    "^climbazole$"
+    "^sodium anisate$"
    ],
    "exclude": [
     "^sodium (lauroyl|cocoyl|methyl cocoyl) .*",
@@ -122,9 +150,35 @@
     "^zinc oxide$",
     "^tin oxide$",
     "^calcium aluminum borosilicate$",
-    "^synthetic fluorphlogopite$"
+    "^synthetic fluorphlogopite$",
+    "carotene",
+    "^anthocyanins$",
+    "^curcumin$",
+    "^riboflavin$",
+    "^chlorophyllin",
+    "^lycopene$",
+    "^bixin$",
+    "^safflower.*color",
+    "^gardenia.*(blue|yellow|red)"
    ],
    "exclude": []
+  },
+  {
+   "id": "tar_color_free",
+   "label": "タール色素フリー (合成有機色素不使用)",
+   "description": "合成有機色素 (法定色素: 赤 202 などの「色名+番号」、CI 10000〜79999 の有機染料・顔料) が無いこと。酸化鉄・酸化チタン・群青などの無機顔料 (CI 77xxx) は対象外。",
+   "ng": [
+    "^ci\\s*[1-7]\\d{4}",
+    "^(red|yellow|blue|green|orange|violet|brown|black) \\d+",
+    "^(d&c|fd&c) ",
+    "^(赤|黄|青|緑|橙|紫|褐|黒)\\s*\\d+"
+   ],
+   "caution": [
+    "^carmine$"
+   ],
+   "exclude": [
+    "^ci\\s*77\\d{3}"
+   ]
   },
   {
    "id": "alcohol_free",
@@ -154,12 +208,15 @@
     "^paraffinum liquidum$",
     "^petrolatum$",
     "^paraffin$",
-    "^microcrystalline wax$",
     "^cera microcristallina$",
     "^ozokerite$",
     "^ceresin$",
     "^(c\\d+-\\d+ )?isoparaffin$",
-    "^petroleum distillates$"
+    "^petroleum distillates$",
+    "microcrystalline wax",
+    "^paraffin wax$",
+    "^liquid paraffin$",
+    "^vaseline$"
    ],
    "caution": [
     "^hydrogenated polyisobutene$",
@@ -218,16 +275,29 @@
    "description": "PEG-n 系および -eth-n 系 (ラウレス、セテアレス等) のエトキシ化原料が無いこと。ポリソルベート、ポロキサマー、PEG 化油脂も慣行上含める。",
    "ng": [
     "(^|[^a-z])peg-\\d+",
-    "[a-z]eth-\\d+",
+    "[a-z]eth(-\\d+|\\s|$)",
     "^polysorbate",
     "^poloxamer",
     "^polyethylene glycol",
-    "peg/ppg"
+    "peg/ppg",
+    "ethoxylated",
+    "^polyoxyethylene"
    ],
    "caution": [
     "^ppg-\\d+"
    ],
-   "exclude": []
+   "exclude": [
+    "^(di|tri|tetra)?methyl",
+    "^dimeth",
+    "^polyethylene$",
+    "^hydroxyeth",
+    "^phenethyl",
+    "^(di|tri)ethanolamine$",
+    "^dieth",
+    "^trieth",
+    "^meth",
+    "^acetyl"
+   ]
   },
   {
    "id": "edta_free",
@@ -282,20 +352,36 @@
    "exclude": []
   },
   {
+   "id": "uv_scatterer_free",
+   "label": "紫外線散乱剤フリー (酸化チタン・酸化亜鉛不使用)",
+   "description": "無機系紫外線散乱剤 (酸化チタン、酸化亜鉛) が無いこと。有機系吸収剤は「紫外線吸収剤フリー」で別途判定。",
+   "ng": [
+    "^titanium dioxide$",
+    "^zinc oxide$",
+    "^ci 77891$",
+    "^ci 77947$"
+   ],
+   "caution": [],
+   "exclude": []
+  },
+  {
    "id": "gluten_free",
    "label": "グルテンフリー",
    "description": "小麦・大麦・ライ麦由来原料が無いこと。オーツ麦は交差汚染の観点で注意扱い。",
    "ng": [
     "triticum",
-    "wheat",
+    "\\bwheat\\b",
     "hordeum",
-    "barley",
+    "\\bbarley\\b",
     "secale",
-    "rye "
+    "\\brye\\b",
+    "\\bmalt\\b",
+    "^gluten$"
    ],
    "caution": [
     "avena",
-    "oat"
+    "\\boat\\b",
+    "\\(oat\\)"
    ],
    "exclude": []
   },
