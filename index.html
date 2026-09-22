@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>成分表ジェネレーター</title>
 <meta name="description" content="原料とその INCI 構成比を登録し、処方 (原料 × 配合%) から化粧品の全成分表示の記載順を作るツール。ブラウザ内で完結し、データは端末の外に出ません。">
-<link rel="stylesheet" href="css/style.css?v=202609222345">
+<link rel="stylesheet" href="css/style.css?v=202609222352">
 </head>
 <body>
 <header class="topbar">
@@ -14,6 +14,7 @@
     <button class="tab active" data-tab="label" role="tab">成分表生成</button>
     <button class="tab" data-tab="materials" role="tab">原料登録 <span id="mat-count" class="pill">0</span></button>
     <button class="tab" data-tab="ingredients" role="tab">成分登録 <span id="ing-count" class="pill">0</span></button>
+    <button class="tab" data-tab="rules" role="tab">フリー表示ルール</button>
     <button class="tab" data-tab="help" role="tab">使い方</button>
   </nav>
 </header>
@@ -178,6 +179,61 @@
   </div>
 </section>
 
+<!-- ═══════════════ フリー表示ルール ═══════════════ -->
+<section id="tab-rules" class="panel">
+  <div class="cols">
+    <div class="col left">
+      <div class="card">
+        <h2>フリー表示の判定ルール</h2>
+        <p class="muted small">同梱のルールは初期値です。表示ごとにオン・オフ、「この成分も該当にする」「この成分は除外する」の追加、自分の表示の新規作成ができます。組み込みの判定は消えないので、壊す心配はありません。設定はこのブラウザに保存されます。</p>
+        <div class="scroll">
+          <table id="rule-table" class="grid clickable">
+            <thead><tr><th>有効</th><th>表示</th><th>自社設定</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="row gap wrap">
+          <button id="rule-new-btn" class="primary">＋ 自分の表示を作る</button>
+          <label class="filebtn">設定を読込<input id="rule-import" type="file" accept=".json,application/json" hidden></label>
+          <button id="rule-export" class="ghost">設定を書出 (社内共有用)</button>
+          <button id="rule-reset-all" class="ghost danger">すべて初期値に戻す</button>
+        </div>
+        <div id="rule-list-feedback"></div>
+      </div>
+    </div>
+    <div class="col right">
+      <div class="card" id="rule-editor">
+        <h2 id="rule-edit-title">表示を選んでください</h2>
+        <div id="rule-edit-body" hidden>
+          <label>表示名 <input id="rule-label" placeholder="例: 合成ポリマーフリー"></label>
+          <label>説明 (任意) <input id="rule-desc" placeholder="この表示で何が無いことを言うのか"></label>
+          <details id="rule-builtin" class="small"><summary>組み込みの判定 (変更不可)</summary><pre id="rule-builtin-pre" class="copy"></pre></details>
+
+          <h3>この成分があれば「該当あり」にする</h3>
+          <table class="grid editable rule-terms" data-kind="ng"><thead><tr><th>成分 (INCI 名)</th><th>一致</th><th></th></tr></thead><tbody></tbody></table>
+          <button type="button" class="ghost rule-term-add" data-kind="ng">＋ 追加</button>
+
+          <h3>この成分があれば「要確認」にする</h3>
+          <table class="grid editable rule-terms" data-kind="caution"><thead><tr><th>成分 (INCI 名)</th><th>一致</th><th></th></tr></thead><tbody></tbody></table>
+          <button type="button" class="ghost rule-term-add" data-kind="caution">＋ 追加</button>
+
+          <h3>この成分は判定から除外する</h3>
+          <table class="grid editable rule-terms" data-kind="exclude"><thead><tr><th>成分 (INCI 名)</th><th>一致</th><th></th></tr></thead><tbody></tbody></table>
+          <button type="button" class="ghost rule-term-add" data-kind="exclude">＋ 追加</button>
+
+          <p class="muted small">「一致」は、INCI 名がその文字と完全に同じ場合だけ (完全一致) か、その文字を含めばよい (含む) かです。例: 「含む: paraben」で全パラベン、「完全一致: Silica」でシリカだけ。</p>
+          <div class="row gap wrap">
+            <button id="rule-save-btn" class="primary">保存</button>
+            <button id="rule-reset-btn" class="ghost">この表示を初期値に戻す</button>
+            <button id="rule-delete-btn" class="ghost danger" hidden>この表示を削除</button>
+            <span id="rule-edit-feedback"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══════════════ 使い方 ═══════════════ -->
 <section id="tab-help" class="panel">
   <div class="card prose">
@@ -197,7 +253,7 @@
     <h3>規制チェック</h3>
     <p>EU 1223/2009 Annex、化粧品基準 (厚生労働省告示第331号)、KFDA、21 CFR 352 由来の配合上限・配合禁止 (595 行) と突き合わせます。剤型や地域を指定しない場合は最も緩い上限を採用します (真値を切り落とさない保守側)。<b>規制は改正されます。最新の規制原文を必ず確認してください。</b></p>
     <h3>フリー表示チェック</h3>
-    <p>パラベンフリー、防腐剤フリー、無香料、無着色、アルコールフリー、鉱物油フリー、シリコンフリー、サルフェートフリー、PEG フリー、EDTA フリー、紫外線吸収剤フリー、グルテンフリー、尿素フリーについて、成分表の INCI にルール (<code>data/free_claims.json</code>) を当てて「該当なし / 該当あり / 要確認」を出します。「要確認」は防腐補助剤や精油、酸化チタンのように定義や用途で扱いが変わる成分です。ルールは一般的な慣行に基づく目安で、表示の可否は各社基準・公正競争規約・景品表示法の観点で別途判断してください。</p>
+    <p>パラベンフリー、防腐剤フリー、無香料、無着色、アルコールフリー、鉱物油フリー、シリコンフリー、サルフェートフリー、PEG フリー、EDTA フリー、紫外線吸収剤フリー、グルテンフリー、尿素フリーについて、成分表の INCI にルール (<code>data/free_claims.json</code>) を当てて「該当なし / 該当あり / 要確認」を出します。「要確認」は防腐補助剤や精油、酸化チタンのように定義や用途で扱いが変わる成分です。ルールは一般的な慣行に基づく目安で、表示の可否は各社基準・公正競争規約・景品表示法の観点で別途判断してください。「フリー表示ルール」タブで、表示のオン・オフ、該当・要確認・除外にする成分の追加、自分の表示の作成ができます (設定はブラウザに保存、JSON で社内共有可)。</p>
     <h3 id="disclaimer">免責事項</h3>
     <p class="disclaimer">本ツールおよび同梱の規制データは情報提供のみを目的とし、法的助言ではありません。規制データは公的文書を基に作成していますが、正確性・完全性・最新性を保証しません。規制は改正され、製品の分類・適用部位・地域によって適用される規定は異なります。成分表示および配合上限の適合性の最終判断は、利用者の責任において最新の規制原文および専門家の確認に基づいて行ってください。本ツールの利用により生じたいかなる損害についても、作者は責任を負いません。</p>
     <h3>扱わないこと</h3>
@@ -244,6 +300,6 @@
   window.addEventListener("error", function (e) { showFatal((e.message || e.type) + (e.filename ? " @ " + e.filename.split("/").pop() + ":" + e.lineno : "")); });
   window.addEventListener("unhandledrejection", function (e) { showFatal(String(e.reason && e.reason.message || e.reason)); });
 </script>
-<script type="module" src="js/app.js?v=202609222345"></script>
+<script type="module" src="js/app.js?v=202609222352"></script>
 </body>
 </html>

@@ -1,10 +1,10 @@
 // 画面の配線。ロジックは label.js、保存は store.js。
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
-  checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims,
-} from "./label.js?v=202609222345";
-import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222345";
-import { parseCsvRecords } from "./csv.js?v=202609222345";
+  checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
+} from "./label.js?v=202609222352";
+import { MaterialStore, IngredientStore, ClaimRuleStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222352";
+import { parseCsvRecords } from "./csv.js?v=202609222352";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -25,8 +25,10 @@ const DISCLAIMER_TEXT = "本ツールおよび同梱の規制データは情報�
 const store = new MaterialStore();
 const ingredients = new IngredientStore();
 let regTable = new Map();
-let freeClaims = [];
-fetch("data/free_claims.json").then((r) => r.json()).then((d) => { freeClaims = compileFreeClaims(d); renderLabel(); }).catch(() => {});
+let freeClaims = [], claimData = { claims: [] };
+const ruleStore = new ClaimRuleStore();
+function rebuildClaims() { freeClaims = compileFreeClaims(applyClaimRules(claimData, ruleStore.rules)); }
+fetch("data/free_claims.json").then((r) => r.json()).then((d) => { claimData = d; rebuildClaims(); renderLabel(); renderRuleList(); }).catch(() => {});
 fetch("data/regulatory_limits_inci.json").then((r) => r.json()).then((d) => { regTable = indexRegulatoryRows(d); renderLabel(); })
   .catch(() => { $("#label-output").prepend(alertBox("規制データ (data/regulatory_limits_inci.json) を読めませんでした。規制チェックなしで動作します。", "warn")); });
 
@@ -37,6 +39,7 @@ $$(".tab").forEach((t) => t.addEventListener("click", () => {
   if (t.dataset.tab === "label") { renderMaterialDatalist(); renderFormula(); }
   if (t.dataset.tab === "ingredients") renderIngredientList();
   if (t.dataset.tab === "materials") renderInciDatalist();
+  if (t.dataset.tab === "rules") renderRuleList();
 }));
 
 // ═══════════════════════ 成分表生成 ═══════════════════════
@@ -370,7 +373,8 @@ function reportImport({ saved, errors }, label) {
 function readFile(input, cb) {
   const f = input.files[0]; if (!f) return;
   const rd = new FileReader();
-  rd.onload = () => { try { cb(rd.result); } catch (e) { $("#mat-list-feedback").replaceChildren(alertBox(`取込失敗: ${e.message}`, "danger")); } input.value = ""; };
+  const fbSel = input.id.startsWith("ing-") ? "#ing-list-feedback" : input.id.startsWith("rule-") ? "#rule-list-feedback" : "#mat-list-feedback";
+  rd.onload = () => { try { cb(rd.result); } catch (e) { $(fbSel).replaceChildren(alertBox(`取込失敗: ${e.message}`, "danger")); } input.value = ""; };
   rd.readAsText(f);
 }
 $("#mat-import-csv").addEventListener("change", (e) => readFile(e.target, (t) => {
@@ -457,6 +461,84 @@ $("#ing-import-csv").addEventListener("change", (e) => readFile(e.target, (t) =>
 }));
 
 $("#footer-disclaimer").addEventListener("click", () => $('.tab[data-tab="help"]').click());
+
+// ═══════════════════════ フリー表示ルール ═══════════════════════
+let ruleEdit = null; // { id, builtin, label, description, ng:[term], caution:[term], exclude:[term] }
+
+function ruleRows() {
+  const base = (claimData.claims || []).map((c) => ({ id: c.id, label: c.label, builtin: true }));
+  const custom = ruleStore.rules.custom.map((c) => ({ id: c.id, label: c.label, builtin: false }));
+  return [...base, ...custom];
+}
+function renderRuleList() {
+  const tb = $("#rule-table tbody"); tb.replaceChildren();
+  for (const r of ruleRows()) {
+    const o = r.builtin ? ruleStore.override(r.id) : ruleStore.custom(r.id) || {};
+    const nTerms = (o.ng || []).length + (o.caution || []).length + (o.exclude || []).length;
+    const chk = el("input", { type: "checkbox", ...(ruleStore.isDisabled(r.id) ? {} : { checked: "" }), onclick: (e) => { e.stopPropagation(); ruleStore.setEnabled(r.id, e.target.checked); rebuildClaims(); renderLabel(); renderRuleList(); } });
+    tb.append(el("tr", { class: ruleEdit && ruleEdit.id === r.id ? "selected" : "", onclick: () => loadRule(r.id, r.builtin) },
+      el("td", {}, chk), el("td", {}, r.label, r.builtin ? "" : el("span", { class: "sub" }, "自作")),
+      el("td", { class: "small" }, nTerms ? `追加 ${nTerms} 件` : "")));
+  }
+}
+function loadRule(id, builtin) {
+  const base = builtin ? claimData.claims.find((c) => c.id === id) : null;
+  const src = builtin ? ruleStore.override(id) : (ruleStore.custom(id) || {});
+  ruleEdit = { id, builtin, label: builtin ? base.label : src.label || "", description: builtin ? base.description : src.description || "",
+    ng: (src.ng || []).map((t) => ({ ...t })), caution: (src.caution || []).map((t) => ({ ...t })), exclude: (src.exclude || []).map((t) => ({ ...t })) };
+  $("#rule-edit-title").textContent = ruleEdit.label || "新しい表示";
+  $("#rule-edit-body").hidden = false;
+  $("#rule-label").value = ruleEdit.label; $("#rule-label").disabled = builtin;
+  $("#rule-desc").value = ruleEdit.description; $("#rule-desc").disabled = builtin;
+  $("#rule-builtin").hidden = !builtin;
+  if (builtin) $("#rule-builtin-pre").textContent = [`該当: ${base.ng.join("  |  ") || "-"}`, `要確認: ${base.caution.join("  |  ") || "-"}`, `除外: ${base.exclude.join("  |  ") || "-"}`].join("\n");
+  $("#rule-reset-btn").hidden = !builtin; $("#rule-delete-btn").hidden = builtin;
+  $("#rule-edit-feedback").replaceChildren();
+  renderRuleTerms(); renderRuleList();
+}
+function renderRuleTerms() {
+  for (const table of $$(".rule-terms")) {
+    const kind = table.dataset.kind; const tb = table.querySelector("tbody"); tb.replaceChildren();
+    ruleEdit[kind].forEach((t, i) => tb.append(el("tr", {},
+      el("td", {}, el("input", { value: t.text || "", placeholder: "例: Polysorbate 80", list: "inci-list", oninput: (e) => renderInciDatalist(e.target.value), onchange: (e) => { t.text = e.target.value.trim(); } })),
+      el("td", {}, el("select", { onchange: (e) => { t.mode = e.target.value; } },
+        el("option", { value: "exact", ...(t.mode !== "contains" ? { selected: "" } : {}) }, "完全一致"),
+        el("option", { value: "contains", ...(t.mode === "contains" ? { selected: "" } : {}) }, "含む"))),
+      el("td", {}, el("button", { type: "button", class: "ghost danger", onclick: () => { ruleEdit[kind].splice(i, 1); renderRuleTerms(); } }, "✕")))));
+  }
+}
+$$(".rule-term-add").forEach((b) => b.addEventListener("click", () => { ruleEdit[b.dataset.kind].push({ text: "", mode: "exact" }); renderRuleTerms(); }));
+$("#rule-new-btn").addEventListener("click", () => { ruleEdit = null; loadRule(null, false); });
+$("#rule-save-btn").addEventListener("click", () => {
+  const fb = $("#rule-edit-feedback"); fb.replaceChildren();
+  const clean = (arr) => arr.filter((t) => (t.text || "").trim());
+  try {
+    if (ruleEdit.builtin) ruleStore.setOverride(ruleEdit.id, { ng: clean(ruleEdit.ng), caution: clean(ruleEdit.caution), exclude: clean(ruleEdit.exclude) });
+    else {
+      const saved = ruleStore.saveCustom({ id: ruleEdit.id, label: $("#rule-label").value, description: $("#rule-desc").value, ng: clean(ruleEdit.ng), caution: clean(ruleEdit.caution), exclude: clean(ruleEdit.exclude) });
+      ruleEdit.id = saved.id;
+    }
+    rebuildClaims(); renderLabel(); loadRule(ruleEdit.id, ruleEdit.builtin);
+    fb.append(alertBox("保存しました", "success"));
+  } catch (e) { fb.append(alertBox(e.message, "danger")); }
+});
+$("#rule-reset-btn").addEventListener("click", () => { if (!ruleEdit?.builtin) return; ruleStore.resetOverride(ruleEdit.id); rebuildClaims(); renderLabel(); loadRule(ruleEdit.id, true); });
+$("#rule-delete-btn").addEventListener("click", () => {
+  if (!ruleEdit || ruleEdit.builtin || !ruleEdit.id) return;
+  if (!confirm(`「${ruleEdit.label}」を削除しますか?`)) return;
+  ruleStore.deleteCustom(ruleEdit.id); ruleEdit = null; $("#rule-edit-body").hidden = true; $("#rule-edit-title").textContent = "表示を選んでください";
+  rebuildClaims(); renderLabel(); renderRuleList();
+});
+$("#rule-reset-all").addEventListener("click", () => {
+  if (!confirm("フリー表示ルールの自社設定をすべて消して初期値に戻しますか?")) return;
+  ruleStore.resetAll(); ruleEdit = null; $("#rule-edit-body").hidden = true; rebuildClaims(); renderLabel(); renderRuleList();
+  $("#rule-list-feedback").replaceChildren(alertBox("初期値に戻しました", "success"));
+});
+$("#rule-export").addEventListener("click", () => download("claim_rules.json", ruleStore.exportJson(), "application/json"));
+$("#rule-import").addEventListener("change", (e) => readFile(e.target, (t) => {
+  ruleStore.importJson(t); rebuildClaims(); renderLabel(); renderRuleList();
+  $("#rule-list-feedback").replaceChildren(alertBox("設定を読み込みました", "success"));
+}));
 
 // ── 初期描画 ────────────────────────────────────────────────────────────────
 renderMaterialList(); renderComponents(); renderMaterialDatalist(); renderInciDatalist(); renderIngredientList(); renderFormula();

@@ -323,11 +323,45 @@ export function findingText(f) {
 // data/free_claims.json のルール (ng / caution / exclude の正規表現) を INCI 名に当てる。
 // status: "ok" (該当なし) / "ng" (該当あり = 表示不可) / "caution" (定義次第、要確認)。
 
+const escapeRe = (t) => String(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** 利用者の簡易指定 ({text, mode:"exact"|"contains"}) を正規表現文字列に。 */
+export function termToPattern(term) {
+  const t = String(term.text ?? "").normalize("NFKC").trim();
+  if (!t) return null;
+  return term.mode === "contains" ? escapeRe(t) : `^${escapeRe(t)}$`;
+}
+
+/**
+ * 同梱ルール (data) に利用者設定 (rules) を重ねた「有効なルール」を返す。
+ * rules = { disabled: [id], overrides: { id: { ng: [term], caution: [term], exclude: [term] } },
+ *           custom: [{ id, label, description, ng: [term], caution: [term], exclude: [term] }] }
+ * 同梱ルールの組み込みパターンは消せない (壊せない)。追加と除外だけできる。
+ */
+export function applyClaimRules(data, rules) {
+  const r = rules || {};
+  const disabled = new Set(r.disabled || []);
+  const terms = (arr) => (arr || []).map(termToPattern).filter(Boolean);
+  const claims = [];
+  for (const c of data.claims || []) {
+    if (disabled.has(c.id)) continue;
+    const o = (r.overrides || {})[c.id] || {};
+    // 利用者の追加 (forceNg / forceCaution) は組み込みの除外より優先、利用者の除外は組み込みの該当より優先
+    claims.push({ ...c, forceNg: terms(o.ng), forceCaution: terms(o.caution),
+      exclude: [...(c.exclude || []), ...terms(o.exclude)], builtin: true });
+  }
+  for (const c of r.custom || []) {
+    if (!c.id || !c.label || disabled.has(c.id)) continue;
+    claims.push({ id: c.id, label: c.label, description: c.description || "", ng: terms(c.ng), caution: terms(c.caution), exclude: terms(c.exclude), builtin: false });
+  }
+  return { ...data, claims };
+}
+
 export function compileFreeClaims(data) {
   const rx = (arr) => (arr || []).map((p) => new RegExp(p, "i"));
   return (data.claims || []).map((c) => ({
     id: c.id, label: c.label, description: c.description || "",
     ng: rx(c.ng), caution: rx(c.caution), exclude: rx(c.exclude),
+    forceNg: rx(c.forceNg), forceCaution: rx(c.forceCaution),
   }));
 }
 
@@ -337,6 +371,8 @@ export function checkFreeClaims(inciNames, claims, { colorants = null } = {}) {
   return claims.map((c) => {
     const ng = [], caution = [];
     for (const { raw, s } of names) {
+      if (c.forceNg.some((r) => r.test(s))) { ng.push(raw); continue; }
+      if (c.forceCaution.some((r) => r.test(s))) { caution.push(raw); continue; }
       if (c.exclude.some((r) => r.test(s))) continue;
       if (c.ng.some((r) => r.test(s)) || (c.id === "colorant_free" && colorKeys.has(normKey(raw)))) ng.push(raw);
       else if (c.caution.some((r) => r.test(s))) caution.push(raw);

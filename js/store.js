@@ -1,7 +1,7 @@
 // 原料マスタの保存層 (localStorage)。サーバー無しで完結する。
 // データはこのブラウザにだけ残る。持ち出しは CSV / JSON 書出で行う。
 
-import { parseCsvRecords, toCsv } from "./csv.js?v=202609222345";
+import { parseCsvRecords, toCsv } from "./csv.js?v=202609222352";
 
 const KEY = "cosme-label:materials:v1";
 const SUM_TOL = 0.05;
@@ -268,4 +268,44 @@ export class IngredientStore {
   importCsv(text) { return this.importRows(parseCsvRecords(text)); }
   exportRows() { return this.listAll().map((x) => ({ inci_name: x.inci, display_name: x.display_name || "", is_colorant: x.is_colorant ? 1 : 0, note: x.note || "" })); }
   exportCsv() { return toCsv(this.exportRows(), INGREDIENT_CSV_COLUMNS); }
+}
+
+
+// ── フリー表示ルールの利用者設定 (同梱ルールへの追加・除外・オンオフ・自作) ─────
+const RKEY = "cosme-label:claim-rules:v1";
+const EMPTY_RULES = () => ({ disabled: [], overrides: {}, custom: [] });
+
+export class ClaimRuleStore {
+  constructor(storage = globalThis.localStorage) {
+    this.storage = storage;
+    this.rules = this._load();
+  }
+  _load() {
+    try { const raw = this.storage?.getItem(RKEY); const r = raw ? JSON.parse(raw) : null; return r && typeof r === "object" ? { ...EMPTY_RULES(), ...r } : EMPTY_RULES(); }
+    catch { return EMPTY_RULES(); }
+  }
+  save() { try { this.storage?.setItem(RKEY, JSON.stringify(this.rules)); } catch (e) { throw new Error("保存できませんでした: " + e.message); } }
+  isDisabled(id) { return this.rules.disabled.includes(id); }
+  setEnabled(id, on) { this.rules.disabled = this.rules.disabled.filter((x) => x !== id); if (!on) this.rules.disabled.push(id); this.save(); }
+  override(id) { return this.rules.overrides[id] || { ng: [], caution: [], exclude: [] }; }
+  setOverride(id, o) { this.rules.overrides[id] = { ng: o.ng || [], caution: o.caution || [], exclude: o.exclude || [] }; this.save(); }
+  resetOverride(id) { delete this.rules.overrides[id]; this.save(); }
+  custom(id) { return this.rules.custom.find((c) => c.id === id) || null; }
+  saveCustom(c) {
+    const label = String(c.label || "").trim();
+    if (!label) throw new Error("表示名が空です");
+    let t = c.id ? this.custom(c.id) : null;
+    if (!t) { t = { id: "custom_" + Date.now().toString(36) }; this.rules.custom.push(t); }
+    Object.assign(t, { label, description: String(c.description || "").trim(), ng: c.ng || [], caution: c.caution || [], exclude: c.exclude || [] });
+    this.save(); return t;
+  }
+  deleteCustom(id) { this.rules.custom = this.rules.custom.filter((c) => c.id !== id); this.rules.disabled = this.rules.disabled.filter((x) => x !== id); this.save(); }
+  resetAll() { this.rules = EMPTY_RULES(); this.save(); }
+  exportJson() { return JSON.stringify({ schema: "cosme-label-claim-rules/1", ...this.rules }, null, 1); }
+  importJson(text) {
+    const d = JSON.parse(text);
+    if (!d || typeof d !== "object") throw new Error("JSON の形式が違います");
+    this.rules = { disabled: d.disabled || [], overrides: d.overrides || {}, custom: d.custom || [] };
+    this.save();
+  }
 }

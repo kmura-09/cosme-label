@@ -9,7 +9,8 @@ import {
 } from "../js/label.js";
 import { parseCsvRecords, toCsv } from "../js/csv.js";
 import { MaterialStore, IngredientStore } from "../js/store.js";
-import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims } from "../js/label.js";
+import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern } from "../js/label.js";
+import { ClaimRuleStore } from "../js/store.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const golden = JSON.parse(readFileSync(join(here, "golden.json"), "utf8"));
@@ -161,6 +162,34 @@ for (const c of golden.regulatory_cases) {
     assert.deepEqual(got, c.expected, "free claims: " + c.inci_names.slice(0, 3).join(","));
     n++;
   }
+}
+
+// 利用者ルール (オンオフ / 追加 / 除外 / 自作) の適用
+{
+  const data = JSON.parse(readFileSync(join(here, "../data/free_claims.json"), "utf8"));
+  assert.equal(termToPattern({ text: "Polysorbate 80", mode: "exact" }), "^Polysorbate 80$");
+  assert.equal(termToPattern({ text: "(Wheat)", mode: "contains" }), "\\(Wheat\\)");
+  const rules = {
+    disabled: ["urea_free"],
+    overrides: { peg_free: { exclude: [{ text: "Polysorbate 80", mode: "exact" }] }, silicone_free: { ng: [{ text: "Silica Silylate", mode: "exact" }] } },
+    custom: [{ id: "custom_x", label: "合成ポリマーフリー", ng: [{ text: "carbomer", mode: "contains" }, { text: "Acrylates", mode: "contains" }] }],
+  };
+  const claims = compileFreeClaims(applyClaimRules(data, rules));
+  const by = Object.fromEntries(checkFreeClaims(["Polysorbate 80", "Laureth-7", "Silica Silylate", "Carbomer", "Urea"], claims).map((r) => [r.id, r]));
+  assert.ok(!("urea_free" in by), "disabled claim removed");
+  assert.deepEqual(by.peg_free.ng, ["Laureth-7"], "excluded polysorbate");       // 除外が効く
+  assert.deepEqual(by.silicone_free.ng, ["Silica Silylate"], "user-added ng beats builtin exclude");
+  assert.deepEqual(by.custom_x.ng, ["Carbomer"]);
+  // ストア
+  const mem = new Map(); const storage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, v) };
+  const st = new ClaimRuleStore(storage);
+  st.setEnabled("urea_free", false); st.setOverride("peg_free", { exclude: [{ text: "Polysorbate 80", mode: "exact" }] });
+  const c = st.saveCustom({ label: "合成ポリマーフリー", ng: [{ text: "carbomer", mode: "contains" }] });
+  const back = new ClaimRuleStore(storage);
+  assert.ok(back.isDisabled("urea_free") && back.custom(c.id).label === "合成ポリマーフリー" && back.override("peg_free").exclude.length === 1);
+  back.importJson(st.exportJson()); assert.equal(back.rules.custom.length, 1);
+  back.resetAll(); assert.equal(new ClaimRuleStore(storage).rules.custom.length, 0);
+  n += 8;
 }
 
 console.log(`ok: ${n} checks passed`);
