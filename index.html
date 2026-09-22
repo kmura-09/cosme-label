@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>成分表ジェネレーター</title>
 <meta name="description" content="原料とその INCI 構成比を登録し、処方 (原料 × 配合%) から化粧品の全成分表示の記載順を作るツール。ブラウザ内で完結し、データは端末の外に出ません。">
-<link rel="stylesheet" href="css/style.css?v=202609222319">
+<link rel="stylesheet" href="css/style.css?v=202609222321">
 </head>
 <body>
 <header class="topbar">
@@ -196,6 +196,8 @@
     </ul>
     <h3>規制チェック</h3>
     <p>EU 1223/2009 Annex、化粧品基準 (厚生労働省告示第331号)、KFDA、21 CFR 352 由来の配合上限・配合禁止 (595 行) と突き合わせます。剤型や地域を指定しない場合は最も緩い上限を採用します (真値を切り落とさない保守側)。<b>規制は改正されます。最新の規制原文を必ず確認してください。</b></p>
+    <h3 id="disclaimer">免責事項</h3>
+    <p class="disclaimer">本ツールおよび同梱の規制データは情報提供のみを目的とし、法的助言ではありません。規制データは公的文書を基に作成していますが、正確性・完全性・最新性を保証しません。規制は改正され、製品の分類・適用部位・地域によって適用される規定は異なります。成分表示および配合上限の適合性の最終判断は、利用者の責任において最新の規制原文および専門家の確認に基づいて行ってください。本ツールの利用により生じたいかなる損害についても、作者は責任を負いません。</p>
     <h3>扱わないこと</h3>
     <p>香料の「香料」一括表記、キャリーオーバー成分の省略可否、医薬部外品の有効成分の表記順などの法規判断は行いません。最終的な表示は担当者が確認してください。</p>
     <h3>データの保存場所</h3>
@@ -204,7 +206,7 @@
 </section>
 </main>
 
-<footer class="muted small">成分表ジェネレーター · Apache-2.0 · ブラウザ内で完結 (データは送信されません)</footer>
+<footer class="muted small">成分表ジェネレーター · Apache-2.0 · ブラウザ内で完結 (データは送信されません) · <a href="#disclaimer" id="footer-disclaimer">免責事項</a></footer>
 <div id="fatal" class="alert danger" hidden style="margin:12px 16px"></div>
 <script>
   // 予期しないエラーを画面に出す (原因報告用)。
@@ -212,6 +214,6 @@
   window.addEventListener("error", function (e) { showFatal((e.message || e.type) + (e.filename ? " @ " + e.filename.split("/").pop() + ":" + e.lineno : "")); });
   window.addEventListener("unhandledrejection", function (e) { showFatal(String(e.reason && e.reason.message || e.reason)); });
 </script>
-<script type="module" src="js/app.js?v=202609222319"></script>
+<script type="module" src="js/app.js?v=202609222321"></script>
 </body>
 </html>

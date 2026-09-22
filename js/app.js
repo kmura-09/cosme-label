@@ -2,9 +2,9 @@
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError,
-} from "./label.js?v=202609222319";
-import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222319";
-import { parseCsvRecords } from "./csv.js?v=202609222319";
+} from "./label.js?v=202609222321";
+import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222321";
+import { parseCsvRecords } from "./csv.js?v=202609222321";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -21,6 +21,7 @@ const el = (tag, attrs = {}, ...children) => {
 };
 const alertBox = (msg, kind = "warn") => el("div", { class: `alert ${kind}` }, msg);
 
+const DISCLAIMER_TEXT = "本ツールおよび同梱の規制データは情報提供のみを目的とし、法的助言ではありません。規制データは公的文書を基に作成していますが、正確性・完全性・最新性を保証しません。規制は改正され、製品の分類・適用部位・地域によって適用される規定は異なります。成分表示および配合上限の適合性の最終判断は、利用者の責任において最新の規制原文および専門家の確認に基づいて行ってください。本ツールの利用により生じたいかなる損害についても、作者は責任を負いません。";
 const store = new MaterialStore();
 const ingredients = new IngredientStore();
 let regTable = new Map();
@@ -197,7 +198,9 @@ function renderLabel() {
   out.append(el("ul", { class: "notes" }, res.notes.map((n) => el("li", {}, n))));
   const pcText = o.productClass || "指定なし (最も緩い上限)";
   out.append(el("p", { class: "muted small" },
-    `規制照会: 剤型 ${pcText} / 地域 ${o.jurisdictions.length ? o.jurisdictions.join(", ") : "全地域 (最緩)"}。${resolved.notes.join(" ")} 規制は改正されるため、最新の規制原文を必ず確認してください。`));
+    `規制照会: 剤型 ${pcText} / 地域 ${o.jurisdictions.length ? o.jurisdictions.join(", ") : "全地域 (最緩)"}。${resolved.notes.join(" ")}`));
+  out.append(el("p", { class: "disclaimer small" }, "免責事項: ", DISCLAIMER_TEXT, " ",
+    el("a", { href: "#disclaimer", onclick: () => $('.tab[data-tab="help"]').click() }, "詳細")));
 }
 
 // ═══════════════════════ 原料登録 ═══════════════════════
@@ -383,6 +386,8 @@ $("#ing-import-csv").addEventListener("change", (e) => readFile(e.target, (t) =>
   if (errors.length) fb.append(el("div", { class: "alert danger" }, el("ul", {}, errors.map((x) => el("li", {}, x)))));
   newIngredient(); renderInciDatalist(); renderLabel();
 }));
+
+$("#footer-disclaimer").addEventListener("click", () => $('.tab[data-tab="help"]').click());
 
 // ── 初期描画 ────────────────────────────────────────────────────────────────
 renderMaterialList(); renderComponents(); renderMaterialDatalist(); renderInciDatalist(); renderIngredientList(); renderFormula();

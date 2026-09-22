@@ -1,7 +1,7 @@
 // 原料マスタの保存層 (localStorage)。サーバー無しで完結する。
 // データはこのブラウザにだけ残る。持ち出しは CSV / JSON 書出で行う。
 
-import { parseCsvRecords, toCsv } from "./csv.js?v=202609222319";
+import { parseCsvRecords, toCsv } from "./csv.js?v=202609222321";
 
 const KEY = "cosme-label:materials:v1";
 const SUM_TOL = 0.05;
