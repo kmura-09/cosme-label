@@ -2078,6 +2078,15 @@
      ]
     },
     {
+     "id": "designated_ingredient_free",
+     "status": "ng",
+     "ng": [
+      "Sodium Laureth Sulfate",
+      "Disodium EDTA"
+     ],
+     "caution": []
+    },
+    {
      "id": "fragrance_free",
      "status": "ok",
      "ng": [],
@@ -2210,6 +2219,16 @@
      ]
     },
     {
+     "id": "designated_ingredient_free",
+     "status": "ng",
+     "ng": [
+      "Cetearyl Alcohol",
+      "Tocopherol",
+      "Disodium EDTA"
+     ],
+     "caution": []
+    },
+    {
      "id": "fragrance_free",
      "status": "ok",
      "ng": [],
@@ -2318,6 +2337,12 @@
     },
     {
      "id": "preservative_free",
+     "status": "ok",
+     "ng": [],
+     "caution": []
+    },
+    {
+     "id": "designated_ingredient_free",
      "status": "ok",
      "ng": [],
      "caution": []
@@ -2463,6 +2488,19 @@
      "caution": [
       "1,2-Hexanediol"
      ]
+    },
+    {
+     "id": "designated_ingredient_free",
+     "status": "ng",
+     "ng": [
+      "Methylparaben",
+      "Sodium Laureth Sulfate",
+      "Cetearyl Alcohol",
+      "Parfum",
+      "Disodium EDTA",
+      "Sodium Benzoate"
+     ],
+     "caution": []
     },
     {
      "id": "fragrance_free",
