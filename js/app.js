@@ -2,9 +2,9 @@
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
-} from "./label.js?v=202609222352";
-import { MaterialStore, IngredientStore, ClaimRuleStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222352";
-import { parseCsvRecords } from "./csv.js?v=202609222352";
+} from "./label.js?v=202609230000";
+import { MaterialStore, IngredientStore, ClaimRuleStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609230000";
+import { parseCsvRecords } from "./csv.js?v=202609230000";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -275,6 +275,7 @@ let edit = { id: null, components: [] };
 let selectedId = null;
 
 function renderMaterialList() {
+  $("#mat-empty").hidden = store.count() > 0;
   const q = $("#mat-search").value.trim();
   const list = q ? store.search(q, 500) : store.listAll();
   const tb = $("#mat-table tbody"); tb.replaceChildren();
@@ -397,6 +398,7 @@ function renderInciDatalist(q = "") {
   $("#inci-list").replaceChildren(...ingredients.search(q, 50).map((x) => el("option", { value: x.inci }, x.display_name || "")));
 }
 function renderIngredientList() {
+  $("#ing-empty").hidden = ingredients.count() > 0;
   const q = $("#ing-search").value.trim();
   const all = q ? ingredients.search(q, 100000) : ingredients.listAll();
   const LIMIT = 200;
@@ -450,7 +452,12 @@ $("#ing-clear-btn").addEventListener("click", () => {
   ingredients.clear(); newIngredient(); renderInciDatalist(); renderLabel();
 });
 $("#ing-export-csv").addEventListener("click", () => download("ingredients.csv", ingredients.exportCsv(), "text/csv"));
-$("#ing-import-csv").addEventListener("change", (e) => readFile(e.target, (t) => {
+$("#ing-sample-btn").addEventListener("click", async () => {
+  const t = await (await fetch("data/sample_materials.csv")).text();
+  reportImport(store.importCsv(t), "サンプル原料"); renderIngredientList();
+  $("#ing-list-feedback").replaceChildren(alertBox(`サンプル原料 ${store.count()} 件と、その構成成分 ${ingredients.count()} 件を読み込みました`, "success"));
+});
+const importIngredientCsv = (t) => {
   const recs = parseCsvRecords(t);
   if (!recs.length || IngredientStore.normalizeRow(recs[0]).inci === undefined) throw new Error("INCI 名の列が見つかりません (inci_name / INCI名 など。任意: display_name / 表示名称, is_colorant, note)");
   const { saved, errors } = ingredients.importCsv(t);
@@ -458,7 +465,9 @@ $("#ing-import-csv").addEventListener("change", (e) => readFile(e.target, (t) =>
   fb.append(alertBox(`CSV 取込: ${saved.length} 成分`, errors.length ? "warn" : "success"));
   if (errors.length) fb.append(el("div", { class: "alert danger" }, el("ul", {}, errors.map((x) => el("li", {}, x)))));
   newIngredient(); renderInciDatalist(); renderLabel();
-}));
+};
+$("#ing-import-csv").addEventListener("change", (e) => readFile(e.target, importIngredientCsv));
+$("#ing-import-csv-empty").addEventListener("change", (e) => readFile(e.target, importIngredientCsv));
 
 $("#footer-disclaimer").addEventListener("click", () => $('.tab[data-tab="help"]').click());
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>成分表ジェネレーター</title>
 <meta name="description" content="原料とその INCI 構成比を登録し、処方 (原料 × 配合%) から化粧品の全成分表示の記載順を作るツール。ブラウザ内で完結し、データは端末の外に出ません。">
-<link rel="stylesheet" href="css/style.css?v=202609222352">
+<link rel="stylesheet" href="css/style.css?v=202609230000">
 </head>
 <body>
 <header class="topbar">
@@ -89,6 +89,9 @@
     <div class="col left">
       <div class="card">
         <h2>登録済み原料</h2>
+        <div id="mat-empty" class="alert info" hidden>
+          <b>原料がまだ登録されていません。</b> 「＋ 新規」で登録するか、「サンプル原料を読込」で 33 件の例を入れて試せます。処方をコピペしたときに未登録の原料があれば、その場で登録ウィンドウが開きます。
+        </div>
         <input id="mat-search" placeholder="🔎 原料名・メーカー・INCI で検索">
         <div class="scroll"><table id="mat-table" class="grid clickable">
           <thead><tr><th>原料名</th><th>メーカー</th><th class="num">成分数</th><th class="num">構成計%</th></tr></thead>
@@ -145,6 +148,13 @@
     <div class="col left">
       <div class="card">
         <h2>成分マスタ (INCI ↔ 表示名称)</h2>
+        <div id="ing-empty" class="alert info" hidden>
+          <b>成分マスタが空です。</b> 成分表を日本語の表示名称で出すには、INCI 名と表示名称の対応が必要です。お手元の成分表示名称リスト (工業会の一覧など。「INCI名」「表示名称」の列があればそのまま読めます) を CSV で読み込むか、まずはサンプルで試してください。表示名称が無くても INCI 名で成分表は作れます。
+          <div class="row gap wrap">
+            <label class="filebtn">成分 CSV を読み込む<input id="ing-import-csv-empty" type="file" accept=".csv,text/csv" hidden></label>
+            <button id="ing-sample-btn" class="ghost">サンプル原料と成分を読み込む</button>
+          </div>
+        </div>
         <p class="muted small">自分で育てる INCI 辞書。ここに登録した表示名称は、原料登録で INCI を入れたときに自動で入り、成分表の表示名称の既定値になります (原料側で個別に入れた表示名称があればそちらを優先)。原料を保存すると、その構成成分は自動でここにも追加されます。</p>
         <input id="ing-search" placeholder="🔎 INCI・表示名称で検索">
         <div class="scroll"><table id="ing-table" class="grid clickable">
@@ -300,6 +310,6 @@
   window.addEventListener("error", function (e) { showFatal((e.message || e.type) + (e.filename ? " @ " + e.filename.split("/").pop() + ":" + e.lineno : "")); });
   window.addEventListener("unhandledrejection", function (e) { showFatal(String(e.reason && e.reason.message || e.reason)); });
 </script>
-<script type="module" src="js/app.js?v=202609222352"></script>
+<script type="module" src="js/app.js?v=202609230000"></script>
 </body>
 </html>
