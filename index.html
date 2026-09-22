@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>成分表ジェネレーター</title>
 <meta name="description" content="原料とその INCI 構成比を登録し、処方 (原料 × 配合%) から化粧品の全成分表示の記載順を作るツール。ブラウザ内で完結し、データは端末の外に出ません。">
-<link rel="stylesheet" href="css/style.css?v=202609222321">
+<link rel="stylesheet" href="css/style.css?v=202609222325">
 </head>
 <body>
 <header class="topbar">
@@ -206,6 +206,34 @@
 </section>
 </main>
 
+<dialog id="reg-dialog">
+  <form method="dialog" class="dialog-body" onsubmit="return false">
+    <h2>未登録の原料を登録 <span id="reg-progress" class="pill"></span></h2>
+    <p class="muted small">貼り付けた処方に登録されていない原料があります。構成成分 (INCI と原料中の %) を入れて保存すると、処方に反映されます。今は分からない原料は「スキップ」できます (処方には入りません)。</p>
+    <div class="row gap">
+      <label class="grow">原料名 (商品名) <input id="reg-name"></label>
+      <label class="grow">メーカー <input id="reg-maker"></label>
+    </div>
+    <label>メモ <input id="reg-note" placeholder="ロット・仕様書の出典など"></label>
+    <h3>構成成分 (INCI / 表示名称 / 原料中の %)</h3>
+    <table id="reg-comp-table" class="grid editable">
+      <thead><tr><th>INCI</th><th>表示名称</th><th class="num">原料中 %</th><th>着色剤</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="row between">
+      <span id="reg-comp-total" class="badge">成分なし</span>
+      <button type="button" id="reg-comp-add-btn" class="ghost">＋ 成分行を追加</button>
+    </div>
+    <p class="muted small">単一成分の原料なら INCI 1 行に 100%。ブレンド原料は活性分と水を分けて入れると成分表で水が合算されます。</p>
+    <div id="reg-feedback"></div>
+    <div class="row gap wrap">
+      <button type="button" id="reg-save-btn" class="primary">保存して次へ</button>
+      <button type="button" id="reg-skip-btn" class="ghost">この原料をスキップ</button>
+      <button type="button" id="reg-close-btn" class="ghost danger">中断</button>
+    </div>
+  </form>
+</dialog>
+
 <footer class="muted small">成分表ジェネレーター · Apache-2.0 · ブラウザ内で完結 (データは送信されません) · <a href="#disclaimer" id="footer-disclaimer">免責事項</a></footer>
 <div id="fatal" class="alert danger" hidden style="margin:12px 16px"></div>
 <script>
@@ -214,6 +242,6 @@
   window.addEventListener("error", function (e) { showFatal((e.message || e.type) + (e.filename ? " @ " + e.filename.split("/").pop() + ":" + e.lineno : "")); });
   window.addEventListener("unhandledrejection", function (e) { showFatal(String(e.reason && e.reason.message || e.reason)); });
 </script>
-<script type="module" src="js/app.js?v=202609222321"></script>
+<script type="module" src="js/app.js?v=202609222325"></script>
 </body>
 </html>

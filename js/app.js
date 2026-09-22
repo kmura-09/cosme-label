@@ -2,9 +2,9 @@
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError,
-} from "./label.js?v=202609222321";
-import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222321";
-import { parseCsvRecords } from "./csv.js?v=202609222321";
+} from "./label.js?v=202609222325";
+import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222325";
+import { parseCsvRecords } from "./csv.js?v=202609222325";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -58,26 +58,74 @@ export function parsePastedLine(line, store_ = store) {
   return [name, pct];
 }
 
-function applyPasted(text) {
+let lastPasteText = "";
+function applyPasted(text, { offerRegister = true } = {}) {
+  lastPasteText = text;
   const lines = splitFormulaLines(text);
   const fb = $("#paste-feedback"); fb.replaceChildren();
   if (!lines.length) { fb.append(alertBox("解析できる行がありません")); return; }
-  const rows = [], problems = [];
+  const rows = [], problems = [], unregistered = [];
   for (const line of lines) {
     const [name, pct] = parsePastedLine(line);
     const { name: resolved, candidates } = resolveMaterialName(name);
     if (pct == null) { problems.push(`「${name}」: 配合% が読めません`); continue; }
-    if (!resolved) { problems.push(`「${name}」: 原料を特定できません${candidates.length ? ` (候補: ${candidates.join(", ")})` : " (未登録)"}`); continue; }
+    if (!resolved && !candidates.length) { unregistered.push({ name, pct }); continue; }
+    if (!resolved) { problems.push(`「${name}」: 原料を特定できません (候補: ${candidates.join(", ")})`); continue; }
     const ex = rows.find((r) => r.material === resolved);
     if (ex) ex.pct = Math.round((ex.pct + pct) * 1e4) / 1e4; else rows.push({ material: resolved, pct });
   }
-  if (problems.length) {
+  const allProblems = problems.concat(unregistered.map((u) => `「${u.name}」: 未登録`));
+  if (allProblems.length) {
     fb.append(el("div", { class: `alert ${rows.length ? "warn" : "danger"}` },
-      el("div", {}, `${rows.length} 原料を反映、${problems.length} 行は未反映:`),
-      el("ul", {}, problems.map((p) => el("li", {}, p)))));
+      el("div", {}, `${rows.length} 原料を反映、${allProblems.length} 行は未反映:`),
+      el("ul", {}, allProblems.map((p) => el("li", {}, p)))));
   } else fb.append(alertBox(`${rows.length} 原料を反映しました`, "success"));
   if (rows.length) { formula = rows; persistFormula(); renderFormula(); }
+  if (unregistered.length) {
+    fb.append(el("div", { class: "row gap" },
+      el("button", { class: "primary", onclick: () => openRegisterDialog(unregistered) }, `未登録の ${unregistered.length} 原料を登録`),
+      el("span", { class: "muted small" }, "登録が終わると処方に自動で反映されます")));
+    if (offerRegister) openRegisterDialog(unregistered);  // 初回は自動で開く。中断後は再度ボタンで
+  }
 }
+
+// ── 貼り付け時の未登録原料をその場で登録するウィンドウ ────────────────────────
+const regDialog = $("#reg-dialog");
+let regQueue = [], regTotal = 0, regEdit = null, regDone = 0;
+function renderRegComponents() { renderComponentTable($("#reg-comp-table tbody"), $("#reg-comp-total"), regEdit.components, renderRegComponents); }
+function openRegisterDialog(items) {
+  regQueue = items.slice(); regTotal = items.length; regDone = 0;
+  nextRegItem();
+  if (!regDialog.open) { if (typeof regDialog.showModal === "function") regDialog.showModal(); else regDialog.setAttribute("open", ""); }
+}
+function nextRegItem() {
+  $("#reg-feedback").replaceChildren();
+  if (!regQueue.length) { finishRegister(); return; }
+  const item = regQueue[0];
+  regEdit = { name: item.name, components: [{ inci: "", display_name: null, pct: 100, is_colorant: false }] };
+  $("#reg-progress").textContent = `${regDone + 1} / ${regTotal}`;
+  $("#reg-name").value = item.name; $("#reg-maker").value = ""; $("#reg-note").value = "";
+  renderRegComponents();
+  setTimeout(() => $("#reg-comp-table tbody tr input")?.focus(), 0);
+}
+function finishRegister() {
+  if (regDialog.open) { if (typeof regDialog.close === "function") regDialog.close(); else regDialog.removeAttribute("open"); }
+  if (regDone) applyPasted(lastPasteText, { offerRegister: false });
+}
+$("#reg-comp-add-btn").addEventListener("click", () => addComponentRow(regEdit.components, renderRegComponents, "#reg-comp-table"));
+$("#reg-save-btn").addEventListener("click", () => {
+  const fb = $("#reg-feedback"); fb.replaceChildren();
+  try {
+    const saved = store.save({ name: $("#reg-name").value, maker: $("#reg-maker").value, note: $("#reg-note").value, components: regEdit.components });
+    ingredients.absorb(saved.components);
+    regDone++; regQueue.shift();
+    renderMaterialList(); renderMaterialDatalist();
+    nextRegItem();
+  } catch (e) { fb.append(alertBox(e.message, "danger")); }
+});
+$("#reg-skip-btn").addEventListener("click", () => { regQueue.shift(); nextRegItem(); });
+$("#reg-close-btn").addEventListener("click", () => { regQueue = []; finishRegister(); });
+regDialog.addEventListener("cancel", (e) => { e.preventDefault(); regQueue = []; finishRegister(); });
 
 $("#paste-btn").addEventListener("click", () => applyPasted($("#paste-input").value));
 for (const [id, file] of [["#sample-shampoo-btn", "sample_formula_shampoo.txt"], ["#sample-cream-btn", "sample_formula_cream.txt"]]) {
@@ -234,33 +282,38 @@ function newMaterial() {
 }
 $("#mat-new-btn").addEventListener("click", newMaterial);
 
-function renderComponents() {
-  const tb = $("#comp-table tbody"); tb.replaceChildren();
-  edit.components.forEach((c, i) => {
-    tb.append(el("tr", {},
+/** 構成成分の編集表を描く (原料登録タブと貼り付け時の登録ウィンドウで共用)。 */
+function renderComponentTable(tbody, totalBadge, comps, rerender) {
+  tbody.replaceChildren();
+  comps.forEach((c, i) => {
+    tbody.append(el("tr", {},
       el("td", {}, el("input", { value: c.inci, placeholder: "INCI 名", list: "inci-list", oninput: (e) => renderInciDatalist(e.target.value), onchange: (e) => {
         c.inci = e.target.value.trim();
         const known = ingredients.get(c.inci) || ingredients.getByDisplayName(c.inci);
         if (known) { c.inci = known.inci; if (!c.display_name && known.display_name) c.display_name = known.display_name; if (known.is_colorant) c.is_colorant = true; }
         if (isCiNumber(c.inci)) c.is_colorant = true;
-        renderComponents();
+        rerender();
       } })),
       el("td", {}, el("input", { value: c.display_name || "", placeholder: "表示名称 (任意)", onchange: (e) => { c.display_name = e.target.value.trim() || null; } })),
-      el("td", { class: "num" }, el("input", { type: "number", min: 0, max: 100, step: 0.01, value: c.pct ?? "", onchange: (e) => { c.pct = parseFloat(e.target.value); updateCompTotal(); } })),
+      el("td", { class: "num" }, el("input", { type: "number", min: 0, max: 100, step: 0.01, value: c.pct ?? "", onchange: (e) => { c.pct = parseFloat(e.target.value); updateTotalBadge(totalBadge, comps); } })),
       el("td", {}, el("input", { type: "checkbox", ...(c.is_colorant ? { checked: "" } : {}), onchange: (e) => { c.is_colorant = e.target.checked; } })),
-      el("td", {}, el("button", { class: "ghost danger", onclick: () => { edit.components.splice(i, 1); renderComponents(); } }, "✕")),
+      el("td", {}, el("button", { type: "button", class: "ghost danger", onclick: () => { comps.splice(i, 1); rerender(); } }, "✕")),
     ));
   });
-  updateCompTotal();
+  updateTotalBadge(totalBadge, comps);
 }
-function updateCompTotal() {
-  const b = $("#comp-total");
-  if (!edit.components.length) { b.textContent = "成分なし"; b.className = "badge"; return; }
-  const t = edit.components.reduce((s, c) => s + (Number(c.pct) || 0), 0); const d = t - 100;
+function updateTotalBadge(b, comps) {
+  if (!comps.length) { b.textContent = "成分なし"; b.className = "badge"; return; }
+  const t = comps.reduce((s, c) => s + (Number(c.pct) || 0), 0); const d = t - 100;
   b.textContent = `構成計: ${t.toFixed(2)}%${Math.abs(d) > 0.05 ? ` (${d >= 0 ? "+" : ""}${d.toFixed(2)}%)` : ""}`;
   b.className = "badge " + (Math.abs(d) <= 0.05 ? "ok" : d > 0 ? "bad" : "warn");
 }
-$("#comp-add-btn").addEventListener("click", () => { edit.components.push({ inci: "", display_name: null, pct: null, is_colorant: false }); renderComponents(); $("#comp-table tbody tr:last-child input").focus(); });
+function addComponentRow(comps, rerender, tableSel) {
+  comps.push({ inci: "", display_name: null, pct: comps.length ? null : 100, is_colorant: false });
+  rerender(); $(`${tableSel} tbody tr:last-child input`).focus();
+}
+function renderComponents() { renderComponentTable($("#comp-table tbody"), $("#comp-total"), edit.components, renderComponents); }
+$("#comp-add-btn").addEventListener("click", () => addComponentRow(edit.components, renderComponents, "#comp-table"));
 
 $("#mat-save-btn").addEventListener("click", () => {
   const fb = $("#mat-edit-feedback"); fb.replaceChildren();
