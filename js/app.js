@@ -2,9 +2,9 @@
 import {
   buildIngredientLabel, parseFormulaText, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError,
-} from "./label.js";
-import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js";
-import { parseCsvRecords } from "./csv.js";
+} from "./label.js?v=202609222254";
+import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222254";
+import { parseCsvRecords } from "./csv.js?v=202609222254";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>成分表ジェネレーター</title>
 <meta name="description" content="原料とその INCI 構成比を登録し、処方 (原料 × 配合%) から化粧品の全成分表示の記載順を作るツール。ブラウザ内で完結し、データは端末の外に出ません。">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=202609222254">
 </head>
 <body>
 <header class="topbar">
@@ -205,6 +205,13 @@
 </main>
 
 <footer class="muted small">成分表ジェネレーター · Apache-2.0 · ブラウザ内で完結 (データは送信されません)</footer>
-<script type="module" src="js/app.js"></script>
+<div id="fatal" class="alert danger" hidden style="margin:12px 16px"></div>
+<script>
+  // 予期しないエラーを画面に出す (原因報告用)。
+  function showFatal(msg) { var d = document.getElementById("fatal"); d.hidden = false; d.textContent = "エラー: " + msg; }
+  window.addEventListener("error", function (e) { showFatal((e.message || e.type) + (e.filename ? " @ " + e.filename.split("/").pop() + ":" + e.lineno : "")); });
+  window.addEventListener("unhandledrejection", function (e) { showFatal(String(e.reason && e.reason.message || e.reason)); });
+</script>
+<script type="module" src="js/app.js?v=202609222254"></script>
 </body>
 </html>
