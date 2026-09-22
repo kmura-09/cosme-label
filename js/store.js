@@ -174,6 +174,7 @@ export class IngredientStore {
   constructor(storage = globalThis.localStorage) {
     this.storage = storage;
     this._items = this._load();
+    this._index = new Map(this._items.map((x) => [IngredientStore.key(x.inci), x]));
   }
   _load() {
     try { const raw = this.storage?.getItem(IKEY); const a = raw ? JSON.parse(raw) : []; return Array.isArray(a) ? a : []; }
@@ -181,50 +182,58 @@ export class IngredientStore {
   }
   _persist() {
     try { this.storage?.setItem(IKEY, JSON.stringify(this._items)); } catch (e) {
-      throw new Error("保存できませんでした (ブラウザのストレージが使えません): " + e.message);
+      throw new Error("保存できませんでした (ブラウザのストレージ容量か設定): " + e.message);
     }
   }
   static key(inci) { return String(inci ?? "").trim().split(/\s+/).join(" ").toLowerCase(); }
   listAll() { return this._items.slice().sort((a, b) => a.inci.localeCompare(b.inci, "en")); }
   count() { return this._items.length; }
-  get(inci) { const k = IngredientStore.key(inci); return this._items.find((x) => IngredientStore.key(x.inci) === k) || null; }
+  get(inci) { return this._index.get(IngredientStore.key(inci)) || null; }
   search(q, max = 50) {
     const k = String(q ?? "").trim().toLowerCase();
     if (!k) return this.listAll().slice(0, max);
-    return this.listAll().filter((x) => x.inci.toLowerCase().includes(k) || (x.display_name || "").toLowerCase().includes(k)).slice(0, max);
+    const out = [];
+    // 前方一致を先に、部分一致を後に
+    for (const x of this._items) if (x.inci.toLowerCase().startsWith(k) || (x.display_name || "").toLowerCase().startsWith(k)) { out.push(x); if (out.length >= max) return out; }
+    for (const x of this._items) if (!out.includes(x) && (x.inci.toLowerCase().includes(k) || (x.display_name || "").toLowerCase().includes(k))) { out.push(x); if (out.length >= max) break; }
+    return out;
   }
-  /** 登録 / 上書き。display_name が空でも INCI だけ登録できる。 */
-  save(item, { overwrite = true } = {}) {
+  _put(item, { overwrite = true } = {}) {
     const inci = String(item.inci || "").trim();
     if (!inci) throw new Error("INCI 名が空です");
-    let t = this.get(inci);
+    const k = IngredientStore.key(inci);
+    let t = this._index.get(k);
     if (t && !overwrite) return t;
-    if (!t) { t = { inci }; this._items.push(t); }
+    if (!t) { t = { inci }; this._items.push(t); this._index.set(k, t); }
     Object.assign(t, {
       inci, display_name: String(item.display_name || "").trim() || null,
       is_colorant: !!item.is_colorant, note: String(item.note || "").trim() || null,
     });
-    this._persist();
     return t;
   }
+  /** 登録 / 上書き。display_name が空でも INCI だけ登録できる。 */
+  save(item, opts) { const t = this._put(item, opts); this._persist(); return t; }
   /** 原料の構成成分から未登録の INCI を取り込む (既存は上書きしない)。 */
   absorb(components) {
     let n = 0;
     for (const c of components) {
       if (!c.inci) continue;
       const ex = this.get(c.inci);
-      if (!ex) { this.save({ inci: c.inci, display_name: c.display_name, is_colorant: c.is_colorant }); n++; }
-      else if (!ex.display_name && c.display_name) { this.save({ ...ex, display_name: c.display_name }); n++; }
+      if (!ex) { this._put({ inci: c.inci, display_name: c.display_name, is_colorant: c.is_colorant }); n++; }
+      else if (!ex.display_name && c.display_name) { this._put({ ...ex, display_name: c.display_name }); n++; }
     }
+    if (n) this._persist();
     return n;
   }
   delete(inci) {
-    const k = IngredientStore.key(inci); const n = this._items.length;
+    const k = IngredientStore.key(inci);
+    if (!this._index.has(k)) return false;
+    this._index.delete(k);
     this._items = this._items.filter((x) => IngredientStore.key(x.inci) !== k);
     this._persist();
-    return this._items.length < n;
+    return true;
   }
-  clear() { this._items = []; this._persist(); }
+  clear() { this._items = []; this._index = new Map(); this._persist(); }
   displayNames() { const o = {}; for (const x of this._items) if (x.display_name) o[x.inci] = x.display_name; return o; }
   colorants() { return new Set(this._items.filter((x) => x.is_colorant).map((x) => x.inci)); }
   /** 工業会リスト等の日本語ヘッダも受ける: INCI名 / 表示名称 / 成分表示名称 … */
@@ -237,14 +246,16 @@ export class IngredientStore {
       note: pick(["note", "メモ", "備考", "定義"]),
     };
   }
+  /** 一括登録。保存は最後に 1 回 (1 万件超でも速い)。 */
   importRows(rows) {
     const saved = [], errors = [];
     for (const raw of rows) {
       const r = IngredientStore.normalizeRow(raw);
       if (!r.inci && !r.display_name) continue;
-      try { saved.push(this.save({ inci: r.inci, display_name: r.display_name, is_colorant: truthy(r.is_colorant), note: r.note })); }
+      try { saved.push(this._put({ inci: r.inci, display_name: r.display_name, is_colorant: truthy(r.is_colorant), note: r.note })); }
       catch (e) { errors.push(`${r.inci ?? r.display_name}: ${e.message}`); }
     }
+    this._persist();
     return { saved, errors };
   }
   importCsv(text) { return this.importRows(parseCsvRecords(text)); }

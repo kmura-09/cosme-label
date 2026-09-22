@@ -226,7 +226,7 @@ function renderComponents() {
   const tb = $("#comp-table tbody"); tb.replaceChildren();
   edit.components.forEach((c, i) => {
     tb.append(el("tr", {},
-      el("td", {}, el("input", { value: c.inci, placeholder: "INCI 名", list: "inci-list", onchange: (e) => {
+      el("td", {}, el("input", { value: c.inci, placeholder: "INCI 名", list: "inci-list", oninput: (e) => renderInciDatalist(e.target.value), onchange: (e) => {
         c.inci = e.target.value.trim();
         const known = ingredients.get(c.inci);
         if (known) { c.inci = known.inci; if (!c.display_name && known.display_name) c.display_name = known.display_name; if (known.is_colorant) c.is_colorant = true; }
@@ -307,8 +307,9 @@ $("#mat-sample-btn").addEventListener("click", async () => {
 // ═══════════════════════ 成分登録 ═══════════════════════
 let ingEdit = null; // 編集中の INCI (元のキー)
 
-function renderInciDatalist() {
-  $("#inci-list").replaceChildren(...ingredients.listAll().map((x) => el("option", { value: x.inci }, x.display_name || "")));
+function renderInciDatalist(q = "") {
+  // 1 万件超の辞書でも重くならないよう、入力中の文字列に合う 50 件だけを候補にする
+  $("#inci-list").replaceChildren(...ingredients.search(q, 50).map((x) => el("option", { value: x.inci }, x.display_name || "")));
 }
 function renderIngredientList() {
   const q = $("#ing-search").value.trim();
