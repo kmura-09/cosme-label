@@ -9,6 +9,7 @@ import {
 } from "../js/label.js";
 import { parseCsvRecords, toCsv } from "../js/csv.js";
 import { MaterialStore, IngredientStore } from "../js/store.js";
+import { splitFormulaLines, normKey } from "../js/label.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const golden = JSON.parse(readFileSync(join(here, "golden.json"), "utf8"));
@@ -117,6 +118,39 @@ for (const c of golden.regulatory_cases) {
   const dup = buildIngredientLabel({ A: 50, B: 50 }, { A: { Water: 100 }, B: { Aqua: 100 } }, { displayNames: { Water: "水", Aqua: "水" } });
   assert.ok(dup.warnings.some((w) => w.includes("Water / Aqua")), dup.warnings.join("|"));
   n += 9;
+}
+
+// ── スペース入り原料名 / 末尾数字の原料名 / INCI 表記揺れ ────────────────────
+{
+  const mem = new Map();
+  const storage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, v) };
+  const st = new MaterialStore(storage);
+  st.save({ name: "MCT オイル", components: [{ inci: "Caprylic/Capric Triglyceride", pct: 100 }] });
+  st.save({ name: "ポリソルベート 80", components: [{ inci: "Polysorbate 80", pct: 100 }] });
+  st.save({ name: "精製水", components: [{ inci: "Water", pct: 100 }] });
+  st.save({ name: "乳化剤 A", components: [{ inci: "Ceteareth-20", pct: 30 }, { inci: "Cetearyl  Alcohol", pct: 70 }] });
+  st.save({ name: "乳化剤 B", components: [{ inci: "Ceteareth 20", pct: 100 }] });
+
+  // parsePastedLine 相当 (app.js は DOM 依存なので同じ規則をここで検証)
+  const parseLine = (line) => (st.getByName(line) ? [line, null] : parseFormulaText(line)[0]);
+  assert.deepEqual(parseLine("MCT オイル\t4"), ["MCT オイル", 4]);            // スペース入り原料名 + タブ
+  assert.deepEqual(parseLine("MCT オイル 4"), ["MCT オイル", 4]);              // スペース区切り
+  assert.deepEqual(parseLine("ポリソルベート 80 2"), ["ポリソルベート 80", 2]); // 末尾数字の原料名 + %
+  assert.deepEqual(parseLine("ポリソルベート 80"), ["ポリソルベート 80", null]); // % 無し → 誤読しない
+  assert.deepEqual(parseLine("ポリソルベート 80%"), ["ポリソルベート", 80]);    // % 記号があれば配合%
+  assert.deepEqual(splitFormulaLines("a 1\n\n# c\nb 2; c 3"), ["a 1", "b 2", "c 3"]);
+
+  // 原料名の照合は前後空白と大小だけ無視 (中のスペースは保持)
+  assert.equal(st.getByName("  mct オイル ").name, "MCT オイル");
+  assert.equal(st.getByName("MCTオイル"), null);
+
+  // 成分表: INCI の空白連続 / ハイフン↔空白 / 全角は同一 INCI として合算
+  const mats = Object.fromEntries(st.listAll().map((m) => [m.name, Object.fromEntries(m.components.map((c) => [c.inci, c.pct]))]));
+  const res = buildIngredientLabel({ "乳化剤 A": 50, "乳化剤 B": 50, "精製水": 0 }, mats);
+  assert.deepEqual(res.inciOrder, ["Ceteareth-20", "Cetearyl  Alcohol"]);
+  assert.equal(res.entries[0].pct, 65);                                          // 15 + 50 合算 (表記は最初に見た方)
+  assert.equal(normKey("ＣＥＴＥＡＲＥＴＨ－２０"), normKey("ceteareth 20"));
+  n += 12;
 }
 
 console.log(`ok: ${n} checks passed`);

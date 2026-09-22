@@ -1,10 +1,10 @@
 // 画面の配線。ロジックは label.js、保存は store.js。
 import {
-  buildIngredientLabel, parseFormulaText, indexRegulatoryRows, resolveRegulatoryLimits,
+  buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError,
-} from "./label.js?v=202609222254";
-import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222254";
-import { parseCsvRecords } from "./csv.js?v=202609222254";
+} from "./label.js?v=202609222319";
+import { MaterialStore, IngredientStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609222319";
+import { parseCsvRecords } from "./csv.js?v=202609222319";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -49,12 +49,21 @@ function resolveMaterialName(name) {
   return { name: null, candidates: hits.map((h) => h.name) };
 }
 
+/** 1 行を (原料名, %) に分ける。行全体が登録原料名に一致するなら「% 無し」とみなす
+ *  (「ポリソルベート 80」のような末尾数字の原料名を「ポリソルベート 80%」と誤読しない)。 */
+export function parsePastedLine(line, store_ = store) {
+  if (store_.getByName(line)) return [line, null];
+  const [[name, pct]] = parseFormulaText(line);
+  return [name, pct];
+}
+
 function applyPasted(text) {
-  const parsed = parseFormulaText(text);
+  const lines = splitFormulaLines(text);
   const fb = $("#paste-feedback"); fb.replaceChildren();
-  if (!parsed.length) { fb.append(alertBox("解析できる行がありません")); return; }
+  if (!lines.length) { fb.append(alertBox("解析できる行がありません")); return; }
   const rows = [], problems = [];
-  for (const [name, pct] of parsed) {
+  for (const line of lines) {
+    const [name, pct] = parsePastedLine(line);
     const { name: resolved, candidates } = resolveMaterialName(name);
     if (pct == null) { problems.push(`「${name}」: 配合% が読めません`); continue; }
     if (!resolved) { problems.push(`「${name}」: 原料を特定できません${candidates.length ? ` (候補: ${candidates.join(", ")})` : " (未登録)"}`); continue; }

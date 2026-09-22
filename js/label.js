@@ -11,8 +11,10 @@ export const DEFAULT_THRESHOLD_PCT = 1.0;
 const TOTAL_TOL = 0.5;          // 処方合計が 100 からこれ以上ずれたら警告
 const MATERIAL_SUM_TOL = 0.05;  // 原料構成が 100% からこれ以上不足したら警告
 
+// 照合キー: NFKC (全角→半角)、大小無視、空白の連続とハイフン/空白の揺れ (Ceteareth-20 /
+// Ceteareth 20) を吸収。表示は最初に見た表記のまま。
 export function normKey(name) {
-  return String(name ?? "").trim().split(/\s+/).filter(Boolean).join(" ").toLowerCase();
+  return String(name ?? "").normalize("NFKC").trim().toLowerCase().replace(/[\s\-‐‑–—]+/g, " ");
 }
 
 function round(x, decimals) {
@@ -189,12 +191,15 @@ const NAME_PCT_RE = /^(.+?)[\s,、:：]+(\d+(?:\.\d+)?)\s*%?\s*$/;
 const PCT_NAME_RE = /^(\d+(?:\.\d+)?)\s*%?[\s,、:：]+(.+?)\s*$/;
 const STRIP = " \t,、:：";
 
+/** 貼り付けテキストを行に分ける (改行 / セミコロン区切り、NFKC、空行とコメント除去)。 */
+export function splitFormulaLines(text) {
+  return String(text ?? "").split(/[\r\n;；]+/).map((l) => l.normalize("NFKC").trim()).filter((l) => l && !l.startsWith("#"));
+}
+
 /** 「原料名 配合%」の行 (改行 / セミコロン区切り) を [[name, pct|null], ...] にする。 */
 export function parseFormulaText(text) {
   const out = [];
-  for (const raw of String(text ?? "").split(/[\r\n;；]+/)) {
-    const line = raw.normalize("NFKC").trim();
-    if (!line || line.startsWith("#")) continue;
+  for (const line of splitFormulaLines(text)) {
     let m = NAME_PCT_RE.exec(line);
     if (m) {
       const name = stripChars(m[1], STRIP);
