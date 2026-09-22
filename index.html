@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>成分表ジェネレーター</title>
 <meta name="description" content="原料とその INCI 構成比を登録し、処方 (原料 × 配合%) から化粧品の全成分表示の記載順を作るツール。ブラウザ内で完結し、データは端末の外に出ません。">
-<link rel="stylesheet" href="css/style.css?v=202609230000">
+<link rel="stylesheet" href="css/style.css?v=202609230007">
 </head>
 <body>
 <header class="topbar">
@@ -149,13 +149,14 @@
       <div class="card">
         <h2>成分マスタ (INCI ↔ 表示名称)</h2>
         <div id="ing-empty" class="alert info" hidden>
-          <b>成分マスタが空です。</b> 成分表を日本語の表示名称で出すには、INCI 名と表示名称の対応が必要です。お手元の成分表示名称リスト (工業会の一覧など。「INCI名」「表示名称」の列があればそのまま読めます) を CSV で読み込むか、まずはサンプルで試してください。表示名称が無くても INCI 名で成分表は作れます。
+          <b>成分マスタが空です。</b> 成分表を日本語の表示名称で出すには、INCI 名と表示名称の対応が必要です。よく使う基本成分 300 件を読み込むか、お手元の成分表示名称リスト (工業会の一覧など。「INCI名」「表示名称」の列があればそのまま読めます) を CSV で読み込んでください。表示名称が無くても INCI 名で成分表は作れます。
           <div class="row gap wrap">
+            <button id="ing-starter-btn-empty" class="primary">基本成分 300 件を読み込む</button>
             <label class="filebtn">成分 CSV を読み込む<input id="ing-import-csv-empty" type="file" accept=".csv,text/csv" hidden></label>
             <button id="ing-sample-btn" class="ghost">サンプル原料と成分を読み込む</button>
           </div>
         </div>
-        <p class="muted small">自分で育てる INCI 辞書。ここに登録した表示名称は、原料登録で INCI を入れたときに自動で入り、成分表の表示名称の既定値になります (原料側で個別に入れた表示名称があればそちらを優先)。原料を保存すると、その構成成分は自動でここにも追加されます。</p>
+        <p class="muted small">初回アクセス時に、市販原料でよく使われる基本成分 300 件 (水、BG、グリセリン、フェノキシエタノール…) が自動で入ります。自分で育てる INCI 辞書。ここに登録した表示名称は、原料登録で INCI を入れたときに自動で入り、成分表の表示名称の既定値になります (原料側で個別に入れた表示名称があればそちらを優先)。原料を保存すると、その構成成分は自動でここにも追加されます。</p>
         <input id="ing-search" placeholder="🔎 INCI・表示名称で検索">
         <div class="scroll"><table id="ing-table" class="grid clickable">
           <thead><tr><th>INCI</th><th>表示名称</th><th>着色剤</th><th>メモ</th></tr></thead>
@@ -164,6 +165,7 @@
         <div class="row gap wrap">
           <label class="filebtn">CSV 取込<input id="ing-import-csv" type="file" accept=".csv,text/csv" hidden></label>
           <button id="ing-export-csv" class="ghost">CSV 書出</button>
+          <button id="ing-starter-btn" class="ghost">基本成分 300 件を読み込む</button>
           <button id="ing-absorb-btn" class="ghost">登録済み原料から取り込む</button>
           <button id="ing-clear-btn" class="ghost danger">全削除</button>
         </div>
@@ -249,7 +251,7 @@
   <div class="card prose">
     <h2>使い方</h2>
     <ol>
-      <li><b>成分登録</b>で INCI 名と表示名称 (日本語) の対応を登録します (自分で育てる辞書)。原料を保存すると構成成分は自動でここにも入るので、後からまとめて表示名称を付けることもできます。</li>
+      <li><b>成分登録</b>に INCI 名と表示名称 (日本語) の対応を登録します。初回は基本成分 300 件が自動で入り、お手元の成分表示名称リストの CSV を読み込めば増やせます。原料を保存すると構成成分は自動でここにも入るので、後からまとめて表示名称を付けることもできます。</li>
       <li><b>原料登録</b>で、使う原料 (商品名) と、その原料 100 g 中の各 INCI の質量% を登録します。INCI を入れると成分マスタの表示名称が自動で入ります。まず「サンプル原料を読込」で 33 件の例を入れて試せます。</li>
       <li><b>成分表生成</b>で、原料と配合% を並べます。「処方をコピペで入力」に 1 行 1 原料で貼り付けるのが速いです。</li>
       <li>右に全成分表示の記載順が出ます。日本語 / INCI の 1 行テキストはボタンでコピーできます。</li>
@@ -310,6 +312,6 @@
   window.addEventListener("error", function (e) { showFatal((e.message || e.type) + (e.filename ? " @ " + e.filename.split("/").pop() + ":" + e.lineno : "")); });
   window.addEventListener("unhandledrejection", function (e) { showFatal(String(e.reason && e.reason.message || e.reason)); });
 </script>
-<script type="module" src="js/app.js?v=202609230000"></script>
+<script type="module" src="js/app.js?v=202609230007"></script>
 </body>
 </html>

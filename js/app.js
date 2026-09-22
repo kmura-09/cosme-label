@@ -2,9 +2,9 @@
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
-} from "./label.js?v=202609230000";
-import { MaterialStore, IngredientStore, ClaimRuleStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609230000";
-import { parseCsvRecords } from "./csv.js?v=202609230000";
+} from "./label.js?v=202609230007";
+import { MaterialStore, IngredientStore, ClaimRuleStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609230007";
+import { parseCsvRecords } from "./csv.js?v=202609230007";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -452,6 +452,23 @@ $("#ing-clear-btn").addEventListener("click", () => {
   ingredients.clear(); newIngredient(); renderInciDatalist(); renderLabel();
 });
 $("#ing-export-csv").addEventListener("click", () => download("ingredients.csv", ingredients.exportCsv(), "text/csv"));
+async function loadStarterIngredients({ silent = false } = {}) {
+  const t = await (await fetch("data/starter_ingredients.csv")).text();
+  const { saved, errors } = ingredients.importCsv(t);
+  renderIngredientList(); renderInciDatalist(); renderLabel();
+  if (!silent) $("#ing-list-feedback").replaceChildren(alertBox(`基本成分 ${saved.length} 件を読み込みました${errors.length ? ` (${errors.length} 件失敗)` : ""}`, errors.length ? "warn" : "success"));
+  return saved.length;
+}
+$("#ing-starter-btn").addEventListener("click", () => loadStarterIngredients());
+$("#ing-starter-btn-empty").addEventListener("click", () => loadStarterIngredients());
+// 初回アクセス (成分マスタが空で、まだ自動読込していない) は基本成分を自動で入れる
+(async () => {
+  const FLAG = "cosme-label:starter-loaded:v1";
+  let done = false; try { done = !!localStorage.getItem(FLAG); } catch {}
+  if (!done && ingredients.count() === 0) {
+    try { await loadStarterIngredients({ silent: true }); localStorage.setItem(FLAG, "1"); } catch {}
+  }
+})();
 $("#ing-sample-btn").addEventListener("click", async () => {
   const t = await (await fetch("data/sample_materials.csv")).text();
   reportImport(store.importCsv(t), "サンプル原料"); renderIngredientList();
