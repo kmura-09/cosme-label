@@ -153,6 +153,12 @@ export function buildIngredientLabel(formula, materials, opts = {}) {
   if (displayNames !== null && unnamed.length) {
     warnings.push("表示名称が引けず INCI 名で代用: " + unnamed.join(", "));
   }
+  // 同じ表示名称に別 INCI が 2 行以上 (Water / Aqua 等の表記揺れ) → 二重計上の疑い
+  const byDisp = new Map();
+  for (const e of entriesOut) if (e.displayName) { const k = e.displayName.normalize("NFKC"); if (!byDisp.has(k)) byDisp.set(k, []); byDisp.get(k).push(e.inciName); }
+  for (const [d, incis] of byDisp) if (incis.length > 1) {
+    warnings.push(`表示名称「${d}」に別々の INCI が ${incis.length} 行あります (${incis.join(" / ")})。同じ成分なら INCI 表記を統一してください`);
+  }
   const nUnordered = entriesOut.filter((e) => e.unorderedOk && !e.isColorant).length;
   if (nUnordered) {
     notes.push(`${thresholdPct}% 以下の ${nUnordered} 成分は順不同で記載できます (本表は降順に並べています)`);

@@ -185,7 +185,14 @@ export class IngredientStore {
       throw new Error("保存できませんでした (ブラウザのストレージ容量か設定): " + e.message);
     }
   }
-  static key(inci) { return String(inci ?? "").trim().split(/\s+/).join(" ").toLowerCase(); }
+  /** 照合キー: NFKC (全角→半角)、大小無視、空白とハイフンの揺れ (Ceteareth-20 / Ceteareth 20) を吸収。 */
+  static key(inci) { return String(inci ?? "").normalize("NFKC").trim().toLowerCase().replace(/[\s\-‐‑–—]+/g, " "); }
+  /** 表示名称から INCI を引く (INCI 欄に日本語を入れたとき用)。 */
+  getByDisplayName(name) {
+    const k = String(name ?? "").normalize("NFKC").trim().toLowerCase();
+    if (!k) return null;
+    return this._items.find((x) => (x.display_name || "").normalize("NFKC").toLowerCase() === k) || null;
+  }
   listAll() { return this._items.slice().sort((a, b) => a.inci.localeCompare(b.inci, "en")); }
   count() { return this._items.length; }
   get(inci) { return this._index.get(IngredientStore.key(inci)) || null; }

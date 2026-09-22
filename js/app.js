@@ -228,7 +228,7 @@ function renderComponents() {
     tb.append(el("tr", {},
       el("td", {}, el("input", { value: c.inci, placeholder: "INCI 名", list: "inci-list", oninput: (e) => renderInciDatalist(e.target.value), onchange: (e) => {
         c.inci = e.target.value.trim();
-        const known = ingredients.get(c.inci);
+        const known = ingredients.get(c.inci) || ingredients.getByDisplayName(c.inci);
         if (known) { c.inci = known.inci; if (!c.display_name && known.display_name) c.display_name = known.display_name; if (known.is_colorant) c.is_colorant = true; }
         if (isCiNumber(c.inci)) c.is_colorant = true;
         renderComponents();

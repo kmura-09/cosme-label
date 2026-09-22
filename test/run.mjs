@@ -108,7 +108,15 @@ for (const c of golden.regulatory_cases) {
   assert.equal(jp.errors.length, 0);
   assert.equal(ing.get("Sodium Laureth Sulfate").display_name, "ラウレス硫酸Na");
   assert.equal(ing.get("Sodium Laureth Sulfate").note, "陰イオン界面活性剤");
-  n += 5;
+  // 表記揺れの吸収と表示名称からの逆引き
+  assert.equal(ing.get("ＷＡＴＥＲ").inci, "Water");
+  ing.save({ inci: "Ceteareth-20", display_name: "セテアレス-20" });
+  assert.equal(ing.get("ceteareth 20").inci, "Ceteareth-20");
+  assert.equal(ing.getByDisplayName("水").inci, "Water");
+  // 同じ表示名称に別 INCI → 成分表で警告
+  const dup = buildIngredientLabel({ A: 50, B: 50 }, { A: { Water: 100 }, B: { Aqua: 100 } }, { displayNames: { Water: "水", Aqua: "水" } });
+  assert.ok(dup.warnings.some((w) => w.includes("Water / Aqua")), dup.warnings.join("|"));
+  n += 9;
 }
 
 console.log(`ok: ${n} checks passed`);
