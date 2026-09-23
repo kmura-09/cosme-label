@@ -95,7 +95,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -345,7 +347,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -593,7 +597,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -707,7 +713,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -815,7 +823,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -903,7 +913,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -992,7 +1004,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -1084,7 +1098,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -1178,7 +1194,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -1266,7 +1284,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -1360,7 +1380,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected": {
@@ -1492,7 +1514,9 @@
      "Citric Acid": "クエン酸",
      "Sodium Hydroxide": "水酸化Ｎａ",
      "Titanium Dioxide": "酸化チタン",
-     "CI 77491": "酸化鉄"
+     "CI 77491": "酸化鉄",
+     "Methylparaben": "メチルパラベン",
+     "Propylparaben": "プロピルパラベン"
     }
    },
    "expected_error": true
@@ -2071,7 +2095,8 @@
      "id": "preservative_free",
      "status": "ng",
      "ng": [
-      "Phenoxyethanol"
+      "Phenoxyethanol",
+      "Citric Acid"
      ],
      "caution": [
       "Ethylhexylglycerin"
@@ -2609,6 +2634,164 @@
       "Urea"
      ],
      "caution": []
+    }
+   ]
+  },
+  {
+   "inci_names": [
+    "Water",
+    "Calcium Propionate",
+    "Ammonium Bisulfite",
+    "Benzophenone-4",
+    "Annatto",
+    "Mystery Preservative X",
+    "Mystery Fragrance Y"
+   ],
+   "colorants": [],
+   "purposes": {
+    "Mystery Preservative X": "防腐剤",
+    "Mystery Fragrance Y": "香料"
+   },
+   "expected": [
+    {
+     "id": "paraben_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "phenoxyethanol_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "preservative_free",
+     "status": "ng",
+     "ng": [
+      "Calcium Propionate",
+      "Ammonium Bisulfite"
+     ],
+     "caution": [
+      "Mystery Preservative X"
+     ],
+     "purpose_hits": [
+      [
+       "Mystery Preservative X",
+       "防腐剤"
+      ]
+     ]
+    },
+    {
+     "id": "designated_ingredient_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "fragrance_free",
+     "status": "caution",
+     "ng": [],
+     "caution": [
+      "Mystery Fragrance Y"
+     ],
+     "purpose_hits": [
+      [
+       "Mystery Fragrance Y",
+       "香料"
+      ]
+     ]
+    },
+    {
+     "id": "colorant_free",
+     "status": "caution",
+     "ng": [],
+     "caution": [
+      "Annatto"
+     ],
+     "purpose_hits": []
+    },
+    {
+     "id": "tar_color_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "alcohol_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "mineral_oil_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "silicone_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "sulfate_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "peg_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "edta_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "uv_absorber_free",
+     "status": "ng",
+     "ng": [
+      "Benzophenone-4"
+     ],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "uv_scatterer_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "gluten_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
+    },
+    {
+     "id": "urea_free",
+     "status": "ok",
+     "ng": [],
+     "caution": [],
+     "purpose_hits": []
     }
    ]
   }

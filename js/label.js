@@ -356,28 +356,58 @@ export function applyClaimRules(data, rules) {
   return { ...data, claims };
 }
 
+/** 規制データの行から EU Annex ごとの INCI 集合 {"IV": Set, "V": Set, "VI": Set} を作る。 */
+export function regulatoryAnnexSets(rows) {
+  const sets = {};
+  for (const r of Array.isArray(rows) ? rows : (rows?.rows || [])) {
+    const m = /Annex (I{1,3}|IV|V|VI)\b/.exec(r.regulation_citation || "");
+    if (!m) continue;
+    (sets[m[1]] ||= new Set()).add(r.inci_name);
+  }
+  return sets;
+}
+
+/** claim.regulatory_annex に従い、Annex の一覧を完全一致パターンとして ng/caution に足す (網羅性の第二の根拠)。 */
+export function applyRegulatoryAnnexes(data, annexSets) {
+  const claims = (data.claims || []).map((c) => {
+    if (!c.regulatory_annex) return c;
+    const add = (kind) => (c.regulatory_annex[kind] || []).flatMap((a) => [...(annexSets[a] || [])]).map((n) => `^${escapeRe(n.normalize("NFKC"))}$`);
+    return { ...c, ng: [...(c.ng || []), ...add("ng")], caution: [...(c.caution || []), ...add("caution")] };
+  });
+  return { ...data, claims };
+}
+
 export function compileFreeClaims(data) {
   const rx = (arr) => (arr || []).map((p) => new RegExp(p, "i"));
   return (data.claims || []).map((c) => ({
-    id: c.id, label: c.label, description: c.description || "",
+    id: c.id, label: c.label, description: c.description || "", method: c.method || "list",
     ng: rx(c.ng), caution: rx(c.caution), exclude: rx(c.exclude),
     forceNg: rx(c.forceNg), forceCaution: rx(c.forceCaution),
+    purposes: c.purposes || {},
   }));
 }
 
-export function checkFreeClaims(inciNames, claims, { colorants = null } = {}) {
+/**
+ * @param {Object} [opts]
+ * @param {Iterable<string>|null} [opts.colorants]  原料側で着色剤にした INCI
+ * @param {(inci:string)=>string|null} [opts.purposeOf]  成分辞書の配合目的 (規則に掛からなくても目的が一致すれば要確認)
+ */
+export function checkFreeClaims(inciNames, claims, { colorants = null, purposeOf = null } = {}) {
   const colorKeys = new Set([...(colorants || [])].map(normKey));
   const names = inciNames.map((n) => ({ raw: n, s: String(n).normalize("NFKC").trim() }));
   return claims.map((c) => {
-    const ng = [], caution = [];
+    const ng = [], caution = [], purposeHits = [];
+    const cautionPurposes = new Set(c.purposes?.caution || []);
     for (const { raw, s } of names) {
       if (c.forceNg.some((r) => r.test(s))) { ng.push(raw); continue; }
       if (c.forceCaution.some((r) => r.test(s))) { caution.push(raw); continue; }
       if (c.exclude.some((r) => r.test(s))) continue;
-      if (c.ng.some((r) => r.test(s)) || (c.id === "colorant_free" && colorKeys.has(normKey(raw)))) ng.push(raw);
-      else if (c.caution.some((r) => r.test(s))) caution.push(raw);
+      if (c.ng.some((r) => r.test(s)) || (c.id === "colorant_free" && colorKeys.has(normKey(raw)))) { ng.push(raw); continue; }
+      if (c.caution.some((r) => r.test(s))) { caution.push(raw); continue; }
+      const purpose = purposeOf ? purposeOf(raw) : null;
+      if (purpose && cautionPurposes.has(purpose)) { caution.push(raw); purposeHits.push({ inci: raw, purpose }); }
     }
-    return { id: c.id, label: c.label, description: c.description, status: ng.length ? "ng" : caution.length ? "caution" : "ok", ng, caution };
+    return { id: c.id, label: c.label, description: c.description, method: c.method, status: ng.length ? "ng" : caution.length ? "caution" : "ok", ng, caution, purposeHits };
   });
 }
 

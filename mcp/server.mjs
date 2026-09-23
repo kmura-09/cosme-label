@@ -13,11 +13,13 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import {
   buildIngredientLabel, parseFormulaText, indexRegulatoryRows, resolveRegulatoryLimits, checkRegulatory, findingText,
   compileFreeClaims, checkFreeClaims, applyClaimRules, naturalOriginIndex, ingredientClaims, isCiNumber, LabelError,
+  regulatoryAnnexSets, applyRegulatoryAnnexes,
 } from "../js/label.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const regTable = indexRegulatoryRows(JSON.parse(readFileSync(join(root, "data/regulatory_limits_inci.json"), "utf8")));
-const claimData = JSON.parse(readFileSync(join(root, "data/free_claims.json"), "utf8"));
+const regData = JSON.parse(readFileSync(join(root, "data/regulatory_limits_inci.json"), "utf8"));
+const regTable = indexRegulatoryRows(regData);
+const claimData = applyRegulatoryAnnexes(JSON.parse(readFileSync(join(root, "data/free_claims.json"), "utf8")), regulatoryAnnexSets(regData));
 
 const server = new McpServer({ name: "cosme-label", version: "0.1.0" });
 const text = (obj) => ({ content: [{ type: "text", text: JSON.stringify(obj, null, 1) }] });
@@ -84,12 +86,15 @@ server.registerTool("check_free_claims", {
   inputSchema: {
     inci_names: z.array(z.string()),
     colorants: z.array(z.string()).optional().describe("原料側で着色剤にした INCI"),
+    purposes: z.record(z.string(), z.string()).optional().describe("{INCI: 配合目的} (防腐剤/香料/着色剤等。規則に掛からなくても要確認に出す)"),
     rules: z.object({ disabled: z.array(z.string()).optional(), overrides: z.record(z.string(), z.any()).optional(), custom: z.array(z.any()).optional() }).optional(),
   },
-}, async ({ inci_names, colorants, rules }) => {
+}, async ({ inci_names, colorants, purposes, rules }) => {
   try {
     const claims = compileFreeClaims(rules ? applyClaimRules(claimData, rules) : claimData);
-    return text(checkFreeClaims(inci_names, claims, { colorants: colorants ?? null }));
+    const norm = (n) => String(n).normalize("NFKC").trim().toLowerCase();
+    const pm = new Map(Object.entries(purposes || {}).map(([k, v]) => [norm(k), v]));
+    return text(checkFreeClaims(inci_names, claims, { colorants: colorants ?? null, purposeOf: (n) => pm.get(norm(n)) || null }));
   } catch (e) { return fail(e); }
 });
 

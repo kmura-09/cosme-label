@@ -9,7 +9,7 @@ import {
 } from "../js/label.js";
 import { parseCsvRecords, toCsv } from "../js/csv.js";
 import { MaterialStore, IngredientStore } from "../js/store.js";
-import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern, naturalOriginIndex, ingredientClaims } from "../js/label.js";
+import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern, naturalOriginIndex, ingredientClaims, regulatoryAnnexSets, applyRegulatoryAnnexes } from "../js/label.js";
 import { ClaimRuleStore } from "../js/store.js";
 import { buildClaimPrompt, promptAsText, EFFICACY_56, chatLinks, efficacyHints } from "../js/copy.js";
 
@@ -157,12 +157,24 @@ for (const c of golden.regulatory_cases) {
 
 // フリー表示チェック (ルール JSON を共有、期待値は golden)
 {
-  const claims = compileFreeClaims(JSON.parse(readFileSync(join(here, "../data/free_claims.json"), "utf8")));
+  const regRows = JSON.parse(readFileSync(join(here, "../data/regulatory_limits_inci.json"), "utf8"));
+  const annex = regulatoryAnnexSets(regRows);
+  assert.ok(annex.V.size > 50 && annex.VI.size > 10 && annex.IV.size > 50, "annex sets");
+  const claims = compileFreeClaims(applyRegulatoryAnnexes(JSON.parse(readFileSync(join(here, "../data/free_claims.json"), "utf8")), annex));
   for (const c of golden.free_claim_cases) {
-    const got = checkFreeClaims(c.inci_names, claims, { colorants: c.colorants }).map((x) => ({ id: x.id, status: x.status, ng: x.ng, caution: x.caution }));
+    const purposeOf = c.purposes ? (n) => c.purposes[n] || null : null;
+    const got = checkFreeClaims(c.inci_names, claims, { colorants: c.colorants, purposeOf }).map((x) => {
+      const o = { id: x.id, status: x.status, ng: x.ng, caution: x.caution };
+      if (c.purposes) o.purpose_hits = x.purposeHits.map((h) => [h.inci, h.purpose]);
+      return o;
+    });
     assert.deepEqual(got, c.expected, "free claims: " + c.inci_names.slice(0, 3).join(","));
     n++;
   }
+  // Annex 由来: 組み込みリストに無い防腐剤 (Calcium Propionate) も拾い、酸化チタンは吸収剤フリーで除外
+  const r = Object.fromEntries(checkFreeClaims(["Calcium Propionate", "Titanium Dioxide"], claims).map((x) => [x.id, x]));
+  assert.ok(r.preservative_free.ng.includes("Calcium Propionate") && r.uv_absorber_free.status === "ok" && r.paraben_free.method === "pattern");
+  n++;
 }
 
 // 利用者ルール (オンオフ / 追加 / 除外 / 自作) の適用

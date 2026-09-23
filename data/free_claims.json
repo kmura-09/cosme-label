@@ -1,6 +1,6 @@
 {
  "schema": "free_claims/1",
- "note": "「〇〇フリー」表示の根拠チェック用ルール。ng: 該当すれば表示できない INCI (正規表現, 大小無視)。caution: 定義や解釈によって該当しうるもの (要確認)。exclude: ng/caution に一致しても除外する INCI。フリー表示の可否は景品表示法・公正競争規約・各社基準にも依るため、本ルールは一般的な慣行に基づく目安。",
+ "note": "「〇〇フリー」表示の根拠チェック用ルール。ng: 該当すれば表示できない INCI (正規表現, 大小無視)。caution: 定義や解釈によって該当しうるもの (要確認)。exclude: ng/caution に一致しても除外する INCI。フリー表示の可否は景品表示法・公正競争規約・各社基準にも依るため、本ルールは一般的な慣行に基づく目安。 method: pattern=名前の規則で判る (見逃しがほぼ無い) / list=リスト照合 (リストに無い成分は素通りしうる)。regulatory_annex: 規制データ (EU 1223/2009 Annex IV/V/VI) の一覧を第二の根拠として ng/caution に加える。purposes: 成分辞書の配合目的がこれに一致し規則に掛からなかった成分を要確認にする。",
  "claims": [
   {
    "id": "paraben_free",
@@ -10,7 +10,8 @@
     "paraben"
    ],
    "caution": [],
-   "exclude": []
+   "exclude": [],
+   "method": "pattern"
   },
   {
    "id": "phenoxyethanol_free",
@@ -20,7 +21,8 @@
     "^phenoxyethanol$"
    ],
    "caution": [],
-   "exclude": []
+   "exclude": [],
+   "method": "pattern"
   },
   {
    "id": "preservative_free",
@@ -110,7 +112,18 @@
     "^homosalate$",
     "^(c12-15 alkyl|benzyl|phenethyl) benzoate$",
     "^alkyl benzoate$"
-   ]
+   ],
+   "method": "list",
+   "regulatory_annex": {
+    "ng": [
+     "V"
+    ]
+   },
+   "purposes": {
+    "caution": [
+     "防腐剤"
+    ]
+   }
   },
   {
    "id": "designated_ingredient_free",
@@ -250,7 +263,8 @@
     "hydroxypropyltrimonium",
     "polyquaternium",
     "^quaternium-"
-   ]
+   ],
+   "method": "list"
   },
   {
    "id": "fragrance_free",
@@ -265,7 +279,13 @@
     "(flower|leaf|peel|wood|bark|rind|herb|needle|resin|root|twig) oil$",
     "essential oil"
    ],
-   "exclude": []
+   "exclude": [],
+   "method": "list",
+   "purposes": {
+    "caution": [
+     "香料"
+    ]
+   }
   },
   {
    "id": "colorant_free",
@@ -301,7 +321,19 @@
     "^safflower.*color",
     "^gardenia.*(blue|yellow|red)"
    ],
-   "exclude": []
+   "exclude": [],
+   "method": "list",
+   "regulatory_annex": {
+    "caution": [
+     "IV"
+    ]
+   },
+   "purposes": {
+    "caution": [
+     "着色剤",
+     "パール剤"
+    ]
+   }
   },
   {
    "id": "tar_color_free",
@@ -318,7 +350,8 @@
    ],
    "exclude": [
     "^ci\\s*77\\d{3}"
-   ]
+   ],
+   "method": "pattern"
   },
   {
    "id": "alcohol_free",
@@ -337,7 +370,8 @@
     "^isopropyl alcohol$",
     "^phenethyl alcohol$"
    ],
-   "exclude": []
+   "exclude": [],
+   "method": "list"
   },
   {
    "id": "mineral_oil_free",
@@ -368,7 +402,9 @@
     "^synthetic wax$",
     "^polyethylene$"
    ],
-   "exclude": []
+   "exclude": [],
+   "method": "list",
+   "purposes": {}
   },
   {
    "id": "silicone_free",
@@ -388,7 +424,8 @@
     "^silica",
     "^hydrated silica$",
     "silicate"
-   ]
+   ],
+   "method": "pattern"
   },
   {
    "id": "sulfate_free",
@@ -407,7 +444,8 @@
    ],
    "exclude": [
     "^(magnesium|zinc|copper|sodium|potassium|calcium|aluminum|ferrous|manganese|iron) sulfate$"
-   ]
+   ],
+   "method": "pattern"
   },
   {
    "id": "peg_free",
@@ -437,7 +475,8 @@
     "^trieth",
     "^meth",
     "^acetyl"
-   ]
+   ],
+   "method": "pattern"
   },
   {
    "id": "edta_free",
@@ -449,7 +488,8 @@
     "edetate"
    ],
    "caution": [],
-   "exclude": []
+   "exclude": [],
+   "method": "pattern"
   },
   {
    "id": "uv_absorber_free",
@@ -489,7 +529,23 @@
     "^bisoctrizole$"
    ],
    "caution": [],
-   "exclude": []
+   "exclude": [
+    "^titanium dioxide$",
+    "^zinc oxide$",
+    "^ci 77891$",
+    "^ci 77947$"
+   ],
+   "method": "list",
+   "regulatory_annex": {
+    "ng": [
+     "VI"
+    ]
+   },
+   "purposes": {
+    "caution": [
+     "紫外線防御剤"
+    ]
+   }
   },
   {
    "id": "uv_scatterer_free",
@@ -502,7 +558,8 @@
     "^ci 77947$"
    ],
    "caution": [],
-   "exclude": []
+   "exclude": [],
+   "method": "pattern"
   },
   {
    "id": "gluten_free",
@@ -523,7 +580,8 @@
     "\\boat\\b",
     "\\(oat\\)"
    ],
-   "exclude": []
+   "exclude": [],
+   "method": "list"
   },
   {
    "id": "urea_free",
@@ -533,7 +591,8 @@
     "urea"
    ],
    "caution": [],
-   "exclude": []
+   "exclude": [],
+   "method": "pattern"
   }
  ]
 }

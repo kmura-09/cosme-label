@@ -21,8 +21,8 @@
 <meta name="twitter:title" content="成分表ジェネレーター｜化粧品の全成分表示を原料構成から自動作成">
 <meta name="twitter:description" content="記載順の自動整列、配合上限チェック、フリー表示 17 種、旧表示指定成分、自然由来指数。無料・登録不要・ブラウザ内で完結。">
 <meta name="twitter:image" content="https://kmura-09.github.io/cosme-label/ogp.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoObject", "name": "成分表ジェネレーターの使い方（55 秒）", "description": "原料登録、成分登録、処方のコピペ入力、全成分表示の自動整列、訴求点の候補、フリー表示チェック、未登録原料のその場登録、自社ルールの編集までを 55 秒で。", "thumbnailUrl": ["https://kmura-09.github.io/cosme-label/media/howto-poster.jpg?v=202609231623"], "contentUrl": "https://kmura-09.github.io/cosme-label/media/howto.mp4?v=202609231623", "uploadDate": "2026-09-23", "duration": "PT55S", "inLanguage": "ja"}</script>
-<link rel="stylesheet" href="css/style.css?v=202609231623">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoObject", "name": "成分表ジェネレーターの使い方（55 秒）", "description": "原料登録、成分登録、処方のコピペ入力、全成分表示の自動整列、訴求点の候補、フリー表示チェック、未登録原料のその場登録、自社ルールの編集までを 55 秒で。", "thumbnailUrl": ["https://kmura-09.github.io/cosme-label/media/howto-poster.jpg?v=202609231635"], "contentUrl": "https://kmura-09.github.io/cosme-label/media/howto.mp4?v=202609231635", "uploadDate": "2026-09-23", "duration": "PT55S", "inLanguage": "ja"}</script>
+<link rel="stylesheet" href="css/style.css?v=202609231635">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "成分表ジェネレーター", "url": "https://kmura-09.github.io/cosme-label/", "description": "化粧品の全成分表示（成分表）を原料構成と処方から自動作成する無料ツール。記載順の自動整列、配合上限チェック、フリー表示 17 種の判定、旧表示指定成分、自然由来指数、訴求点の候補。ブラウザ内で完結。", "applicationCategory": "BusinessApplication", "operatingSystem": "Any (Web browser)", "browserRequirements": "Requires JavaScript", "inLanguage": "ja", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"}, "license": "https://www.apache.org/licenses/LICENSE-2.0", "image": "https://kmura-09.github.io/cosme-label/ogp.png", "featureList": ["全成分表示の記載順の自動作成（降順・1%以下は順不同・着色剤は末尾）", "原料（配合剤）の INCI 構成比からの合算", "INCI 名と表示名称の対応辞書（基本成分 300 件同梱、CSV 取込）", "配合上限・配合禁止のチェック（JP/EU/US/KR）", "フリー表示 17 種の根拠判定", "旧表示指定成分（102 成分 + 香料）の判定", "自然由来指数（ISO 16128 の考え方）", "訴求点の候補と LLM 向けプロンプト"]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "化粧品の全成分表示の記載順のルールは？", "acceptedAnswer": {"@type": "Answer", "text": "配合量の多い順に記載します。1% 以下の成分は順不同で記載でき、着色剤は配合量に関わらず末尾にまとめて記載できます。本ツールはこの規則で自動的に並べ、1% 以下の帯と着色剤を明示します。"}}, {"@type": "Question", "name": "原料（配合剤）から成分表を作るには？", "acceptedAnswer": {"@type": "Answer", "text": "原料ごとに INCI 構成比（原料 100 g 中の各成分の質量%）を登録し、処方（原料 × 配合%）を入力すると、同じ INCI を合算して記載順を出します。ブレンド原料の水も正しく合算されます。"}}, {"@type": "Question", "name": "INCI 名と表示名称（日本語）の対応はどうやって用意する？", "acceptedAnswer": {"@type": "Answer", "text": "成分登録タブで INCI と表示名称の対応を登録します。基本成分 300 件は初期値として入っており、お手元の成分表示名称リストの CSV（「INCI名」「表示名称」の列）を読み込めば増やせます。"}}, {"@type": "Question", "name": "配合上限のチェックはどの規制に基づく？", "acceptedAnswer": {"@type": "Answer", "text": "EU 化粧品規則 1223/2009 の Annex、日本の化粧品基準（厚生労働省告示第331号）、KFDA、米国 21 CFR 352 由来の配合上限・配合禁止 595 行と突き合わせます。剤型・地域が未指定なら最も緩い上限を採用します。規制は改正されるため最終判断は原文で確認してください。"}}, {"@type": "Question", "name": "パラベンフリーや防腐剤フリーの根拠は確認できる？", "acceptedAnswer": {"@type": "Answer", "text": "パラベン、防腐剤、旧表示指定成分、無香料、無着色、タール色素、アルコール、鉱物油、シリコン、サルフェート、PEG、EDTA、紫外線吸収剤、紫外線散乱剤、グルテン、尿素の 17 種のフリー表示について、成分表に該当成分があるかを判定し、該当した INCI を示します。自社基準に合わせてルールを編集できます。"}}, {"@type": "Question", "name": "旧表示指定成分とは？", "acceptedAnswer": {"@type": "Answer", "text": "1980 年（昭和 55 年）の厚生省告示で表示が義務付けられていた 102 成分と香料のことです。2001 年の全成分表示義務化で廃止されましたが、「旧表示指定成分無添加」の表示は今も使われます。本ツールはこの 103 項目を INCI 名で判定します。"}}, {"@type": "Question", "name": "自然由来指数とは？", "acceptedAnswer": {"@type": "Answer", "text": "ISO 16128 の考え方で、成分ごとの天然由来率を配合% で加重した処方全体の値です。水を含む値と除く値の両方を出し、天然由来率が未登録の成分がある場合はその幅で示します。"}}, {"@type": "Question", "name": "処方のデータはどこに保存される？", "acceptedAnswer": {"@type": "Answer", "text": "すべてブラウザ内で処理され、原料や成分のデータはお使いのブラウザの localStorage にだけ保存されます。サーバーには何も送信しません。別の端末へは CSV や JSON で持ち運びます。"}}, {"@type": "Question", "name": "無料で使える？登録は必要？", "acceptedAnswer": {"@type": "Answer", "text": "無料で、登録も不要です。ソースコードは Apache-2.0 で公開しています。"}}]}</script>
 </head>
@@ -281,9 +281,9 @@
   <div class="card prose">
     <h2>使い方</h2>
     <p><b>55 秒の動画</b>で一通りの流れが分かります（音声なし・字幕入り）。</p>
-    <video id="howto-video" controls preload="none" playsinline poster="media/howto-poster.jpg?v=202609231623" style="width:100%;max-width:960px;border-radius:8px;border:1px solid #e2e6ea;background:#000">
-      <source src="media/howto.mp4?v=202609231623" type="video/mp4">
-      お使いのブラウザは動画を再生できません。<a href="media/howto.mp4?v=202609231623">動画ファイル</a>
+    <video id="howto-video" controls preload="none" playsinline poster="media/howto-poster.jpg?v=202609231635" style="width:100%;max-width:960px;border-radius:8px;border:1px solid #e2e6ea;background:#000">
+      <source src="media/howto.mp4?v=202609231635" type="video/mp4">
+      お使いのブラウザは動画を再生できません。<a href="media/howto.mp4?v=202609231635">動画ファイル</a>
     </video>
     <ol>
       <li><b>原料登録</b>で、原料の中身（INCI と割合）を入れます。まずは「サンプル原料を読込」で試せます。</li>
@@ -363,6 +363,6 @@
   window.addEventListener("error", function (e) { showFatal((e.message || e.type) + (e.filename ? " @ " + e.filename.split("/").pop() + ":" + e.lineno : "")); });
   window.addEventListener("unhandledrejection", function (e) { showFatal(String(e.reason && e.reason.message || e.reason)); });
 </script>
-<script type="module" src="js/app.js?v=202609231623"></script>
+<script type="module" src="js/app.js?v=202609231635"></script>
 </body>
 </html>

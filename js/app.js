@@ -2,11 +2,11 @@
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
-  naturalOriginIndex, ingredientClaims, normKey,
-} from "./label.js?v=202609231623";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231623";
+  naturalOriginIndex, ingredientClaims, normKey, regulatoryAnnexSets, applyRegulatoryAnnexes,
+} from "./label.js?v=202609231635";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231635";
 import { buildClaimPrompt, promptAsText, chatLinks } from "./copy.js";
-import { parseCsvRecords } from "./csv.js?v=202609231623";
+import { parseCsvRecords } from "./csv.js?v=202609231635";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -26,12 +26,13 @@ const alertBox = (msg, kind = "warn") => el("div", { class: `alert ${kind}` }, m
 const DISCLAIMER_TEXT = "本ツールおよび同梱の規制データは情報提供のみを目的とし、法的助言ではありません。規制データは公的文書を基に作成していますが、正確性・完全性・最新性を保証しません。規制は改正され、製品の分類・適用部位・地域によって適用される規定は異なります。成分表示および配合上限の適合性の最終判断は、利用者の責任において最新の規制原文および専門家の確認に基づいて行ってください。本ツールの利用により生じたいかなる損害についても、作者は責任を負いません。";
 const store = new MaterialStore();
 const ingredients = new IngredientStore();
-let regTable = new Map();
+let regTable = new Map(), annexSets = {};
 let freeClaims = [], claimData = { claims: [] };
 const ruleStore = new ClaimRuleStore();
-function rebuildClaims() { freeClaims = compileFreeClaims(applyClaimRules(claimData, ruleStore.rules)); }
+// 規制データの Annex 一覧 (EU IV/V/VI) を第二の根拠として重ねる → リスト照合型の見逃しを減らす
+function rebuildClaims() { freeClaims = compileFreeClaims(applyClaimRules(applyRegulatoryAnnexes(claimData, annexSets), ruleStore.rules)); }
 fetch("data/free_claims.json").then((r) => r.json()).then((d) => { claimData = d; rebuildClaims(); renderLabel(); renderRuleList(); }).catch(() => {});
-fetch("data/regulatory_limits_inci.json").then((r) => r.json()).then((d) => { regTable = indexRegulatoryRows(d); renderLabel(); })
+fetch("data/regulatory_limits_inci.json").then((r) => r.json()).then((d) => { regTable = indexRegulatoryRows(d); annexSets = regulatoryAnnexSets(d); rebuildClaims(); renderLabel(); })
   .catch(() => { $("#label-output").prepend(alertBox("規制データ (data/regulatory_limits_inci.json) を読めませんでした。規制チェックなしで動作します。", "warn")); });
 
 // ── タブ ────────────────────────────────────────────────────────────────────
@@ -255,7 +256,8 @@ function renderLabel() {
     const noi = naturalOriginIndex(res.entries, info);
     const ic = ingredientClaims(res.entries, info);
     const fmtIdx = (r) => r.low == null ? "-" : (r.coverage >= 99.9 ? `${r.high.toFixed(1)}%` : `${r.low.toFixed(1)}〜${r.high.toFixed(1)}%`);
-    const okClaims = freeClaims.length ? checkFreeClaims(res.inciOrder, freeClaims, { colorants }).filter((r) => r.status === "ok").map((r) => r.label) : [];
+    const purposeOf = (n) => info(n)?.purpose || null;
+    const okClaims = freeClaims.length ? checkFreeClaims(res.inciOrder, freeClaims, { colorants, purposeOf }).filter((r) => r.status === "ok").map((r) => r.label) : [];
     const idxText = `自然由来指数 ${fmtIdx(noi.withWater)}（水を含む）/ ${fmtIdx(noi.withoutWater)}（水を除く）`;
     const lines = [
       ...ic.purposeLines.map((l) => l.text),
@@ -287,18 +289,23 @@ function renderLabel() {
   }
   out.append(renderCopySection());
   if (freeClaims.length) {
-    const results = checkFreeClaims(res.inciOrder, freeClaims, { colorants });
+    const infoMap2 = ingredients.infoMap();
+    const results = checkFreeClaims(res.inciOrder, freeClaims, { colorants, purposeOf: (n) => infoMap2.get(normKey(n))?.purpose || null });
     const icon = { ok: "✓", ng: "✗", caution: "△" }, cls = { ok: "ok", ng: "bad", caution: "warn" };
     const nOk = results.filter((r) => r.status === "ok").length;
     out.append(el("details", { class: "claims" },
       el("summary", {}, el("b", {}, "フリー表示チェック"), el("span", { class: "muted small" }, ` 表示できる根拠あり ${nOk} / ${results.length}　`), el("span", { class: "more" }, "詳しく見る")),
       el("table", { class: "grid" },
-        el("thead", {}, el("tr", {}, el("th", {}, "表示"), el("th", {}, "判定"), el("th", {}, "該当成分"))),
-        el("tbody", {}, results.map((r) => el("tr", {},
-          el("td", { title: r.description }, r.label),
-          el("td", {}, el("span", { class: `badge ${cls[r.status]}` }, `${icon[r.status]} ${r.status === "ok" ? "該当なし" : r.status === "ng" ? "該当あり" : "要確認"}`)),
-          el("td", { class: "small" }, [...r.ng.map((x) => `✗ ${x}`), ...r.caution.map((x) => `△ ${x}`)].join(" / ")))))),
-      el("p", { class: "muted small" }, "✓ は本ルール上の該当成分が無いという意味で、表示の可否は各社基準・公正競争規約・景品表示法の観点で別途判断してください。△ は定義や用途によって該当しうる成分 (防腐補助剤、精油、酸化チタン等)。行にマウスを乗せると定義が出ます。")));
+        el("thead", {}, el("tr", {}, el("th", {}, "表示"), el("th", {}, "判定"), el("th", {}, "該当成分"), el("th", {}, "判定方法"))),
+        el("tbody", {}, results.map((r) => {
+          const hit = new Map(r.purposeHits.map((h) => [h.inci, h.purpose]));
+          return el("tr", {},
+            el("td", { title: r.description }, r.label),
+            el("td", {}, el("span", { class: `badge ${cls[r.status]}` }, `${icon[r.status]} ${r.status === "ok" ? "該当なし" : r.status === "ng" ? "該当あり" : "要確認"}`)),
+            el("td", { class: "small" }, [...r.ng.map((x) => `✗ ${x}`), ...r.caution.map((x) => `△ ${x}${hit.has(x) ? `（配合目的: ${hit.get(x)}）` : ""}`)].join(" / ")),
+            el("td", { class: "small muted" }, r.method === "pattern" ? "名前の規則" : "リスト照合"));
+        }))),
+      el("p", { class: "muted small" }, "「名前の規則」は成分名の特徴で判るので見逃しはほぼありません。「リスト照合」は規制データの一覧（EU Annex IV/V/VI）と組み込みリストで照合するので、どちらにも無い成分は素通りすることがあります。成分辞書の配合目的が防腐剤・香料・着色剤なのに掛からなかった成分は要確認に出します。表示の可否は各社基準・公正競争規約・景品表示法の観点で別途判断してください。")));
   }
   out.append(...copyBlock("表示名称 (日本語)", res.asText(), "jp-text"));
   out.append(...copyBlock("INCI (英語)", res.asInciText(), "inci-text"));
