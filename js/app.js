@@ -3,10 +3,10 @@ import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
   naturalOriginIndex, ingredientClaims, normKey,
-} from "./label.js?v=202609231536";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231536";
+} from "./label.js?v=202609231537";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231537";
 import { buildClaimPrompt, promptAsText, chatLinks } from "./copy.js";
-import { parseCsvRecords } from "./csv.js?v=202609231536";
+import { parseCsvRecords } from "./csv.js?v=202609231537";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -588,6 +588,7 @@ $("#ing-import-csv").addEventListener("change", (e) => readFile(e.target, import
 $("#ing-import-csv-empty").addEventListener("change", (e) => readFile(e.target, importIngredientCsv));
 
 $("#footer-disclaimer").addEventListener("click", () => $('.tab[data-tab="help"]').click());
+$("#intro-help-link").addEventListener("click", (e) => { e.preventDefault(); $('.tab[data-tab="help"]').click(); window.scrollTo(0, 0); });
 
 // ═══════════════════════ フリー表示ルール ═══════════════════════
 let ruleEdit = null; // { id, builtin, label, description, ng:[term], caution:[term], exclude:[term] }

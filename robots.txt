@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kmura-09.github.io/cosme-label/sitemap.xml
