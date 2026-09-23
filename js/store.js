@@ -1,7 +1,7 @@
 // 原料マスタの保存層 (localStorage)。サーバー無しで完結する。
 // データはこのブラウザにだけ残る。持ち出しは CSV / JSON 書出で行う。
 
-import { parseCsvRecords, toCsv } from "./csv.js?v=202609230020";
+import { parseCsvRecords, toCsv } from "./csv.js?v=202609231234";
 
 const KEY = "cosme-label:materials:v1";
 const SUM_TOL = 0.05;
@@ -168,7 +168,8 @@ export class MaterialStore {
 // ユーザー自身が育てる INCI 辞書。原料登録で同じ INCI の表示名称を入れ直さずに済み、
 // 成分表の表示名称の既定値になる (原料側の表示名称が入っていればそちらを優先)。
 const IKEY = "cosme-label:ingredients:v1";
-export const INGREDIENT_CSV_COLUMNS = ["inci_name", "display_name", "is_colorant", "note"];
+export const INGREDIENT_CSV_COLUMNS = ["inci_name", "display_name", "is_colorant", "purpose", "origin", "natural_index", "note"];
+export const ORIGINS = ["植物由来", "動物由来", "鉱物由来", "発酵由来", "水", "合成", "石油由来"];
 
 export class IngredientStore {
   constructor(storage = globalThis.localStorage) {
@@ -212,9 +213,12 @@ export class IngredientStore {
     let t = this._index.get(k);
     if (t && !overwrite) return t;
     if (!t) { t = { inci }; this._items.push(t); this._index.set(k, t); }
+    const ni = item.natural_index === "" || item.natural_index == null ? null : Number(item.natural_index);
     Object.assign(t, {
       inci, display_name: String(item.display_name || "").trim() || null,
       is_colorant: !!item.is_colorant, note: String(item.note || "").trim() || null,
+      purpose: String(item.purpose || "").trim() || null, origin: String(item.origin || "").trim() || null,
+      natural_index: Number.isFinite(ni) && ni >= 0 && ni <= 100 ? ni : null,
     });
     return t;
   }
@@ -250,6 +254,9 @@ export class IngredientStore {
       inci: pick(["inci_name", "inci", "inci名", "inciname", "inci名称", "英名", "英語名"]),
       display_name: pick(["display_name", "displayname", "表示名称", "成分表示名称", "日本語名", "名称", "和名", "表示名"]),
       is_colorant: pick(["is_colorant", "iscolorant", "着色剤", "colorant"]),
+      purpose: pick(["purpose", "配合目的", "目的", "機能"]),
+      origin: pick(["origin", "由来", "起源"]),
+      natural_index: pick(["natural_index", "naturalindex", "天然由来率", "自然由来率", "天然由来指数", "自然由来指数"]),
       note: pick(["note", "メモ", "備考", "定義"]),
     };
   }
@@ -259,14 +266,24 @@ export class IngredientStore {
     for (const raw of rows) {
       const r = IngredientStore.normalizeRow(raw);
       if (!r.inci && !r.display_name) continue;
-      try { saved.push(this._put({ inci: r.inci, display_name: r.display_name, is_colorant: truthy(r.is_colorant), note: r.note })); }
+      try {
+        const ex = this.get(r.inci);
+        // 既存項目の空欄だけ埋める (工業会リストの再取込で目的や由来を消さない)
+        const merged = ex ? { ...ex, display_name: r.display_name || ex.display_name, purpose: r.purpose || ex.purpose, origin: r.origin || ex.origin,
+          natural_index: (r.natural_index ?? "") !== "" ? r.natural_index : ex.natural_index, note: r.note || ex.note,
+          is_colorant: r.is_colorant !== undefined && r.is_colorant !== "" ? truthy(r.is_colorant) : ex.is_colorant }
+          : { inci: r.inci, display_name: r.display_name, is_colorant: truthy(r.is_colorant), purpose: r.purpose, origin: r.origin, natural_index: r.natural_index, note: r.note };
+        saved.push(this._put(merged));
+      }
       catch (e) { errors.push(`${r.inci ?? r.display_name}: ${e.message}`); }
     }
     this._persist();
     return { saved, errors };
   }
   importCsv(text) { return this.importRows(parseCsvRecords(text)); }
-  exportRows() { return this.listAll().map((x) => ({ inci_name: x.inci, display_name: x.display_name || "", is_colorant: x.is_colorant ? 1 : 0, note: x.note || "" })); }
+  exportRows() { return this.listAll().map((x) => ({ inci_name: x.inci, display_name: x.display_name || "", is_colorant: x.is_colorant ? 1 : 0, purpose: x.purpose || "", origin: x.origin || "", natural_index: x.natural_index ?? "", note: x.note || "" })); }
+  /** 成分表 → 訴求点用の情報 {normKey: {purpose, origin, natural_index}} */
+  infoMap() { const m = new Map(); for (const x of this._items) m.set(IngredientStore.key(x.inci), x); return m; }
   exportCsv() { return toCsv(this.exportRows(), INGREDIENT_CSV_COLUMNS); }
 }
 

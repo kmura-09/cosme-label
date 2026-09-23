@@ -394,3 +394,44 @@ export function labelInputs(materials) {
   }
   return { materials: comp, displayNames: names, colorants };
 }
+
+// ── 自然由来指数 (ISO 16128 の考え方) と配合成分の訴求点候補 ─────────────────
+// info: (inciName) => { purpose, origin, natural_index } | null  (成分辞書からの引き当て)
+
+/**
+ * 成分表の各行 (pct) と辞書の天然由来率から、処方全体の自然由来指数を出す。
+ * 未登録成分は 0 とみなした下限と 100 とみなした上限の幅で返す (正直な範囲)。
+ * 水を含む値と除く値の両方を返す (業界慣行で両方併記されるため)。
+ */
+export function naturalOriginIndex(entries, info) {
+  const calc = (rows) => {
+    let total = 0, known = 0, weighted = 0; const missing = [];
+    for (const e of rows) {
+      total += e.pct;
+      const i = info(e.inciName);
+      const ni = i && i.natural_index != null ? Number(i.natural_index) : null;
+      if (ni == null) { missing.push(e.inciName); continue; }
+      known += e.pct; weighted += e.pct * ni / 100;
+    }
+    if (total <= 0) return { low: null, high: null, coverage: 0, missing };
+    const low = 100 * weighted / total;                 // 未登録 = 0
+    const high = 100 * (weighted + (total - known)) / total; // 未登録 = 100
+    return { low: round(low, 1), high: round(high, 1), coverage: round(100 * known / total, 1), missing };
+  };
+  const isWater = (n) => /^(water|aqua|eau)$/i.test(n.trim()) || n.trim() === "水";
+  return { withWater: calc(entries), withoutWater: calc(entries.filter((e) => !isWater(e.inciName))) };
+}
+
+/** 配合目的・由来ごとに成分をまとめ、「〇〇（配合目的）配合」型の候補文を作る。 */
+export function ingredientClaims(entries, info) {
+  const byPurpose = new Map(), byOrigin = new Map(), unknown = [];
+  for (const e of entries) {
+    const i = info(e.inciName); const name = e.displayName || e.inciName;
+    if (!i || (!i.purpose && !i.origin)) { unknown.push(name); continue; }
+    if (i.purpose) { if (!byPurpose.has(i.purpose)) byPurpose.set(i.purpose, []); byPurpose.get(i.purpose).push(name); }
+    if (i.origin) { if (!byOrigin.has(i.origin)) byOrigin.set(i.origin, []); byOrigin.get(i.origin).push(name); }
+  }
+  const purposeLines = [...byPurpose].map(([p, names]) => ({ purpose: p, names, text: `${names.join("・")}（${p}）配合` }));
+  const originLines = [...byOrigin].map(([o, names]) => ({ origin: o, names, text: `${o}成分 ${names.length} 種配合（${names.join("・")}）` }));
+  return { purposeLines, originLines, unknown };
+}

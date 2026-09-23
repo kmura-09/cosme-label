@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>成分表ジェネレーター</title>
 <meta name="description" content="原料とその INCI 構成比を登録し、処方 (原料 × 配合%) から化粧品の全成分表示の記載順を作るツール。ブラウザ内で完結し、データは端末の外に出ません。">
-<link rel="stylesheet" href="css/style.css?v=202609230020">
+<link rel="stylesheet" href="css/style.css?v=202609231234">
 </head>
 <body>
 <header class="topbar">
@@ -159,7 +159,7 @@
         <p class="muted small">初回アクセス時に、市販原料でよく使われる基本成分 300 件 (水、BG、グリセリン、フェノキシエタノール…) が自動で入ります。自分で育てる INCI 辞書。ここに登録した表示名称は、原料登録で INCI を入れたときに自動で入り、成分表の表示名称の既定値になります (原料側で個別に入れた表示名称があればそちらを優先)。原料を保存すると、その構成成分は自動でここにも追加されます。</p>
         <input id="ing-search" placeholder="🔎 INCI・表示名称で検索">
         <div class="scroll"><table id="ing-table" class="grid clickable">
-          <thead><tr><th>INCI</th><th>表示名称</th><th>着色剤</th><th>メモ</th></tr></thead>
+          <thead><tr><th>INCI</th><th>表示名称</th><th>配合目的</th><th>由来</th><th class="num">天然由来率</th><th>着色剤</th></tr></thead>
           <tbody></tbody>
         </table></div>
         <div class="row gap wrap">
@@ -169,7 +169,7 @@
           <button id="ing-absorb-btn" class="ghost">登録済み原料から取り込む</button>
           <button id="ing-clear-btn" class="ghost danger">全削除</button>
         </div>
-        <p class="muted small">CSV 列: inci_name, display_name (任意: is_colorant, note)。「INCI名」「表示名称」などの日本語ヘッダ (工業会の成分表示名称リストを CSV にしたもの) もそのまま読めます。同じ INCI は上書き。</p>
+        <p class="muted small">CSV 列: inci_name, display_name (任意: is_colorant, purpose, origin, natural_index, note)。「INCI名」「表示名称」「配合目的」「由来」「天然由来率」などの日本語ヘッダ (工業会の成分表示名称リストを CSV にしたもの) もそのまま読めます。同じ INCI は空欄だけ埋める形で上書き。</p>
         <div id="ing-list-feedback"></div>
       </div>
     </div>
@@ -179,7 +179,14 @@
         <label>INCI 名 <input id="ing-inci" placeholder="例: Sodium Laureth Sulfate"></label>
         <label>表示名称 (日本語) <input id="ing-display" placeholder="例: ラウレス硫酸Na"></label>
         <label class="check"><input id="ing-colorant" type="checkbox"> 着色剤 (成分表で末尾にまとめる)</label>
-        <label>メモ <input id="ing-note" placeholder="表示名称の出典など"></label>
+        <div class="row gap">
+          <label class="grow">配合目的 <input id="ing-purpose" list="purpose-list" placeholder="例: 保湿剤 / 洗浄剤 / 整肌成分"></label>
+          <datalist id="purpose-list"></datalist>
+          <label class="grow">由来 <select id="ing-origin"><option value="">(未設定)</option></select></label>
+          <label>天然由来率 (%) <input id="ing-natural" type="number" min="0" max="100" step="1" placeholder="0〜100"></label>
+        </div>
+        <p class="muted small">配合目的と由来は「訴求点の候補」(〇〇（保湿剤）配合、植物由来成分 N 種配合) に使います。天然由来率は ISO 16128 の考え方で、水・植物・鉱物は 100、石油・シリコーン・合成ポリマーは 0、植物油脂から作った誘導体は原料メーカーの値を入れてください。処方の自然由来指数はここから配合% 加重で計算します。</p>
+        <label>メモ <input id="ing-note" placeholder="表示名称や天然由来率の出典など"></label>
         <div class="row gap">
           <button id="ing-save-btn" class="primary">保存</button>
           <button id="ing-new-btn" class="ghost">＋ 新規</button>
@@ -264,6 +271,8 @@
     </ul>
     <h3>規制チェック</h3>
     <p>EU 1223/2009 Annex、化粧品基準 (厚生労働省告示第331号)、KFDA、21 CFR 352 由来の配合上限・配合禁止 (595 行) と突き合わせます。剤型や地域を指定しない場合は最も緩い上限を採用します (真値を切り落とさない保守側)。<b>規制は改正されます。最新の規制原文を必ず確認してください。</b></p>
+    <h3>訴求点の候補</h3>
+    <p>成分表と成分辞書 (配合目的・由来・天然由来率) から、根拠のある訴求の候補を並べます。「〇〇（保湿剤）配合」型の配合成分訴求、「植物由来成分 N 種配合」型の由来訴求、ISO 16128 の考え方による自然由来指数 (水を含む / 除く、未登録成分がある場合はその幅)、および表示できるフリー表示です。候補は成分辞書の登録内容に依存するので、辞書を整えるほど充実します。文言の採用可否 (薬機法の効能効果の範囲、景品表示法) は利用者の判断です。</p>
     <h3>フリー表示チェック</h3>
     <p>パラベンフリー、フェノキシエタノールフリー、防腐剤フリー、旧表示指定成分フリー (昭和55年厚生省告示の 102 成分 + 香料)、無香料、無着色、タール色素フリー、アルコールフリー、鉱物油フリー、シリコンフリー、サルフェートフリー、PEG フリー、EDTA フリー、紫外線吸収剤フリー、紫外線散乱剤フリー、グルテンフリー、尿素フリーの 17 種について、成分表の INCI にルール (<code>data/free_claims.json</code>) を当てて「該当なし / 該当あり / 要確認」を出します。「要確認」は防腐補助剤や精油、酸化チタンのように定義や用途で扱いが変わる成分です。ルールは一般的な慣行に基づく目安で、表示の可否は各社基準・公正競争規約・景品表示法の観点で別途判断してください。「フリー表示ルール」タブで、表示のオン・オフ、該当・要確認・除外にする成分の追加、自分の表示の作成ができます (設定はブラウザに保存、JSON で社内共有可)。</p>
     <h3 id="disclaimer">免責事項</h3>
@@ -312,6 +321,6 @@
   window.addEventListener("error", function (e) { showFatal((e.message || e.type) + (e.filename ? " @ " + e.filename.split("/").pop() + ":" + e.lineno : "")); });
   window.addEventListener("unhandledrejection", function (e) { showFatal(String(e.reason && e.reason.message || e.reason)); });
 </script>
-<script type="module" src="js/app.js?v=202609230020"></script>
+<script type="module" src="js/app.js?v=202609231234"></script>
 </body>
 </html>

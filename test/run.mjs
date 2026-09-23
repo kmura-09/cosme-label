@@ -9,7 +9,7 @@ import {
 } from "../js/label.js";
 import { parseCsvRecords, toCsv } from "../js/csv.js";
 import { MaterialStore, IngredientStore } from "../js/store.js";
-import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern } from "../js/label.js";
+import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern, naturalOriginIndex, ingredientClaims } from "../js/label.js";
 import { ClaimRuleStore } from "../js/store.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -190,6 +190,36 @@ for (const c of golden.regulatory_cases) {
   back.importJson(st.exportJson()); assert.equal(back.rules.custom.length, 1);
   back.resetAll(); assert.equal(new ClaimRuleStore(storage).rules.custom.length, 0);
   n += 8;
+}
+
+// 自然由来指数と配合成分の訴求候補
+{
+  const entries = [
+    { inciName: "Water", displayName: "水", pct: 70 }, { inciName: "Glycerin", displayName: "グリセリン", pct: 10 },
+    { inciName: "Simmondsia Chinensis (Jojoba) Seed Oil", displayName: "ホホバ種子油", pct: 10 }, { inciName: "Dimethicone", displayName: "ジメチコン", pct: 10 },
+  ];
+  const dict = { water: { purpose: "基剤", origin: "水", natural_index: 100 }, glycerin: { purpose: "保湿剤", origin: null, natural_index: null },
+    "simmondsia chinensis (jojoba) seed oil": { purpose: "エモリエント剤", origin: "植物由来", natural_index: 100 }, dimethicone: { purpose: "エモリエント剤", origin: "合成", natural_index: 0 } };
+  const info = (n) => dict[normKey(n)] || null;
+  const noi = naturalOriginIndex(entries, info);
+  // 水含む: 既知 90% のうち天然 80 → 下限 80, 上限 90 (グリセリン未登録 10%)
+  assert.deepEqual([noi.withWater.low, noi.withWater.high, noi.withWater.coverage, noi.withWater.missing], [80, 90, 90, ["Glycerin"]]);
+  // 水除く: 30% 中 既知 20 (ホホバ 10 天然, ジメチコン 10 合成) → 下限 33.3, 上限 66.7
+  assert.deepEqual([noi.withoutWater.low, noi.withoutWater.high], [33.3, 66.7]);
+  const ic = ingredientClaims(entries, info);
+  assert.deepEqual(ic.purposeLines.map((l) => l.text), ["水（基剤）配合", "グリセリン（保湿剤）配合", "ホホバ種子油・ジメチコン（エモリエント剤）配合"]);
+  assert.deepEqual(ic.originLines.map((l) => l.text), ["水成分 1 種配合（水）", "植物由来成分 1 種配合（ホホバ種子油）", "合成成分 1 種配合（ジメチコン）"]);
+  assert.deepEqual(ic.unknown, []);
+  // 辞書 CSV: 日本語ヘッダ + 空欄だけ埋める上書き
+  const mem = new Map(); const storage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, v) };
+  const ing = new IngredientStore(storage);
+  ing.importRows(parseCsvRecords("INCI名,表示名称,配合目的,由来,天然由来率\nGlycerin,グリセリン,保湿剤,植物由来,100\n"));
+  assert.deepEqual([ing.get("Glycerin").purpose, ing.get("Glycerin").origin, ing.get("Glycerin").natural_index], ["保湿剤", "植物由来", 100]);
+  ing.importRows(parseCsvRecords("inci_name,display_name\nGlycerin,グリセリン(別)\n"));
+  assert.equal(ing.get("Glycerin").purpose, "保湿剤");          // 目的は消えない
+  assert.equal(ing.get("Glycerin").display_name, "グリセリン(別)");
+  assert.equal(parseCsvRecords(ing.exportCsv())[0].natural_index, "100");
+  n += 9;
 }
 
 console.log(`ok: ${n} checks passed`);

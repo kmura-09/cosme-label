@@ -2,9 +2,10 @@
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
-} from "./label.js?v=202609230020";
-import { MaterialStore, IngredientStore, ClaimRuleStore, totalPct, CSV_COLUMNS } from "./store.js?v=202609230020";
-import { parseCsvRecords } from "./csv.js?v=202609230020";
+  naturalOriginIndex, ingredientClaims, normKey,
+} from "./label.js?v=202609231234";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231234";
+import { parseCsvRecords } from "./csv.js?v=202609231234";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -246,6 +247,33 @@ function renderLabel() {
       el("td", { class: "num" }, e.pct.toFixed(3)),
       el("td", { class: "small" }, Object.entries(e.sources).map(([k, v]) => `${k} (${+v.toPrecision(3)})`).join(" / ")),
       el("td", { class: "flag" }, e.isColorant ? "着色剤" : e.unorderedOk ? "順不同可" : ""))))));
+  // ── 訴求点の候補 ──
+  {
+    const infoMap = ingredients.infoMap();
+    const info = (n) => infoMap.get(normKey(n)) || null;
+    const noi = naturalOriginIndex(res.entries, info);
+    const ic = ingredientClaims(res.entries, info);
+    const fmtIdx = (r) => r.low == null ? "-" : (r.coverage >= 99.9 ? `${r.high.toFixed(1)}%` : `${r.low.toFixed(1)}〜${r.high.toFixed(1)}%`);
+    const okClaims = freeClaims.length ? checkFreeClaims(res.inciOrder, freeClaims, { colorants }).filter((r) => r.status === "ok").map((r) => r.label) : [];
+    const lines = [
+      ...ic.purposeLines.map((l) => l.text),
+      ...ic.originLines.map((l) => l.text),
+      `自然由来指数 ${fmtIdx(noi.withWater.high != null ? noi.withWater : {})}（水を含む）/ ${fmtIdx(noi.withoutWater)}（水を除く）`,
+      okClaims.length ? okClaims.join("・") : null,
+    ].filter(Boolean);
+    out.append(el("details", { class: "claims", open: "" },
+      el("summary", {}, el("b", {}, "訴求点の候補"), el("span", { class: "muted small" }, " 成分辞書の配合目的・由来・天然由来率から")),
+      el("table", { class: "grid" }, el("tbody", {},
+        ...ic.purposeLines.map((l) => el("tr", {}, el("td", { class: "small" }, "配合成分"), el("td", {}, l.text))),
+        ...ic.originLines.map((l) => el("tr", {}, el("td", { class: "small" }, "由来"), el("td", {}, l.text))),
+        el("tr", {}, el("td", { class: "small" }, "自然由来指数"), el("td", {},
+          `水を含む: ${fmtIdx(noi.withWater)}　水を除く: ${fmtIdx(noi.withoutWater)}`,
+          noi.withWater.coverage < 99.9 ? el("div", { class: "muted small" }, `天然由来率が未登録の成分が ${(100 - noi.withWater.coverage).toFixed(1)}% 分あります (${noi.withWater.missing.join("、")})。幅は未登録分を 0 と 100 で置いた場合です。`) : null)),
+        el("tr", {}, el("td", { class: "small" }, "フリー表示"), el("td", {}, okClaims.length ? okClaims.join("、") : el("span", { class: "muted" }, "(該当なし)"))))),
+      ic.unknown.length ? el("p", { class: "muted small" }, `配合目的・由来が未登録: ${ic.unknown.join("、")}（成分登録タブで登録すると候補に入ります）`) : null,
+      ...copyBlock("候補テキスト", lines.join("\n"), "claims-text"),
+      el("p", { class: "muted small" }, "候補は成分表と成分辞書の登録内容だけから機械的に作ったものです。効能効果の表現範囲 (薬機法)・優良誤認 (景品表示法)・各社基準への適合は利用者が判断してください。")));
+  }
   if (freeClaims.length) {
     const results = checkFreeClaims(res.inciOrder, freeClaims, { colorants });
     const icon = { ok: "✓", ng: "✗", caution: "△" }, cls = { ok: "ok", ng: "bad", caution: "warn" };
@@ -393,6 +421,11 @@ $("#mat-sample-btn").addEventListener("click", async () => {
 // ═══════════════════════ 成分登録 ═══════════════════════
 let ingEdit = null; // 編集中の INCI (元のキー)
 
+const PURPOSES = ["基剤", "保湿剤", "保湿成分", "整肌成分", "エモリエント剤", "洗浄剤", "乳化剤", "可溶化剤", "乳化安定剤", "増粘剤", "皮膜形成剤", "コンディショニング剤",
+  "防腐剤", "酸化防止剤", "キレート剤", "pH調整剤", "紫外線防御剤", "着色剤", "パール剤", "感触調整剤", "溶剤", "香料", "スクラブ剤", "清涼剤", "収れん剤", "美白成分 (医薬部外品)", "有効成分 (医薬部外品)"];
+$("#purpose-list").replaceChildren(...PURPOSES.map((x) => el("option", { value: x })));
+$("#ing-origin").append(...ORIGINS.map((x) => el("option", { value: x }, x)));
+
 function renderInciDatalist(q = "") {
   // 1 万件超の辞書でも重くならないよう、入力中の文字列に合う 50 件だけを候補にする
   $("#inci-list").replaceChildren(...ingredients.search(q, 50).map((x) => el("option", { value: x.inci }, x.display_name || "")));
@@ -408,7 +441,8 @@ function renderIngredientList() {
   for (const x of list) {
     tb.append(el("tr", { class: ingEdit && IngredientStore.key(ingEdit) === IngredientStore.key(x.inci) ? "selected" : "", onclick: () => loadIngredient(x) },
       el("td", {}, x.inci), el("td", {}, x.display_name || el("span", { class: "muted" }, "(未設定)")),
-      el("td", {}, x.is_colorant ? "✓" : ""), el("td", { class: "small" }, x.note || "")));
+      el("td", { class: "small" }, x.purpose || ""), el("td", { class: "small" }, x.origin || ""),
+      el("td", { class: "num small" }, x.natural_index ?? ""), el("td", {}, x.is_colorant ? "✓" : "")));
   }
   $("#ing-count").textContent = ingredients.count();
 }
@@ -417,13 +451,14 @@ function loadIngredient(x) {
   ingEdit = x.inci;
   $("#ing-inci").value = x.inci; $("#ing-display").value = x.display_name || "";
   $("#ing-colorant").checked = !!x.is_colorant; $("#ing-note").value = x.note || "";
+  $("#ing-purpose").value = x.purpose || ""; $("#ing-origin").value = x.origin || ""; $("#ing-natural").value = x.natural_index ?? "";
   $("#ing-edit-title").textContent = "成分の編集"; $("#ing-edit-feedback").replaceChildren();
   renderIngredientList();
 }
 function newIngredient() {
   ingEdit = null;
-  ["#ing-inci", "#ing-display", "#ing-note"].forEach((id) => { $(id).value = ""; });
-  $("#ing-colorant").checked = false; $("#ing-edit-title").textContent = "成分の登録"; $("#ing-edit-feedback").replaceChildren();
+  ["#ing-inci", "#ing-display", "#ing-note", "#ing-purpose", "#ing-natural"].forEach((id) => { $(id).value = ""; });
+  $("#ing-origin").value = ""; $("#ing-colorant").checked = false; $("#ing-edit-title").textContent = "成分の登録"; $("#ing-edit-feedback").replaceChildren();
   renderIngredientList();
 }
 $("#ing-new-btn").addEventListener("click", newIngredient);
@@ -432,7 +467,8 @@ $("#ing-save-btn").addEventListener("click", () => {
   try {
     const inci = $("#ing-inci").value.trim();
     if (ingEdit && IngredientStore.key(ingEdit) !== IngredientStore.key(inci)) ingredients.delete(ingEdit); // INCI 名の変更
-    const saved = ingredients.save({ inci, display_name: $("#ing-display").value, is_colorant: $("#ing-colorant").checked || isCiNumber(inci), note: $("#ing-note").value });
+    const saved = ingredients.save({ inci, display_name: $("#ing-display").value, is_colorant: $("#ing-colorant").checked || isCiNumber(inci), note: $("#ing-note").value,
+      purpose: $("#ing-purpose").value, origin: $("#ing-origin").value, natural_index: $("#ing-natural").value });
     loadIngredient(saved); renderInciDatalist(); renderLabel();
     fb.append(alertBox(`保存しました: ${saved.inci}${saved.display_name ? ` → ${saved.display_name}` : ""}`, "success"));
   } catch (e) { fb.append(alertBox(e.message, "danger")); }
