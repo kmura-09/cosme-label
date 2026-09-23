@@ -3,10 +3,10 @@ import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
   naturalOriginIndex, ingredientClaims, normKey,
-} from "./label.js?v=202609231557";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231557";
+} from "./label.js?v=202609231602";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231602";
 import { buildClaimPrompt, promptAsText, chatLinks } from "./copy.js";
-import { parseCsvRecords } from "./csv.js?v=202609231557";
+import { parseCsvRecords } from "./csv.js?v=202609231602";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
