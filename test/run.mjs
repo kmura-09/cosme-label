@@ -207,8 +207,9 @@ for (const c of golden.regulatory_cases) {
   // 水除く: 30% 中 既知 20 (ホホバ 10 天然, ジメチコン 10 合成) → 下限 33.3, 上限 66.7
   assert.deepEqual([noi.withoutWater.low, noi.withoutWater.high], [33.3, 66.7]);
   const ic = ingredientClaims(entries, info);
-  assert.deepEqual(ic.purposeLines.map((l) => l.text), ["水（基剤）配合", "グリセリン（保湿剤）配合", "ホホバ種子油・ジメチコン（エモリエント剤）配合"]);
-  assert.deepEqual(ic.originLines.map((l) => l.text), ["水成分 1 種配合（水）", "植物由来成分 1 種配合（ホホバ種子油）", "合成成分 1 種配合（ジメチコン）"]);
+  assert.deepEqual(ic.purposeLines.map((l) => l.text), ["保湿剤：グリセリン", "エモリエント剤：ホホバ種子油・ジメチコン"]);
+  assert.deepEqual(ic.originLines.map((l) => l.text), ["植物由来成分 1 種：ホホバ種子油"]);   // 水・合成は訴求にしない
+  assert.deepEqual(ic.otherLines, ["基剤 1"]);
   assert.deepEqual(ic.unknown, []);
   // 辞書 CSV: 日本語ヘッダ + 空欄だけ埋める上書き
   const mem = new Map(); const storage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, v) };

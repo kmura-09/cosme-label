@@ -422,16 +422,25 @@ export function naturalOriginIndex(entries, info) {
   return { withWater: calc(entries), withoutWater: calc(entries.filter((e) => !isWater(e.inciName))) };
 }
 
-/** 配合目的・由来ごとに成分をまとめ、「〇〇（配合目的）配合」型の候補文を作る。 */
-export function ingredientClaims(entries, info) {
-  const byPurpose = new Map(), byOrigin = new Map(), unknown = [];
+// 訴求にならない配合目的・由来 (処方上の都合や否定的なもの) は候補から外し、補足にまとめる
+export const NON_PROMOTABLE_PURPOSES = new Set(["基剤", "溶剤", "pH調整剤", "キレート剤", "防腐剤", "増粘剤", "乳化剤", "可溶化剤", "乳化安定剤",
+  "皮膜形成剤", "着色剤", "香料", "パール剤", "感触調整剤", "酸化防止剤"]);
+export const NON_PROMOTABLE_ORIGINS = new Set(["水", "合成", "石油由来", "動物由来"]);
+
+/** 配合目的・由来ごとに成分をまとめ、「目的：成分・成分」型の候補を作る。 */
+export function ingredientClaims(entries, info, { skipPurposes = NON_PROMOTABLE_PURPOSES, skipOrigins = NON_PROMOTABLE_ORIGINS } = {}) {
+  const byPurpose = new Map(), byOrigin = new Map(), other = new Map(), unknown = [];
   for (const e of entries) {
     const i = info(e.inciName); const name = e.displayName || e.inciName;
     if (!i || (!i.purpose && !i.origin)) { unknown.push(name); continue; }
-    if (i.purpose) { if (!byPurpose.has(i.purpose)) byPurpose.set(i.purpose, []); byPurpose.get(i.purpose).push(name); }
-    if (i.origin) { if (!byOrigin.has(i.origin)) byOrigin.set(i.origin, []); byOrigin.get(i.origin).push(name); }
+    if (i.purpose) {
+      const target = skipPurposes.has(i.purpose) ? other : byPurpose;
+      if (!target.has(i.purpose)) target.set(i.purpose, []); target.get(i.purpose).push(name);
+    }
+    if (i.origin && !skipOrigins.has(i.origin)) { if (!byOrigin.has(i.origin)) byOrigin.set(i.origin, []); byOrigin.get(i.origin).push(name); }
   }
-  const purposeLines = [...byPurpose].map(([p, names]) => ({ purpose: p, names, text: `${names.join("・")}（${p}）配合` }));
-  const originLines = [...byOrigin].map(([o, names]) => ({ origin: o, names, text: `${o}成分 ${names.length} 種配合（${names.join("・")}）` }));
-  return { purposeLines, originLines, unknown };
+  const purposeLines = [...byPurpose].map(([p, names]) => ({ purpose: p, names, text: `${p}：${names.join("・")}` }));
+  const originLines = [...byOrigin].map(([o, names]) => ({ origin: o, names, text: `${o}成分 ${names.length} 種：${names.join("・")}` }));
+  const otherLines = [...other].map(([p, names]) => `${p} ${names.length}`);
+  return { purposeLines, originLines, otherLines, unknown };
 }

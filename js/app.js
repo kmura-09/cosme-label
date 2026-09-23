@@ -3,9 +3,9 @@ import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
   naturalOriginIndex, ingredientClaims, normKey,
-} from "./label.js?v=202609231234";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231234";
-import { parseCsvRecords } from "./csv.js?v=202609231234";
+} from "./label.js?v=202609231419";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231419";
+import { parseCsvRecords } from "./csv.js?v=202609231419";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -255,21 +255,23 @@ function renderLabel() {
     const ic = ingredientClaims(res.entries, info);
     const fmtIdx = (r) => r.low == null ? "-" : (r.coverage >= 99.9 ? `${r.high.toFixed(1)}%` : `${r.low.toFixed(1)}〜${r.high.toFixed(1)}%`);
     const okClaims = freeClaims.length ? checkFreeClaims(res.inciOrder, freeClaims, { colorants }).filter((r) => r.status === "ok").map((r) => r.label) : [];
+    const idxText = `自然由来指数 ${fmtIdx(noi.withWater)}（水を含む）/ ${fmtIdx(noi.withoutWater)}（水を除く）`;
     const lines = [
       ...ic.purposeLines.map((l) => l.text),
       ...ic.originLines.map((l) => l.text),
-      `自然由来指数 ${fmtIdx(noi.withWater.high != null ? noi.withWater : {})}（水を含む）/ ${fmtIdx(noi.withoutWater)}（水を除く）`,
-      okClaims.length ? okClaims.join("・") : null,
+      idxText,
+      okClaims.length ? okClaims.map((x) => x.replace(/\s*\(.*\)$/, "")).join("・") : null,
     ].filter(Boolean);
+    const row = (k, v) => el("tr", {}, el("td", { class: "small", style: "white-space:nowrap" }, k), el("td", {}, v));
     out.append(el("details", { class: "claims", open: "" },
       el("summary", {}, el("b", {}, "訴求点の候補"), el("span", { class: "muted small" }, " 成分辞書の配合目的・由来・天然由来率から")),
       el("table", { class: "grid" }, el("tbody", {},
-        ...ic.purposeLines.map((l) => el("tr", {}, el("td", { class: "small" }, "配合成分"), el("td", {}, l.text))),
-        ...ic.originLines.map((l) => el("tr", {}, el("td", { class: "small" }, "由来"), el("td", {}, l.text))),
-        el("tr", {}, el("td", { class: "small" }, "自然由来指数"), el("td", {},
-          `水を含む: ${fmtIdx(noi.withWater)}　水を除く: ${fmtIdx(noi.withoutWater)}`,
+        ...ic.purposeLines.map((l) => row(l.purpose, l.names.join("・"))),
+        ...ic.originLines.map((l) => row(l.origin, `${l.names.length} 種：${l.names.join("・")}`)),
+        row("自然由来指数", el("span", {}, `水を含む ${fmtIdx(noi.withWater)}　水を除く ${fmtIdx(noi.withoutWater)}`,
           noi.withWater.coverage < 99.9 ? el("div", { class: "muted small" }, `天然由来率が未登録の成分が ${(100 - noi.withWater.coverage).toFixed(1)}% 分あります (${noi.withWater.missing.join("、")})。幅は未登録分を 0 と 100 で置いた場合です。`) : null)),
-        el("tr", {}, el("td", { class: "small" }, "フリー表示"), el("td", {}, okClaims.length ? okClaims.join("、") : el("span", { class: "muted" }, "(該当なし)"))))),
+        row("フリー表示", okClaims.length ? okClaims.map((x) => x.replace(/\s*\(.*\)$/, "")).join("・") : el("span", { class: "muted" }, "(該当なし)")))),
+      ic.otherLines.length ? el("p", { class: "muted small" }, `訴求にしない目的: ${ic.otherLines.join("、")}`) : null,
       ic.unknown.length ? el("p", { class: "muted small" }, `配合目的・由来が未登録: ${ic.unknown.join("、")}（成分登録タブで登録すると候補に入ります）`) : null,
       ...copyBlock("候補テキスト", lines.join("\n"), "claims-text"),
       el("p", { class: "muted small" }, "候補は成分表と成分辞書の登録内容だけから機械的に作ったものです。効能効果の表現範囲 (薬機法)・優良誤認 (景品表示法)・各社基準への適合は利用者が判断してください。")));
