@@ -101,3 +101,6 @@ details.claims[open] summary .more { display: none; }
 @media (min-width: 901px) {
   #tab-label .col.right { position: sticky; top: 8px; max-height: calc(100vh - 16px); overflow: auto; }
 }
+td.rowops { white-space: nowrap; }
+button.mini { padding: 2px 7px; font-size: .8rem; margin-left: 2px; }
+button.mini:disabled { opacity: .35; cursor: default; }

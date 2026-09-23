@@ -3,10 +3,10 @@ import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
   naturalOriginIndex, ingredientClaims, normKey, regulatoryAnnexSets, applyRegulatoryAnnexes,
-} from "./label.js?v=202609232030";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609232030";
+} from "./label.js?v=202609232035";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609232035";
 import { buildClaimPrompt, promptAsText, chatLinks } from "./copy.js";
-import { parseCsvRecords } from "./csv.js?v=202609232030";
+import { parseCsvRecords } from "./csv.js?v=202609232035";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -175,10 +175,19 @@ function renderFormula() {
       el("td", { class: "small" }, comp),
       el("td", { class: "num" }, el("input", { type: "number", min: 0, max: 100, step: 0.01, value: r.pct,
         oninput: (e) => { const v = parseFloat(e.target.value); if (v >= 0) { formula[i].pct = v; persistFormula(); updateTotal(); scheduleLabel(); } } })),
-      el("td", {}, el("button", { class: "ghost danger", onclick: () => { formula.splice(i, 1); persistFormula(); renderFormula(); } }, "✕")),
+      el("td", { class: "rowops" },
+        el("button", { class: "ghost mini", title: "上へ", ...(i === 0 ? { disabled: "" } : {}), onclick: () => moveRow(i, -1) }, "↑"),
+        el("button", { class: "ghost mini", title: "下へ", ...(i === formula.length - 1 ? { disabled: "" } : {}), onclick: () => moveRow(i, 1) }, "↓"),
+        el("button", { class: "ghost danger mini", title: "削除", onclick: () => { formula.splice(i, 1); persistFormula(); renderFormula(); } }, "✕")),
     ));
   });
   updateTotal(); renderLabel();
+}
+// 行の並びは作業用のメモ (成分表は配合量で並べ直すので計算には無関係)
+function moveRow(i, d) {
+  const j = i + d; if (j < 0 || j >= formula.length) return;
+  [formula[i], formula[j]] = [formula[j], formula[i]];
+  persistFormula(); renderFormula();
 }
 let labelTimer = null;
 function scheduleLabel() { clearTimeout(labelTimer); labelTimer = setTimeout(renderLabel, 200); }
