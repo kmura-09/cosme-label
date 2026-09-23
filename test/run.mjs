@@ -78,7 +78,7 @@ for (const c of golden.regulatory_cases) {
   const csv = readFileSync(join(here, "../data/sample_materials.csv"), "utf8");
   const { saved, errors } = st.importCsv(csv);
   assert.equal(errors.length, 0, errors.join("\n"));
-  assert.equal(saved.length, 33);
+  assert.equal(saved.length, 35);
   const back = parseCsvRecords(st.exportCsv());
   assert.equal(back.length, parseCsvRecords(csv).length, "csv roundtrip rows");
   const sles = st.getByName("sles-27");

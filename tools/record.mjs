@@ -54,7 +54,7 @@ await shot("intro"); await wait(3200);
 
 // ① 原料登録
 await click('.tab[data-tab="materials"]');
-await cap("① 原料登録", "まずは「サンプル原料を読込」で 33 件の例を入れてみます");
+await cap("① 原料登録", "まずは「サンプル原料を読込」で 35 件の例を入れてみます");
 await wait(1500);
 await click("#mat-sample-btn"); await wait(1200);
 await shot("materials-loaded");
