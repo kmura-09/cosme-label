@@ -33,7 +33,7 @@ export function buildClaimPrompt(facts, opts = {}) {
     rules.push("この製品は化粧品です。効能効果の表現は薬機法上の化粧品の効能の範囲 (56 項目) に収め、それ以外の効果 (治療・予防・美白・シワ改善など) を示唆しないでください。",
       compact ? "" : "効能の範囲: " + EFFICACY_56.join("／"),
       "成分ごとの効果を断定せず、「〇〇（保湿成分）配合」のように配合目的として表現してください。",
-      "使ってはいけない表現の例: " + NG_EXAMPLES + "。");
+      compact ? "" : "使ってはいけない表現の例: " + NG_EXAMPLES + "。");
   } else if (mode === "quasi_drug") {
     rules.push("この製品は医薬部外品です。有効成分として承認された効能 (指定された範囲) は書けますが、それ以外の成分の効果は化粧品と同じく配合目的の表現に留めてください。",
       "承認外の効能、治療的表現、最上級表現、根拠のない数値は使わないでください。");
@@ -61,7 +61,8 @@ export function buildClaimPrompt(facts, opts = {}) {
   lines.push(`- ターゲット: ${opts.target || "(未指定)"}`);
   lines.push(`- トーン: ${opts.tone || "誠実で分かりやすい"}`);
   if (opts.extra) lines.push(`- 補足: ${opts.extra}`);
-  lines.push("", "# 全成分表示 (記載順)", facts.jpText || "", "", "INCI: " + (facts.inciText || ""));
+  lines.push("", "# 全成分表示 (記載順)", facts.jpText || "");
+  if (!compact) lines.push("", "INCI: " + (facts.inciText || ""));
   if (facts.entries?.length && !compact) {
     lines.push("", "# 成分ごとの情報 (配合%, 配合目的, 由来)");
     for (const e of facts.entries) lines.push(`- ${e.name}: ${e.pct}%${e.purpose ? `, ${e.purpose}` : ""}${e.origin ? `, ${e.origin}` : ""}`);
@@ -84,7 +85,7 @@ export const CHAT_TARGETS = [
   { id: "chatgpt", label: "ChatGPT で開く", url: (t) => `https://chatgpt.com/?q=${encodeURIComponent(t)}` },
   { id: "claude", label: "Claude で開く", url: (t) => `https://claude.ai/new?q=${encodeURIComponent(t)}` },
 ];
-export const URL_SAFE_LIMIT = 7000; // エンコード後の目安。超える場合はコピーに誘導
+export const URL_SAFE_LIMIT = 16000; // エンコード後の目安 (主要ブラウザ・サイトが受ける範囲)。超える場合はコピーに誘導
 
 export function chatLinks(promptText) {
   return CHAT_TARGETS.map((c) => { const url = c.url(promptText); return { ...c, href: url, tooLong: url.length > URL_SAFE_LIMIT }; });
