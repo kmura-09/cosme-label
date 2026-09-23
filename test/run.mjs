@@ -11,6 +11,7 @@ import { parseCsvRecords, toCsv } from "../js/csv.js";
 import { MaterialStore, IngredientStore } from "../js/store.js";
 import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern, naturalOriginIndex, ingredientClaims } from "../js/label.js";
 import { ClaimRuleStore } from "../js/store.js";
+import { buildClaimPrompt, promptAsText, EFFICACY_56 } from "../js/copy.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const golden = JSON.parse(readFileSync(join(here, "golden.json"), "utf8"));
@@ -221,6 +222,20 @@ for (const c of golden.regulatory_cases) {
   assert.equal(ing.get("Glycerin").display_name, "グリセリン(別)");
   assert.equal(parseCsvRecords(ing.exportCsv())[0].natural_index, "100");
   n += 9;
+}
+
+// 訴求文プロンプト
+{
+  assert.equal(EFFICACY_56.length, 56);
+  const facts = { jpText: "水、グリセリン", inciText: "Water, Glycerin", entries: [{ name: "グリセリン", pct: 10, purpose: "保湿剤", origin: "" }],
+    candidates: ["保湿剤：グリセリン"], naturalIndex: "90.0%（水を含む）", freeClaims: ["パラベンフリー"] };
+  const p = buildClaimPrompt(facts, { productName: "テスト化粧水", mode: "cosmetic" });
+  assert.ok(p.system.includes("56 項目") && p.system.includes("乾燥による小ジワを目立たなくする"));
+  assert.ok(p.user.includes("テスト化粧水") && p.user.includes("保湿剤：グリセリン") && p.user.includes("パラベンフリー"));
+  const q = buildClaimPrompt(facts, { mode: "free" });
+  assert.ok(!q.system.includes("56 項目") && q.system.includes("事実を作らない"));
+  assert.ok(promptAsText(p).includes("---"));
+  n += 4;
 }
 
 console.log(`ok: ${n} checks passed`);

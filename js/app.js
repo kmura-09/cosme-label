@@ -3,9 +3,10 @@ import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
   naturalOriginIndex, ingredientClaims, normKey,
-} from "./label.js?v=202609231419";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231419";
-import { parseCsvRecords } from "./csv.js?v=202609231419";
+} from "./label.js?v=202609231433";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231433";
+import { buildClaimPrompt, promptAsText, generateWithClaude, MODELS, DEFAULT_MODEL } from "./copy.js";
+import { parseCsvRecords } from "./csv.js?v=202609231433";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -262,6 +263,13 @@ function renderLabel() {
       idxText,
       okClaims.length ? okClaims.map((x) => x.replace(/\s*\(.*\)$/, "")).join("・") : null,
     ].filter(Boolean);
+    lastFacts = {
+      jpText: res.asText(), inciText: res.asInciText(),
+      entries: res.entries.map((e) => { const i = info(e.inciName); return { name: e.displayName || e.inciName, pct: +e.pct.toFixed(3), purpose: i?.purpose || "", origin: i?.origin || "" }; }),
+      candidates: [...ic.purposeLines.map((l) => l.text), ...ic.originLines.map((l) => l.text)],
+      naturalIndex: idxText.replace(/^自然由来指数 /, ""),
+      freeClaims: okClaims.map((x) => x.replace(/\s*\(.*\)$/, "")),
+    };
     const row = (k, v) => el("tr", {}, el("td", { class: "small", style: "white-space:nowrap" }, k), el("td", {}, v));
     out.append(el("details", { class: "claims", open: "" },
       el("summary", {}, el("b", {}, "訴求点の候補"), el("span", { class: "muted small" }, " 成分辞書の配合目的・由来・天然由来率から")),
@@ -276,6 +284,7 @@ function renderLabel() {
       ...copyBlock("候補テキスト", lines.join("\n"), "claims-text"),
       el("p", { class: "muted small" }, "候補は成分表と成分辞書の登録内容だけから機械的に作ったものです。効能効果の表現範囲 (薬機法)・優良誤認 (景品表示法)・各社基準への適合は利用者が判断してください。")));
   }
+  out.append(renderCopySection());
   if (freeClaims.length) {
     const results = checkFreeClaims(res.inciOrder, freeClaims, { colorants });
     const icon = { ok: "✓", ng: "✗", caution: "△" }, cls = { ok: "ok", ng: "bad", caution: "warn" };
@@ -298,6 +307,66 @@ function renderLabel() {
     `規制照会: 剤型 ${pcText} / 地域 ${o.jurisdictions.length ? o.jurisdictions.join(", ") : "全地域 (最緩)"}。${resolved.notes.join(" ")}`));
   out.append(el("p", { class: "disclaimer small" }, "免責事項: ", DISCLAIMER_TEXT, " ",
     el("a", { href: "#disclaimer", onclick: () => $('.tab[data-tab="help"]').click() }, "詳細")));
+}
+
+// ═══════════════════════ 訴求文の LLM 生成 ═══════════════════════
+let lastFacts = null;
+const KEY_APIKEY = "cosme-label:anthropic-key", KEY_MODEL = "cosme-label:anthropic-model", KEY_COPYOPTS = "cosme-label:copy-opts";
+const lsGet = (k) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+let copyOpts = (() => { try { return JSON.parse(lsGet(KEY_COPYOPTS) || "{}"); } catch { return {}; } })();
+let lastGenerated = "";
+let abortCtl = null;
+
+function renderCopySection() {
+  const saveOpts = () => lsSet(KEY_COPYOPTS, JSON.stringify(copyOpts));
+  const field = (key, label, placeholder, type = "input") => el("label", { class: "grow" }, label,
+    el(type, { value: copyOpts[key] || "", placeholder, ...(type === "select" ? {} : {}), onchange: (e) => { copyOpts[key] = e.target.value; saveOpts(); } }));
+  const modeSel = el("select", { onchange: (e) => { copyOpts.mode = e.target.value; saveOpts(); } },
+    ...[["cosmetic", "化粧品 (効能 56 項目に収める)"], ["quasi_drug", "医薬部外品"], ["free", "制約なし (事実は守る)"]].map(([v, t]) =>
+      el("option", { value: v, ...(v === (copyOpts.mode || "cosmetic") ? { selected: "" } : {}) }, t)));
+  const keyInput = el("input", { type: "password", value: lsGet(KEY_APIKEY), placeholder: "sk-ant-...", autocomplete: "off",
+    onchange: (e) => lsSet(KEY_APIKEY, e.target.value.trim()) });
+  const modelSel = el("select", { onchange: (e) => lsSet(KEY_MODEL, e.target.value) },
+    ...MODELS.map((m) => el("option", { value: m.id, ...(m.id === (lsGet(KEY_MODEL) || DEFAULT_MODEL) ? { selected: "" } : {}) }, m.label)));
+  const outBox = el("div", { id: "copy-output" });
+  const status = el("span", { class: "muted small" });
+  const prompt = () => buildClaimPrompt(lastFacts, { ...copyOpts, mode: copyOpts.mode || "cosmetic" });
+  const copyPromptBtn = el("button", { class: "ghost", onclick: async () => {
+    const t = promptAsText(prompt());
+    try { await navigator.clipboard.writeText(t); copyPromptBtn.textContent = "コピーしました"; } catch { outBox.replaceChildren(el("pre", { class: "copy" }, t)); copyPromptBtn.textContent = "下に表示しました"; }
+    setTimeout(() => { copyPromptBtn.textContent = "プロンプトをコピー (手持ちの LLM に貼る)"; }, 1500);
+  } }, "プロンプトをコピー (手持ちの LLM に貼る)");
+  const genBtn = el("button", { class: "primary", onclick: async () => {
+    const apiKey = keyInput.value.trim(); lsSet(KEY_APIKEY, apiKey);
+    if (!apiKey) { outBox.replaceChildren(alertBox("API キーを入力してください (設定を開く)", "warn")); settings.open = true; return; }
+    if (abortCtl) { abortCtl.abort(); abortCtl = null; genBtn.textContent = "Claude で生成"; status.textContent = "中断しました"; return; }
+    abortCtl = new AbortController(); genBtn.textContent = "中断"; status.textContent = "生成中… (30〜90 秒)"; outBox.replaceChildren();
+    try {
+      const { system, user } = prompt();
+      const r = await generateWithClaude({ apiKey, model: modelSel.value, system, user, signal: abortCtl.signal });
+      lastGenerated = r.text;
+      outBox.replaceChildren(...copyBlock(`生成結果 (${r.model})`, r.text, "copy-generated"),
+        r.truncated ? alertBox("出力が長さ上限で途中で切れました", "warn") : null,
+        el("p", { class: "muted small" }, `入力 ${r.usage?.input_tokens ?? "?"} / 出力 ${r.usage?.output_tokens ?? "?"} トークン。文案は下書きです。効能効果の範囲・優良誤認・各社基準への適合は必ず人が確認してください。`));
+      status.textContent = "";
+    } catch (e) {
+      if (e.name === "AbortError") status.textContent = "中断しました";
+      else { outBox.replaceChildren(alertBox(`生成に失敗しました: ${e.message}`, "danger")); status.textContent = ""; }
+    } finally { abortCtl = null; genBtn.textContent = "Claude で生成"; }
+  } }, "Claude で生成");
+  const settings = el("details", { class: "small" }, el("summary", {}, "API 設定 (Claude で生成する場合)"),
+    el("div", { class: "row gap wrap" }, el("label", { class: "grow" }, "Anthropic API キー ", keyInput), el("label", {}, "モデル ", modelSel)),
+    el("p", { class: "muted small" }, "キーはこのブラウザにだけ保存され、api.anthropic.com への呼び出しにしか使いません (サーバーを介しません)。利用料はキーの持ち主に請求されます。キーは console.anthropic.com で発行できます。"));
+  if (!lsGet(KEY_APIKEY)) settings.open = false;
+  return el("details", { class: "claims", open: "" },
+    el("summary", {}, el("b", {}, "訴求文を LLM で作る"), el("span", { class: "muted small" }, " 成分表と候補を事実として渡し、文案の下書きを作る")),
+    el("div", { class: "row gap wrap" }, field("productName", "製品名 ", "例: モイストシャンプー"), field("productType", "剤型・カテゴリ ", "例: シャンプー / 化粧水 / クリーム")),
+    el("div", { class: "row gap wrap" }, field("target", "ターゲット ", "例: 30 代女性、乾燥が気になる人"), field("tone", "トーン ", "例: 誠実で分かりやすい / 上質感")),
+    el("div", { class: "row gap wrap" }, el("label", { class: "grow" }, "補足 (自由記述) ", el("input", { value: copyOpts.extra || "", placeholder: "例: 詰め替え対応、ノンシリコンを前面に", onchange: (e) => { copyOpts.extra = e.target.value; saveOpts(); } })),
+      el("label", {}, "表現の制約 ", modeSel)),
+    el("div", { class: "row gap wrap" }, genBtn, copyPromptBtn, status),
+    settings, outBox);
 }
 
 // ═══════════════════════ 原料登録 ═══════════════════════
