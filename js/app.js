@@ -3,10 +3,10 @@ import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
   naturalOriginIndex, ingredientClaims, normKey,
-} from "./label.js?v=202609231616";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231616";
+} from "./label.js?v=202609231623";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231623";
 import { buildClaimPrompt, promptAsText, chatLinks } from "./copy.js";
-import { parseCsvRecords } from "./csv.js?v=202609231616";
+import { parseCsvRecords } from "./csv.js?v=202609231623";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -290,8 +290,8 @@ function renderLabel() {
     const results = checkFreeClaims(res.inciOrder, freeClaims, { colorants });
     const icon = { ok: "✓", ng: "✗", caution: "△" }, cls = { ok: "ok", ng: "bad", caution: "warn" };
     const nOk = results.filter((r) => r.status === "ok").length;
-    out.append(el("details", { class: "claims", open: "" },
-      el("summary", {}, el("b", {}, "フリー表示チェック"), el("span", { class: "muted small" }, ` 表示できる根拠あり ${nOk} / ${results.length}`)),
+    out.append(el("details", { class: "claims" },
+      el("summary", {}, el("b", {}, "フリー表示チェック"), el("span", { class: "muted small" }, ` 表示できる根拠あり ${nOk} / ${results.length}　`), el("span", { class: "more" }, "詳しく見る")),
       el("table", { class: "grid" },
         el("thead", {}, el("tr", {}, el("th", {}, "表示"), el("th", {}, "判定"), el("th", {}, "該当成分"))),
         el("tbody", {}, results.map((r) => el("tr", {},
@@ -351,8 +351,8 @@ function renderCopySection() {
   refreshLinks();
   const status = el("span", { class: "muted small" });
   const showBtn = el("button", { class: "ghost", onclick: () => { outBox.replaceChildren(el("pre", { class: "copy" }, fullPrompt())); } }, "プロンプトを表示");
-  return el("details", { class: "claims", open: "" },
-    el("summary", {}, el("b", {}, "訴求文を LLM で作る"), el("span", { class: "muted small" }, " 成分表と候補を「事実」として渡し、手持ちのチャットで文案の下書きを作る")),
+  return el("details", { class: "claims" },
+    el("summary", {}, el("b", {}, "訴求文を LLM で作る"), el("span", { class: "muted small" }, " 手持ちのチャットで文案の下書きを作る　"), el("span", { class: "more" }, "詳しく見る")),
     el("div", { class: "row gap wrap" }, field("productName", "製品名 ", "例: モイストシャンプー"), field("productType", "剤型・カテゴリ ", "例: シャンプー / 化粧水 / クリーム")),
     el("div", { class: "row gap wrap" }, field("target", "ターゲット ", "例: 30 代女性、乾燥が気になる人"), field("tone", "トーン ", "例: 誠実で分かりやすい / 上質感")),
     el("div", { class: "row gap wrap" }, el("label", { class: "grow" }, "補足 (自由記述) ", el("input", { value: copyOpts.extra || "", placeholder: "例: 詰め替え対応、ノンシリコンを前面に", onchange: (e) => { copyOpts.extra = e.target.value; saveOpts(); refreshLinks(); } })),

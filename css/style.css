@@ -96,3 +96,5 @@ details.claims summary { cursor: pointer; }
 details.faq { border-bottom: 1px solid var(--line); padding: 6px 0; }
 details.faq summary { cursor: pointer; font-weight: 600; font-size: .92rem; }
 details.faq p { margin: 6px 0 2px 14px; font-size: .9rem; }
+details.claims summary .more { color: var(--info); font-size: .85rem; text-decoration: underline; }
+details.claims[open] summary .more { display: none; }
