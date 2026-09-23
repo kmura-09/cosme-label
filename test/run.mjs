@@ -11,7 +11,7 @@ import { parseCsvRecords, toCsv } from "../js/csv.js";
 import { MaterialStore, IngredientStore } from "../js/store.js";
 import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern, naturalOriginIndex, ingredientClaims } from "../js/label.js";
 import { ClaimRuleStore } from "../js/store.js";
-import { buildClaimPrompt, promptAsText, EFFICACY_56, chatLinks } from "../js/copy.js";
+import { buildClaimPrompt, promptAsText, EFFICACY_56, chatLinks, efficacyHints } from "../js/copy.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const golden = JSON.parse(readFileSync(join(here, "golden.json"), "utf8"));
@@ -238,6 +238,11 @@ for (const c of golden.regulatory_cases) {
     assert.ok(!t.includes("12.345") && !t.includes("87.655") && !/\d+(\.\d+)?%/.test(t.replace(/自然由来指数[^\n]*/g, "")), `pct leaked (${mode}, compact=${compact})`);
   }
   assert.ok(p.user.includes("配合量は非開示"));
+  // 剤型ヒント: シャンプーなら毛髪系の効能が前に出る
+  assert.ok(efficacyHints("モイストシャンプー").includes("毛髪をしなやかにする") && !efficacyHints("シャンプー").includes("口唇の荒れを防ぐ"));
+  assert.deepEqual(efficacyHints("不明"), []);
+  const ps = buildClaimPrompt(facts, { productType: "化粧水", mode: "cosmetic", compact: true });
+  assert.ok(ps.system.includes("皮膚にうるおいを与える") && ps.system.includes("良い例の型"));
   const q = buildClaimPrompt(facts, { mode: "free" });
   assert.ok(!q.system.includes("56 項目") && q.system.includes("事実を作らない"));
   assert.ok(promptAsText(p).includes("---"));
