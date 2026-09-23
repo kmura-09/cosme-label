@@ -46,6 +46,17 @@ ES module を使うので `file://` では動かない。何かで配信する:
 python3 -m http.server 8000   # → http://localhost:8000
 ```
 
+## 使い方の動画
+
+`media/howto.mp4` (55 秒、字幕入り) は `tools/record.mjs` で自動操作して録画したもの。画面を変えたら
+撮り直せる (開発用。`npm i playwright` と ffmpeg が必要):
+
+```bash
+python3 -m http.server 8765 &                       # ローカル配信
+OUT=./rec node tools/record.mjs                     # rec/video.webm と rec/shots/*.png
+ffmpeg -i rec/video.webm -c:v libx264 -crf 23 -pix_fmt yuv420p -r 30 -movflags +faststart media/howto.mp4
+```
+
 ## テスト
 
 `test/golden.json` に処方 → 成分表、テキスト解析、規制引き当ての期待値をまとめてあり、
