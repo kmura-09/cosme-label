@@ -1,7 +1,7 @@
 // 原料マスタの保存層 (localStorage)。サーバー無しで完結する。
 // データはこのブラウザにだけ残る。持ち出しは CSV / JSON 書出で行う。
 
-import { parseCsvRecords, toCsv } from "./csv.js?v=202609231550";
+import { parseCsvRecords, toCsv } from "./csv.js?v=202609231554";
 
 const KEY = "cosme-label:materials:v1";
 const SUM_TOL = 0.05;
@@ -247,7 +247,7 @@ export class IngredientStore {
   clear() { this._items = []; this._index = new Map(); this._persist(); }
   displayNames() { const o = {}; for (const x of this._items) if (x.display_name) o[x.inci] = x.display_name; return o; }
   colorants() { return new Set(this._items.filter((x) => x.is_colorant).map((x) => x.inci)); }
-  /** 工業会リスト等の日本語ヘッダも受ける: INCI名 / 表示名称 / 成分表示名称 … */
+  /** 日本語ヘッダも受ける: INCI名 / 表示名称 / 成分表示名称 … */
   static normalizeRow(r) {
     const pick = (keys) => { for (const k of Object.keys(r)) { const kk = k.replace(/\s+/g, "").toLowerCase(); if (keys.includes(kk)) return r[k]; } return undefined; };
     return {
@@ -268,7 +268,7 @@ export class IngredientStore {
       if (!r.inci && !r.display_name) continue;
       try {
         const ex = this.get(r.inci);
-        // 既存項目の空欄だけ埋める (工業会リストの再取込で目的や由来を消さない)
+        // 既存項目の空欄だけ埋める (対応表の再取込で目的や由来を消さない)
         const merged = ex ? { ...ex, display_name: r.display_name || ex.display_name, purpose: r.purpose || ex.purpose, origin: r.origin || ex.origin,
           natural_index: (r.natural_index ?? "") !== "" ? r.natural_index : ex.natural_index, note: r.note || ex.note,
           is_colorant: r.is_colorant !== undefined && r.is_colorant !== "" ? truthy(r.is_colorant) : ex.is_colorant }

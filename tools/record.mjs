@@ -49,7 +49,7 @@ const typeSlow = async (sel, text) => { const el = page.locator(sel).first(); aw
 
 await page.goto(URL, { waitUntil: "networkidle" });
 await wait(600);
-await cap("成分表ジェネレーター　3 分で分かる使い方", "原料の構成を登録 → 処方を貼る → 全成分表示・フリー表示・訴求点が一度に出ます");
+await cap("成分表ジェネレーター　1 分で分かる使い方", "原料の構成を登録 → 処方を貼る → 全成分表示・フリー表示・訴求点が一度に出ます");
 await shot("intro"); await wait(3200);
 
 // ① 原料登録
@@ -64,7 +64,7 @@ await shot("material-edit");
 
 // ② 成分登録
 await click('.tab[data-tab="ingredients"]');
-await cap("② 成分登録（INCI ↔ 表示名称）", "基本成分 300 件は自動で入っています。工業会リストの CSV もそのまま読めます");
+await cap("② 成分登録（INCI ↔ 表示名称）", "基本成分 300 件は自動で入っています。お手元の INCI と表示名称の対応表を CSV で追加できます");
 await wait(900);
 await typeSlow("#ing-search", "glyc"); await wait(1800);
 await shot("ingredients");

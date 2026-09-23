@@ -106,7 +106,7 @@ for (const c of golden.regulatory_cases) {
   const csv = parseCsvRecords(ing.exportCsv());
   assert.equal(csv.length, 3);
   assert.ok(ing.delete("glycerin") && !ing.get("Glycerin"));
-  // 工業会風の日本語ヘッダ
+  // 日本語ヘッダ
   const jp = ing.importRows(parseCsvRecords("表示名称,INCI名,定義\nラウレス硫酸Na,Sodium Laureth Sulfate,陰イオン界面活性剤\n"));
   assert.equal(jp.errors.length, 0);
   assert.equal(ing.get("Sodium Laureth Sulfate").display_name, "ラウレス硫酸Na");

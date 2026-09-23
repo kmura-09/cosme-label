@@ -93,3 +93,6 @@ details.claims summary { cursor: pointer; }
 .intro h1 small { font-weight: 500; color: var(--muted); font-size: .95rem; margin-left: 8px; }
 .intro p { margin: 0 0 6px; color: #374151; font-size: .9rem; }
 .prose h4 { margin: 12px 0 2px; font-size: .92rem; }
+details.faq { border-bottom: 1px solid var(--line); padding: 6px 0; }
+details.faq summary { cursor: pointer; font-weight: 600; font-size: .92rem; }
+details.faq p { margin: 6px 0 2px 14px; font-size: .9rem; }

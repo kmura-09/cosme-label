@@ -22,7 +22,7 @@
 <meta name="twitter:description" content="記載順の自動整列、配合上限チェック、フリー表示 17 種、旧表示指定成分、自然由来指数。無料・登録不要・ブラウザ内で完結。">
 <meta name="twitter:image" content="https://kmura-09.github.io/cosme-label/ogp.png">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoObject", "name": "成分表ジェネレーターの使い方（55 秒）", "description": "原料登録、成分登録、処方のコピペ入力、全成分表示の自動整列、訴求点の候補、フリー表示チェック、未登録原料のその場登録、自社ルールの編集までを 55 秒で。", "thumbnailUrl": ["https://kmura-09.github.io/cosme-label/media/howto-poster.jpg"], "contentUrl": "https://kmura-09.github.io/cosme-label/media/howto.mp4", "uploadDate": "2026-09-23", "duration": "PT55S", "inLanguage": "ja"}</script>
-<link rel="stylesheet" href="css/style.css?v=202609231550">
+<link rel="stylesheet" href="css/style.css?v=202609231554">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "成分表ジェネレーター", "url": "https://kmura-09.github.io/cosme-label/", "description": "化粧品の全成分表示（成分表）を原料構成と処方から自動作成する無料ツール。記載順の自動整列、配合上限チェック、フリー表示 17 種の判定、旧表示指定成分、自然由来指数、訴求点の候補。ブラウザ内で完結。", "applicationCategory": "BusinessApplication", "operatingSystem": "Any (Web browser)", "browserRequirements": "Requires JavaScript", "inLanguage": "ja", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"}, "license": "https://www.apache.org/licenses/LICENSE-2.0", "image": "https://kmura-09.github.io/cosme-label/ogp.png", "featureList": ["全成分表示の記載順の自動作成（降順・1%以下は順不同・着色剤は末尾）", "原料（配合剤）の INCI 構成比からの合算", "INCI 名と表示名称の対応辞書（基本成分 300 件同梱、CSV 取込）", "配合上限・配合禁止のチェック（JP/EU/US/KR）", "フリー表示 17 種の根拠判定", "旧表示指定成分（102 成分 + 香料）の判定", "自然由来指数（ISO 16128 の考え方）", "訴求点の候補と LLM 向けプロンプト"]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "化粧品の全成分表示の記載順のルールは？", "acceptedAnswer": {"@type": "Answer", "text": "配合量の多い順に記載します。1% 以下の成分は順不同で記載でき、着色剤は配合量に関わらず末尾にまとめて記載できます。本ツールはこの規則で自動的に並べ、1% 以下の帯と着色剤を明示します。"}}, {"@type": "Question", "name": "原料（配合剤）から成分表を作るには？", "acceptedAnswer": {"@type": "Answer", "text": "原料ごとに INCI 構成比（原料 100 g 中の各成分の質量%）を登録し、処方（原料 × 配合%）を入力すると、同じ INCI を合算して記載順を出します。ブレンド原料の水も正しく合算されます。"}}, {"@type": "Question", "name": "INCI 名と表示名称（日本語）の対応はどうやって用意する？", "acceptedAnswer": {"@type": "Answer", "text": "成分登録タブで INCI と表示名称の対応を登録します。基本成分 300 件は初期値として入っており、お手元の成分表示名称リストの CSV（「INCI名」「表示名称」の列）を読み込めば増やせます。"}}, {"@type": "Question", "name": "配合上限のチェックはどの規制に基づく？", "acceptedAnswer": {"@type": "Answer", "text": "EU 化粧品規則 1223/2009 の Annex、日本の化粧品基準（厚生労働省告示第331号）、KFDA、米国 21 CFR 352 由来の配合上限・配合禁止 595 行と突き合わせます。剤型・地域が未指定なら最も緩い上限を採用します。規制は改正されるため最終判断は原文で確認してください。"}}, {"@type": "Question", "name": "パラベンフリーや防腐剤フリーの根拠は確認できる？", "acceptedAnswer": {"@type": "Answer", "text": "パラベン、防腐剤、旧表示指定成分、無香料、無着色、タール色素、アルコール、鉱物油、シリコン、サルフェート、PEG、EDTA、紫外線吸収剤、紫外線散乱剤、グルテン、尿素の 17 種のフリー表示について、成分表に該当成分があるかを判定し、該当した INCI を示します。自社基準に合わせてルールを編集できます。"}}, {"@type": "Question", "name": "旧表示指定成分とは？", "acceptedAnswer": {"@type": "Answer", "text": "1980 年（昭和 55 年）の厚生省告示で表示が義務付けられていた 102 成分と香料のことです。2001 年の全成分表示義務化で廃止されましたが、「旧表示指定成分無添加」の表示は今も使われます。本ツールはこの 103 項目を INCI 名で判定します。"}}, {"@type": "Question", "name": "自然由来指数とは？", "acceptedAnswer": {"@type": "Answer", "text": "ISO 16128 の考え方で、成分ごとの天然由来率を配合% で加重した処方全体の値です。水を含む値と除く値の両方を出し、天然由来率が未登録の成分がある場合はその幅で示します。"}}, {"@type": "Question", "name": "処方のデータはどこに保存される？", "acceptedAnswer": {"@type": "Answer", "text": "すべてブラウザ内で処理され、原料や成分のデータはお使いのブラウザの localStorage にだけ保存されます。サーバーには何も送信しません。別の端末へは CSV や JSON で持ち運びます。"}}, {"@type": "Question", "name": "無料で使える？登録は必要？", "acceptedAnswer": {"@type": "Answer", "text": "無料で、登録も不要です。ソースコードは Apache-2.0 で公開しています。"}}]}</script>
 </head>
@@ -172,7 +172,7 @@
       <div class="card">
         <h2>成分マスタ (INCI ↔ 表示名称)</h2>
         <div id="ing-empty" class="alert info" hidden>
-          <b>成分マスタが空です。</b> 成分表を日本語の表示名称で出すには、INCI 名と表示名称の対応が必要です。よく使う基本成分 300 件を読み込むか、お手元の成分表示名称リスト (工業会の一覧など。「INCI名」「表示名称」の列があればそのまま読めます) を CSV で読み込んでください。表示名称が無くても INCI 名で成分表は作れます。
+          <b>成分マスタが空です。</b> 成分表を日本語の表示名称で出すには、INCI 名と表示名称の対応が必要です。よく使う基本成分 300 件を読み込むか、お手元の INCI と表示名称の対応表 (「INCI名」「表示名称」の列があればそのまま読めます) を CSV で読み込んでください。表示名称が無くても INCI 名で成分表は作れます。
           <div class="row gap wrap">
             <button id="ing-starter-btn-empty" class="primary">基本成分 300 件を読み込む</button>
             <label class="filebtn">成分 CSV を読み込む<input id="ing-import-csv-empty" type="file" accept=".csv,text/csv" hidden></label>
@@ -192,7 +192,7 @@
           <button id="ing-absorb-btn" class="ghost">登録済み原料から取り込む</button>
           <button id="ing-clear-btn" class="ghost danger">全削除</button>
         </div>
-        <p class="muted small">CSV 列: inci_name, display_name (任意: is_colorant, purpose, origin, natural_index, note)。「INCI名」「表示名称」「配合目的」「由来」「天然由来率」などの日本語ヘッダ (工業会の成分表示名称リストを CSV にしたもの) もそのまま読めます。同じ INCI は空欄だけ埋める形で上書き。</p>
+        <p class="muted small">CSV 列: inci_name, display_name (任意: is_colorant, purpose, origin, natural_index, note)。「INCI名」「表示名称」「配合目的」「由来」「天然由来率」などの日本語ヘッダもそのまま読めます。同じ INCI は空欄だけ埋める形で上書き。</p>
         <div id="ing-list-feedback"></div>
       </div>
     </div>
@@ -308,24 +308,16 @@
     <h3>フリー表示チェック</h3>
     <p>パラベンフリー、フェノキシエタノールフリー、防腐剤フリー、旧表示指定成分フリー (昭和55年厚生省告示の 102 成分 + 香料)、無香料、無着色、タール色素フリー、アルコールフリー、鉱物油フリー、シリコンフリー、サルフェートフリー、PEG フリー、EDTA フリー、紫外線吸収剤フリー、紫外線散乱剤フリー、グルテンフリー、尿素フリーの 17 種について、成分表の INCI にルール (<code>data/free_claims.json</code>) を当てて「該当なし / 該当あり / 要確認」を出します。「要確認」は防腐補助剤や精油、酸化チタンのように定義や用途で扱いが変わる成分です。ルールは一般的な慣行に基づく目安で、表示の可否は各社基準・公正競争規約・景品表示法の観点で別途判断してください。「フリー表示ルール」タブで、表示のオン・オフ、該当・要確認・除外にする成分の追加、自分の表示の作成ができます (設定はブラウザに保存、JSON で社内共有可)。</p>
     <h3 id="faq">よくある質問</h3>
-    <h4>化粧品の全成分表示の記載順のルールは？</h4>
-    <p>配合量の多い順に記載します。1% 以下の成分は順不同で記載でき、着色剤は配合量に関わらず末尾にまとめて記載できます。本ツールはこの規則で自動的に並べ、1% 以下の帯と着色剤を明示します。</p>
-    <h4>原料（配合剤）から成分表を作るには？</h4>
-    <p>原料ごとに INCI 構成比（原料 100 g 中の各成分の質量%）を登録し、処方（原料 × 配合%）を入力すると、同じ INCI を合算して記載順を出します。ブレンド原料の水も正しく合算されます。</p>
-    <h4>INCI 名と表示名称（日本語）の対応はどうやって用意する？</h4>
-    <p>成分登録タブで INCI と表示名称の対応を登録します。基本成分 300 件は初期値として入っており、お手元の成分表示名称リストの CSV（「INCI名」「表示名称」の列）を読み込めば増やせます。</p>
-    <h4>配合上限のチェックはどの規制に基づく？</h4>
-    <p>EU 化粧品規則 1223/2009 の Annex、日本の化粧品基準（厚生労働省告示第331号）、KFDA、米国 21 CFR 352 由来の配合上限・配合禁止 595 行と突き合わせます。剤型・地域が未指定なら最も緩い上限を採用します。規制は改正されるため最終判断は原文で確認してください。</p>
-    <h4>パラベンフリーや防腐剤フリーの根拠は確認できる？</h4>
-    <p>パラベン、防腐剤、旧表示指定成分、無香料、無着色、タール色素、アルコール、鉱物油、シリコン、サルフェート、PEG、EDTA、紫外線吸収剤、紫外線散乱剤、グルテン、尿素の 17 種のフリー表示について、成分表に該当成分があるかを判定し、該当した INCI を示します。自社基準に合わせてルールを編集できます。</p>
-    <h4>旧表示指定成分とは？</h4>
-    <p>1980 年（昭和 55 年）の厚生省告示で表示が義務付けられていた 102 成分と香料のことです。2001 年の全成分表示義務化で廃止されましたが、「旧表示指定成分無添加」の表示は今も使われます。本ツールはこの 103 項目を INCI 名で判定します。</p>
-    <h4>自然由来指数とは？</h4>
-    <p>ISO 16128 の考え方で、成分ごとの天然由来率を配合% で加重した処方全体の値です。水を含む値と除く値の両方を出し、天然由来率が未登録の成分がある場合はその幅で示します。</p>
-    <h4>処方のデータはどこに保存される？</h4>
-    <p>すべてブラウザ内で処理され、原料や成分のデータはお使いのブラウザの localStorage にだけ保存されます。サーバーには何も送信しません。別の端末へは CSV や JSON で持ち運びます。</p>
-    <h4>無料で使える？登録は必要？</h4>
-    <p>無料で、登録も不要です。ソースコードは Apache-2.0 で公開しています。</p>
+    <p class="muted small">質問を押すと答えが開きます。</p>
+    <details class="faq"><summary>化粧品の全成分表示の記載順のルールは？</summary><p>配合量の多い順に記載します。1% 以下の成分は順不同で記載でき、着色剤は配合量に関わらず末尾にまとめて記載できます。本ツールはこの規則で自動的に並べ、1% 以下の帯と着色剤を明示します。</p></details>
+    <details class="faq"><summary>原料（配合剤）から成分表を作るには？</summary><p>原料ごとに INCI 構成比（原料 100 g 中の各成分の質量%）を登録し、処方（原料 × 配合%）を入力すると、同じ INCI を合算して記載順を出します。ブレンド原料の水も正しく合算されます。</p></details>
+    <details class="faq"><summary>INCI 名と表示名称（日本語）の対応はどうやって用意する？</summary><p>成分登録タブで INCI と表示名称の対応を登録します。基本成分 300 件は初期値として入っており、お手元の成分表示名称リストの CSV（「INCI名」「表示名称」の列）を読み込めば増やせます。</p></details>
+    <details class="faq"><summary>配合上限のチェックはどの規制に基づく？</summary><p>EU 化粧品規則 1223/2009 の Annex、日本の化粧品基準（厚生労働省告示第331号）、KFDA、米国 21 CFR 352 由来の配合上限・配合禁止 595 行と突き合わせます。剤型・地域が未指定なら最も緩い上限を採用します。規制は改正されるため最終判断は原文で確認してください。</p></details>
+    <details class="faq"><summary>パラベンフリーや防腐剤フリーの根拠は確認できる？</summary><p>パラベン、防腐剤、旧表示指定成分、無香料、無着色、タール色素、アルコール、鉱物油、シリコン、サルフェート、PEG、EDTA、紫外線吸収剤、紫外線散乱剤、グルテン、尿素の 17 種のフリー表示について、成分表に該当成分があるかを判定し、該当した INCI を示します。自社基準に合わせてルールを編集できます。</p></details>
+    <details class="faq"><summary>旧表示指定成分とは？</summary><p>1980 年（昭和 55 年）の厚生省告示で表示が義務付けられていた 102 成分と香料のことです。2001 年の全成分表示義務化で廃止されましたが、「旧表示指定成分無添加」の表示は今も使われます。本ツールはこの 103 項目を INCI 名で判定します。</p></details>
+    <details class="faq"><summary>自然由来指数とは？</summary><p>ISO 16128 の考え方で、成分ごとの天然由来率を配合% で加重した処方全体の値です。水を含む値と除く値の両方を出し、天然由来率が未登録の成分がある場合はその幅で示します。</p></details>
+    <details class="faq"><summary>処方のデータはどこに保存される？</summary><p>すべてブラウザ内で処理され、原料や成分のデータはお使いのブラウザの localStorage にだけ保存されます。サーバーには何も送信しません。別の端末へは CSV や JSON で持ち運びます。</p></details>
+    <details class="faq"><summary>無料で使える？登録は必要？</summary><p>無料で、登録も不要です。ソースコードは Apache-2.0 で公開しています。</p></details>
     <h3 id="disclaimer">免責事項</h3>
     <p class="disclaimer">本ツールおよび同梱の規制データは情報提供のみを目的とし、法的助言ではありません。規制データは公的文書を基に作成していますが、正確性・完全性・最新性を保証しません。規制は改正され、製品の分類・適用部位・地域によって適用される規定は異なります。成分表示および配合上限の適合性の最終判断は、利用者の責任において最新の規制原文および専門家の確認に基づいて行ってください。本ツールの利用により生じたいかなる損害についても、作者は責任を負いません。</p>
     <h3>扱わないこと</h3>
@@ -372,6 +364,6 @@
   window.addEventListener("error", function (e) { showFatal((e.message || e.type) + (e.filename ? " @ " + e.filename.split("/").pop() + ":" + e.lineno : "")); });
   window.addEventListener("unhandledrejection", function (e) { showFatal(String(e.reason && e.reason.message || e.reason)); });
 </script>
-<script type="module" src="js/app.js?v=202609231550"></script>
+<script type="module" src="js/app.js?v=202609231554"></script>
 </body>
 </html>
