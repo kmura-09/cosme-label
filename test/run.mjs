@@ -245,6 +245,7 @@ for (const c of golden.regulatory_cases) {
   assert.ok(!short.includes("乾燥による小ジワ") && short.includes("56 項目"));
   const links = chatLinks(short);
   assert.ok(links.every((l) => !l.tooLong) && links[0].href.startsWith("https://chatgpt.com/?q=") && links[1].href.startsWith("https://claude.ai/new?q="));
+  assert.ok(links[2].copyFirst && links[2].href === "https://gemini.google.com/app");
   n += 6;
 }
 

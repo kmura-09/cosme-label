@@ -90,9 +90,11 @@ export function promptAsText({ system, user }) {
 export const CHAT_TARGETS = [
   { id: "chatgpt", label: "ChatGPT で開く", url: (t) => `https://chatgpt.com/?q=${encodeURIComponent(t)}` },
   { id: "claude", label: "Claude で開く", url: (t) => `https://claude.ai/new?q=${encodeURIComponent(t)}` },
+  // Gemini はプロンプト入り URL を公式には受け付けない (拡張機能が必要) → コピーしてから開く
+  { id: "gemini", label: "Gemini で開く (コピーして貼る)", url: () => "https://gemini.google.com/app", copyFirst: true },
 ];
 export const URL_SAFE_LIMIT = 16000; // エンコード後の目安 (主要ブラウザ・サイトが受ける範囲)。超える場合はコピーに誘導
 
 export function chatLinks(promptText) {
-  return CHAT_TARGETS.map((c) => { const url = c.url(promptText); return { ...c, href: url, tooLong: url.length > URL_SAFE_LIMIT }; });
+  return CHAT_TARGETS.map((c) => { const url = c.url(promptText); return { ...c, href: url, tooLong: !c.copyFirst && url.length > URL_SAFE_LIMIT }; });
 }

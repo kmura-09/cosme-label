@@ -3,10 +3,10 @@ import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
   naturalOriginIndex, ingredientClaims, normKey,
-} from "./label.js?v=202609231439";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231439";
+} from "./label.js?v=202609231442";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231442";
 import { buildClaimPrompt, promptAsText, chatLinks } from "./copy.js";
-import { parseCsvRecords } from "./csv.js?v=202609231439";
+import { parseCsvRecords } from "./csv.js?v=202609231442";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -336,11 +336,20 @@ function renderCopySection() {
   } }, "プロンプトをコピー");
   const linkBox = el("span", { class: "row gap wrap", style: "margin:0" });
   const refreshLinks = () => {
-    linkBox.replaceChildren(...chatLinks(shortPrompt()).map((l) => l.tooLong
-      ? el("button", { class: "ghost", disabled: "", title: "プロンプトが長すぎて URL に載りません。コピーを使ってください" }, l.label)
-      : el("a", { class: "ghost", role: "button", href: l.href, target: "_blank", rel: "noopener", style: "text-decoration:none; padding:6px 12px; border:1px solid #b8c2cc; border-radius:6px" }, l.label)));
+    const linkStyle = "text-decoration:none; padding:6px 12px; border:1px solid #b8c2cc; border-radius:6px";
+    linkBox.replaceChildren(...chatLinks(shortPrompt()).map((l) => {
+      if (l.tooLong) return el("button", { class: "ghost", disabled: "", title: "プロンプトが長すぎて URL に載りません。コピーを使ってください" }, l.label);
+      if (l.copyFirst) {
+        // 完全版をクリップボードへ → 新しいタブで開く → 貼り付けてもらう
+        return el("a", { class: "ghost", role: "button", href: l.href, target: "_blank", rel: "noopener", style: linkStyle,
+          title: "クリックでプロンプトをコピーし、Gemini を開きます。入力欄に貼り付けてください",
+          onclick: () => { try { navigator.clipboard.writeText(fullPrompt()); status.textContent = "プロンプトをコピーしました。Gemini の入力欄に貼り付けてください"; } catch { status.textContent = "コピーできませんでした。「プロンプトをコピー」を使ってください"; } } }, l.label);
+      }
+      return el("a", { class: "ghost", role: "button", href: l.href, target: "_blank", rel: "noopener", style: linkStyle }, l.label);
+    }));
   };
   refreshLinks();
+  const status = el("span", { class: "muted small" });
   const showBtn = el("button", { class: "ghost", onclick: () => { outBox.replaceChildren(el("pre", { class: "copy" }, fullPrompt())); } }, "プロンプトを表示");
   return el("details", { class: "claims", open: "" },
     el("summary", {}, el("b", {}, "訴求文を LLM で作る"), el("span", { class: "muted small" }, " 成分表と候補を「事実」として渡し、手持ちのチャットで文案の下書きを作る")),
@@ -348,7 +357,7 @@ function renderCopySection() {
     el("div", { class: "row gap wrap" }, field("target", "ターゲット ", "例: 30 代女性、乾燥が気になる人"), field("tone", "トーン ", "例: 誠実で分かりやすい / 上質感")),
     el("div", { class: "row gap wrap" }, el("label", { class: "grow" }, "補足 (自由記述) ", el("input", { value: copyOpts.extra || "", placeholder: "例: 詰め替え対応、ノンシリコンを前面に", onchange: (e) => { copyOpts.extra = e.target.value; saveOpts(); refreshLinks(); } })),
       el("label", {}, "表現の制約 ", modeSel)),
-    el("div", { class: "row gap wrap" }, copyBtn, linkBox, showBtn),
+    el("div", { class: "row gap wrap" }, copyBtn, linkBox, showBtn, status),
     el("p", { class: "muted small" }, el("b", {}, "機密の扱い: "), "プロンプトに配合% と原料の商品名は含めません。渡すのは全成分表示 (公開情報)、成分の配合目的・由来、候補文、自然由来指数だけです。それでも外部サービスに送る内容なので、送る前に「プロンプトを表示」で確認してください。"),
     el("p", { class: "muted small" }, "「〜で開く」はプロンプト入りで新しいチャットを開きます (短縮版。効能 56 項目の全文と成分ごとの詳細は省き、コピー版には含みます)。生成文は下書きです。効能効果の範囲・優良誤認・各社基準への適合は必ず人が確認してください。"),
     outBox);
