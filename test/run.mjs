@@ -11,7 +11,7 @@ import { parseCsvRecords, toCsv } from "../js/csv.js";
 import { MaterialStore, IngredientStore } from "../js/store.js";
 import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern, naturalOriginIndex, ingredientClaims } from "../js/label.js";
 import { ClaimRuleStore } from "../js/store.js";
-import { buildClaimPrompt, promptAsText, EFFICACY_56 } from "../js/copy.js";
+import { buildClaimPrompt, promptAsText, EFFICACY_56, chatLinks } from "../js/copy.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const golden = JSON.parse(readFileSync(join(here, "golden.json"), "utf8"));
@@ -235,7 +235,11 @@ for (const c of golden.regulatory_cases) {
   const q = buildClaimPrompt(facts, { mode: "free" });
   assert.ok(!q.system.includes("56 項目") && q.system.includes("事実を作らない"));
   assert.ok(promptAsText(p).includes("---"));
-  n += 4;
+  const short = promptAsText(buildClaimPrompt(facts, { mode: "cosmetic", compact: true }));
+  assert.ok(!short.includes("乾燥による小ジワ") && short.includes("56 項目"));
+  const links = chatLinks(short);
+  assert.ok(links.every((l) => !l.tooLong) && links[0].href.startsWith("https://chatgpt.com/?q=") && links[1].href.startsWith("https://claude.ai/new?q="));
+  n += 6;
 }
 
 console.log(`ok: ${n} checks passed`);
