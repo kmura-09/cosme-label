@@ -98,3 +98,6 @@ details.faq summary { cursor: pointer; font-weight: 600; font-size: .92rem; }
 details.faq p { margin: 6px 0 2px 14px; font-size: .9rem; }
 details.claims summary .more { color: var(--info); font-size: .85rem; text-decoration: underline; }
 details.claims[open] summary .more { display: none; }
+@media (min-width: 901px) {
+  #tab-label .col.right { position: sticky; top: 8px; max-height: calc(100vh - 16px); overflow: auto; }
+}

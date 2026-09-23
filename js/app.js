@@ -3,10 +3,10 @@ import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
   naturalOriginIndex, ingredientClaims, normKey, regulatoryAnnexSets, applyRegulatoryAnnexes,
-} from "./label.js?v=202609231635";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231635";
+} from "./label.js?v=202609232030";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609232030";
 import { buildClaimPrompt, promptAsText, chatLinks } from "./copy.js";
-import { parseCsvRecords } from "./csv.js?v=202609231635";
+import { parseCsvRecords } from "./csv.js?v=202609232030";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -144,7 +144,7 @@ for (const [id, file] of [["#sample-shampoo-btn", "sample_formula_shampoo.txt"],
   });
 }
 
-$("#add-btn").addEventListener("click", () => {
+function addRowFromInputs() {
   const name = $("#add-material").value.trim(); const pct = parseFloat($("#add-pct").value);
   const fb = $("#paste-feedback"); fb.replaceChildren();
   if (!name || !(pct >= 0)) { fb.append(alertBox("原料と配合% を入力してください")); return; }
@@ -154,7 +154,11 @@ $("#add-btn").addEventListener("click", () => {
   if (ex) ex.pct = Math.round((ex.pct + pct) * 1e4) / 1e4; else formula.push({ material: resolved, pct });
   $("#add-material").value = ""; $("#add-pct").value = "";
   persistFormula(); renderFormula();
-});
+  $("#add-material").focus();
+}
+$("#add-btn").addEventListener("click", addRowFromInputs);
+$("#add-material").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("#add-pct").focus(); } });
+$("#add-pct").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addRowFromInputs(); } });
 $("#clear-formula-btn").addEventListener("click", () => { formula = []; persistFormula(); renderFormula(); });
 
 function renderMaterialDatalist() {
@@ -170,12 +174,30 @@ function renderFormula() {
       el("td", {}, r.material),
       el("td", { class: "small" }, comp),
       el("td", { class: "num" }, el("input", { type: "number", min: 0, max: 100, step: 0.01, value: r.pct,
-        onchange: (e) => { const v = parseFloat(e.target.value); if (v >= 0) { formula[i].pct = v; persistFormula(); renderLabel(); updateTotal(); } } })),
+        oninput: (e) => { const v = parseFloat(e.target.value); if (v >= 0) { formula[i].pct = v; persistFormula(); updateTotal(); scheduleLabel(); } } })),
       el("td", {}, el("button", { class: "ghost danger", onclick: () => { formula.splice(i, 1); persistFormula(); renderFormula(); } }, "✕")),
     ));
   });
   updateTotal(); renderLabel();
 }
+let labelTimer = null;
+function scheduleLabel() { clearTimeout(labelTimer); labelTimer = setTimeout(renderLabel, 200); }
+
+// 3. 残りを水にする: 構成が水 100% の原料を探し、その配合% を「100 − 他の合計」にする
+function fillWithWater() {
+  const isWater = (m) => m.components.length === 1 && /^(water|aqua)$/i.test(m.components[0].inci) && Number(m.components[0].pct) === 100;
+  let row = formula.find((r) => { const m = store.getByName(r.material); return m && isWater(m); });
+  if (!row) {
+    const m = store.listAll().find(isWater);
+    if (!m) { $("#paste-feedback").replaceChildren(alertBox("水 100% の原料が登録されていません（例: 精製水）")); return; }
+    row = { material: m.name, pct: 0 }; formula.push(row);
+  }
+  const others = formula.filter((r) => r !== row).reduce((s, r) => s + Number(r.pct || 0), 0);
+  row.pct = Math.max(0, Math.round((100 - others) * 1e4) / 1e4);
+  persistFormula(); renderFormula();
+}
+$("#fill-water-btn").addEventListener("click", fillWithWater);
+
 function updateTotal() {
   const total = formula.reduce((s, r) => s + Number(r.pct || 0), 0);
   const b = $("#formula-total"); const d = total - 100;
