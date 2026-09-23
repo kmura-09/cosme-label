@@ -3,10 +3,10 @@ import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
   naturalOriginIndex, ingredientClaims, normKey,
-} from "./label.js?v=202609231436";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231436";
+} from "./label.js?v=202609231439";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609231439";
 import { buildClaimPrompt, promptAsText, chatLinks } from "./copy.js";
-import { parseCsvRecords } from "./csv.js?v=202609231436";
+import { parseCsvRecords } from "./csv.js?v=202609231439";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -265,7 +265,8 @@ function renderLabel() {
     ].filter(Boolean);
     lastFacts = {
       jpText: res.asText(), inciText: res.asInciText(),
-      entries: res.entries.map((e) => { const i = info(e.inciName); return { name: e.displayName || e.inciName, pct: +e.pct.toFixed(3), purpose: i?.purpose || "", origin: i?.origin || "" }; }),
+      // 配合% と原料の商品名は機密なので渡さない (成分名・目的・由来のみ)
+      entries: res.entries.map((e) => { const i = info(e.inciName); return { name: e.displayName || e.inciName, purpose: i?.purpose || "", origin: i?.origin || "" }; }),
       candidates: [...ic.purposeLines.map((l) => l.text), ...ic.originLines.map((l) => l.text)],
       naturalIndex: idxText.replace(/^自然由来指数 /, ""),
       freeClaims: okClaims.map((x) => x.replace(/\s*\(.*\)$/, "")),
@@ -348,6 +349,7 @@ function renderCopySection() {
     el("div", { class: "row gap wrap" }, el("label", { class: "grow" }, "補足 (自由記述) ", el("input", { value: copyOpts.extra || "", placeholder: "例: 詰め替え対応、ノンシリコンを前面に", onchange: (e) => { copyOpts.extra = e.target.value; saveOpts(); refreshLinks(); } })),
       el("label", {}, "表現の制約 ", modeSel)),
     el("div", { class: "row gap wrap" }, copyBtn, linkBox, showBtn),
+    el("p", { class: "muted small" }, el("b", {}, "機密の扱い: "), "プロンプトに配合% と原料の商品名は含めません。渡すのは全成分表示 (公開情報)、成分の配合目的・由来、候補文、自然由来指数だけです。それでも外部サービスに送る内容なので、送る前に「プロンプトを表示」で確認してください。"),
     el("p", { class: "muted small" }, "「〜で開く」はプロンプト入りで新しいチャットを開きます (短縮版。効能 56 項目の全文と成分ごとの詳細は省き、コピー版には含みます)。生成文は下書きです。効能効果の範囲・優良誤認・各社基準への適合は必ず人が確認してください。"),
     outBox);
 }

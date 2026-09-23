@@ -227,11 +227,17 @@ for (const c of golden.regulatory_cases) {
 // 訴求文プロンプト
 {
   assert.equal(EFFICACY_56.length, 56);
-  const facts = { jpText: "水、グリセリン", inciText: "Water, Glycerin", entries: [{ name: "グリセリン", pct: 10, purpose: "保湿剤", origin: "" }],
+  const facts = { jpText: "水、グリセリン", inciText: "Water, Glycerin", entries: [{ name: "グリセリン", pct: 12.345, purpose: "保湿剤", origin: "" }, { name: "水", pct: 87.655 }],
     candidates: ["保湿剤：グリセリン"], naturalIndex: "90.0%（水を含む）", freeClaims: ["パラベンフリー"] };
   const p = buildClaimPrompt(facts, { productName: "テスト化粧水", mode: "cosmetic" });
   assert.ok(p.system.includes("56 項目") && p.system.includes("乾燥による小ジワを目立たなくする"));
   assert.ok(p.user.includes("テスト化粧水") && p.user.includes("保湿剤：グリセリン") && p.user.includes("パラベンフリー"));
+  // 機密: 配合% はどのモードでも絶対に含めない
+  for (const mode of ["cosmetic", "quasi_drug", "free"]) for (const compact of [false, true]) {
+    const t = promptAsText(buildClaimPrompt(facts, { mode, compact }));
+    assert.ok(!t.includes("12.345") && !t.includes("87.655") && !/\d+(\.\d+)?%/.test(t.replace(/自然由来指数[^\n]*/g, "")), `pct leaked (${mode}, compact=${compact})`);
+  }
+  assert.ok(p.user.includes("配合量は非開示"));
   const q = buildClaimPrompt(facts, { mode: "free" });
   assert.ok(!q.system.includes("56 項目") && q.system.includes("事実を作らない"));
   assert.ok(promptAsText(p).includes("---"));

@@ -1,6 +1,10 @@
 // 訴求文の LLM 生成: 成分表と訴求候補 (事実) を詰めたプロンプトを組み、手持ちのチャット
 // (ChatGPT / Claude / Gemini 等) に貼る、またはプロンプト入りの URL で直接開く。
 // API キーは扱わない (無料ツールにキーを入れる人はいない)。サーバーも介さない。
+//
+// 機密の扱い: 配合% と原料の商品名は処方の機密なので、プロンプトには絶対に含めない。
+// 渡すのは公開情報である全成分表示 (記載順) と、成分辞書の配合目的・由来、候補文、
+// 処方全体の集計値 (自然由来指数) だけ。buildClaimPrompt は pct を受け取っても無視する。
 
 // 化粧品の効能の範囲 (56 項目、平成23年 薬食発0721第1号)
 export const EFFICACY_56 = [
@@ -22,7 +26,8 @@ const NG_EXAMPLES = "美白、シミが消える、シワ改善、ニキビが�
 
 /**
  * 事実 (成分表・候補) と条件から、訴求文生成のプロンプト (system / user) を組む。
- * facts: { jpText, inciText, entries:[{name, pct, purpose, origin}], candidates:[string], naturalIndex:string, freeClaims:[string] }
+ * facts: { jpText, inciText, entries:[{name, purpose, origin}], candidates:[string], naturalIndex:string, freeClaims:[string] }
+ *        (entries に pct があっても使わない。配合% は機密)
  * opts:  { productName, productType, target, tone, length, mode: "cosmetic"|"quasi_drug"|"free", extra }
  */
 export function buildClaimPrompt(facts, opts = {}) {
@@ -63,14 +68,15 @@ export function buildClaimPrompt(facts, opts = {}) {
   if (opts.extra) lines.push(`- 補足: ${opts.extra}`);
   lines.push("", "# 全成分表示 (記載順)", facts.jpText || "");
   if (!compact) lines.push("", "INCI: " + (facts.inciText || ""));
-  if (facts.entries?.length && !compact) {
-    lines.push("", "# 成分ごとの情報 (配合%, 配合目的, 由来)");
-    for (const e of facts.entries) lines.push(`- ${e.name}: ${e.pct}%${e.purpose ? `, ${e.purpose}` : ""}${e.origin ? `, ${e.origin}` : ""}`);
+  const detailed = (facts.entries || []).filter((e) => e.purpose || e.origin);
+  if (detailed.length && !compact) {
+    lines.push("", "# 成分ごとの情報 (配合目的, 由来)  ※配合量は非開示");
+    for (const e of detailed) lines.push(`- ${e.name}: ${[e.purpose, e.origin].filter(Boolean).join(", ")}`);
   }
   lines.push("", "# 訴求候補 (事実)", ...(facts.candidates || []).map((c) => `- ${c}`));
   if (facts.naturalIndex) lines.push(`- 自然由来指数: ${facts.naturalIndex}`);
   if (facts.freeClaims?.length) lines.push(`- 表示できるフリー表示: ${facts.freeClaims.join("、")}`);
-  lines.push("", "上記の事実だけを根拠に、指定の構成で文案を作ってください。");
+  lines.push("", "配合量は非開示です。量の多寡を推測して書かないでください。上記の事実だけを根拠に、指定の構成で文案を作ってください。");
   return { system, user: lines.join("\n") };
 }
 
