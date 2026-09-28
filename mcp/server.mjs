@@ -12,7 +12,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   buildIngredientLabel, parseFormulaText, indexRegulatoryRows, resolveRegulatoryLimits, checkRegulatory, findingText,
-  compileFreeClaims, checkFreeClaims, applyClaimRules, naturalOriginIndex, ingredientClaims, isCiNumber, LabelError,
+  compileFreeClaims, checkFreeClaims, applyClaimRules, naturalOriginIndexByMaterial, ingredientClaims, isCiNumber, LabelError,
   regulatoryAnnexSets, applyRegulatoryAnnexes,
 } from "../js/label.js";
 
