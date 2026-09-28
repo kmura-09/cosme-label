@@ -9,7 +9,7 @@ import {
 } from "../js/label.js";
 import { parseCsvRecords, toCsv } from "../js/csv.js";
 import { MaterialStore, IngredientStore } from "../js/store.js";
-import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern, naturalOriginIndex, ingredientClaims, regulatoryAnnexSets, applyRegulatoryAnnexes } from "../js/label.js";
+import { splitFormulaLines, normKey, compileFreeClaims, checkFreeClaims, applyClaimRules, termToPattern, naturalOriginIndex, ingredientClaims, regulatoryAnnexSets, applyRegulatoryAnnexes, naturalOriginIndexByMaterial, materialNaturalIndex } from "../js/label.js";
 import { ClaimRuleStore } from "../js/store.js";
 import { buildClaimPrompt, promptAsText, EFFICACY_56, chatLinks, efficacyHints } from "../js/copy.js";
 
@@ -263,6 +263,29 @@ for (const c of golden.regulatory_cases) {
   const links = chatLinks(short);
   assert.ok(links.every((l) => !l.tooLong) && links[0].href.startsWith("https://chatgpt.com/?q=") && links[1].href.startsWith("https://claude.ai/new?q="));
   assert.ok(links[2].copyFirst && links[2].href === "https://gemini.google.com/app");
+  n += 6;
+}
+
+// 原料ベースの自然由来指数
+{
+  const materials = { "精製水": { Water: 100 }, "SLES-27": { "Sodium Laureth Sulfate": 27, Water: 73 }, "ホホバ油": { "Simmondsia Chinensis (Jojoba) Seed Oil": 100 }, "謎原料": { X: 100 } };
+  const ni = { "精製水": 100, "SLES-27": 73, "ホホバ油": 100 };   // SLES-27: 水 73 は天然、SLES は 0 と申告された想定
+  const rows = [{ material: "精製水", pct: 60 }, { material: "SLES-27", pct: 20 }, { material: "ホホバ油", pct: 10 }, { material: "謎原料", pct: 10 }];
+  const r = naturalOriginIndexByMaterial(rows, materials, (m) => ni[m] ?? null);
+  // 水含む: 天然 = 60 + 20*0.73 + 10 = 84.6 / 100 → 下限 84.6、未登録 10% を 100 にすると 94.6
+  assert.deepEqual([r.withWater.low, r.withWater.high, r.withWater.coverage, r.withWater.missing], [84.6, 94.6, 90, ["謎原料"]]);
+  // 水除く: 非水 = SLES 5.4 + ホホバ 10 + 謎 10 = 25.4; 天然(非水) = (20*0.73 − 20*0.73=0) + 10 = 10 → 39.4、上限 (10+10)/25.4 = 78.7
+  assert.deepEqual([r.withoutWater.low, r.withoutWater.high], [39.4, 78.7]);
+  // 原料に申告値が無ければ成分側から合成、1 つでも無ければ null
+  assert.equal(materialNaturalIndex({ natural_index: null, components: [{ inci: "A", pct: 30 }, { inci: "B", pct: 70 }] }, (i) => ({ A: 100, B: 0 })[i] ?? null), 30);
+  assert.equal(materialNaturalIndex({ natural_index: null, components: [{ inci: "A", pct: 30 }, { inci: "C", pct: 70 }] }, (i) => ({ A: 100 })[i] ?? null), null);
+  assert.equal(materialNaturalIndex({ natural_index: 55, components: [] }, () => 100), 55);
+  // 原料 CSV に natural_index が往復する
+  const mem = new Map(); const storage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, v) };
+  const st = new MaterialStore(storage);
+  st.importRows(parseCsvRecords("name,natural_index,inci_name,pct\nホホバ油,100,Simmondsia Chinensis (Jojoba) Seed Oil,100\n"));
+  assert.equal(st.getByName("ホホバ油").natural_index, 100);
+  assert.equal(parseCsvRecords(st.exportCsv())[0].natural_index, "100");
   n += 6;
 }
 

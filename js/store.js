@@ -1,12 +1,12 @@
 // 原料マスタの保存層 (localStorage)。サーバー無しで完結する。
 // データはこのブラウザにだけ残る。持ち出しは CSV / JSON 書出で行う。
 
-import { parseCsvRecords, toCsv } from "./csv.js?v=202609232035";
+import { parseCsvRecords, toCsv } from "./csv.js?v=202609282155";
 
 const KEY = "cosme-label:materials:v1";
 const SUM_TOL = 0.05;
 
-export const CSV_COLUMNS = ["name", "maker", "note", "inci_name", "pct", "display_name", "is_colorant"];
+export const CSV_COLUMNS = ["name", "maker", "note", "natural_index", "inci_name", "pct", "display_name", "is_colorant"];
 
 function now() { return new Date().toISOString().replace(/\.\d{3}Z$/, "Z"); }
 
@@ -98,8 +98,10 @@ export class MaterialStore {
       target = { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()), created_at: t };
       this._items.push(target);
     }
+    const ni = material.natural_index === "" || material.natural_index == null ? null : Number(material.natural_index);
     Object.assign(target, {
       name, maker: (material.maker || "").trim() || null, note: (material.note || "").trim() || null,
+      natural_index: Number.isFinite(ni) && ni >= 0 && ni <= 100 ? ni : null,   // 原料メーカー申告の天然由来率 (ISO 16128)
       components, updated_at: t,
     });
     this._persist();
@@ -121,7 +123,8 @@ export class MaterialStore {
     for (const r of rows) {
       const name = String(r.name || "").trim();
       if (!name) continue;
-      if (!grouped.has(name)) grouped.set(name, { name, maker: r.maker, note: r.note, components: [] });
+      if (!grouped.has(name)) grouped.set(name, { name, maker: r.maker, note: r.note, natural_index: r.natural_index ?? r["天然由来率"] ?? "", components: [] });
+      else if ((grouped.get(name).natural_index ?? "") === "" && (r.natural_index ?? "") !== "") grouped.get(name).natural_index = r.natural_index;
       grouped.get(name).components.push({
         inci: String(r.inci_name || "").trim(), pct: Number(r.pct || 0),
         display_name: String(r.display_name || "").trim() || null, is_colorant: truthy(r.is_colorant),
@@ -141,7 +144,7 @@ export class MaterialStore {
     const out = [];
     for (const m of this.listAll()) {
       for (const c of m.components) {
-        out.push({ name: m.name, maker: m.maker || "", note: m.note || "", inci_name: c.inci, pct: c.pct,
+        out.push({ name: m.name, maker: m.maker || "", note: m.note || "", natural_index: m.natural_index ?? "", inci_name: c.inci, pct: c.pct,
           display_name: c.display_name || "", is_colorant: c.is_colorant ? 1 : 0 });
       }
     }

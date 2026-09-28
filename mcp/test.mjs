@@ -30,7 +30,7 @@ assert.equal(by.paraben_free.status, "ng"); assert.equal(by.sulfate_free.status,
 const custom = parse(await client.callTool({ name: "check_free_claims", arguments: { inci_names: ["Methylparaben"], rules: { disabled: ["paraben_free"] } } }));
 assert.ok(!custom.some((r) => r.id === "paraben_free"));
 
-const noi = parse(await client.callTool({ name: "natural_origin_index", arguments: { entries: [{ inci: "Water", pct: 90 }, { inci: "Dimethicone", pct: 10 }], natural_index: { Water: 100, Dimethicone: 0 } } }));
+const noi = parse(await client.callTool({ name: "natural_origin_index", arguments: { formula: { "精製水": 90, "ジメチコン": 10 }, materials: { "精製水": { Water: 100 }, "ジメチコン": { Dimethicone: 100 } }, natural_index: { "精製水": 100, "ジメチコン": 0 } } }));
 assert.deepEqual([noi.withWater.low, noi.withWater.high, noi.withoutWater.high], [90, 90, 0]);
 
 const cands = parse(await client.callTool({ name: "claim_candidates", arguments: { inci_names: ["Water", "Glycerin"], dictionary: { Glycerin: { display_name: "グリセリン", purpose: "保湿剤", origin: "植物由来" }, Water: { display_name: "水", purpose: "基剤", origin: "水" } } } }));

@@ -2,11 +2,11 @@
 import {
   buildIngredientLabel, parseFormulaText, splitFormulaLines, indexRegulatoryRows, resolveRegulatoryLimits,
   checkRegulatory, findingText, labelInputs, isCiNumber, LabelError, compileFreeClaims, checkFreeClaims, applyClaimRules,
-  naturalOriginIndex, ingredientClaims, normKey, regulatoryAnnexSets, applyRegulatoryAnnexes,
-} from "./label.js?v=202609232035";
-import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609232035";
+  naturalOriginIndex, naturalOriginIndexByMaterial, materialNaturalIndex, ingredientClaims, normKey, regulatoryAnnexSets, applyRegulatoryAnnexes,
+} from "./label.js?v=202609282155";
+import { MaterialStore, IngredientStore, ClaimRuleStore, ORIGINS, totalPct, CSV_COLUMNS } from "./store.js?v=202609282155";
 import { buildClaimPrompt, promptAsText, chatLinks } from "./copy.js";
-import { parseCsvRecords } from "./csv.js?v=202609232035";
+import { parseCsvRecords } from "./csv.js?v=202609282155";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -112,7 +112,7 @@ function nextRegItem() {
   const item = regQueue[0];
   regEdit = { name: item.name, components: [{ inci: "", display_name: null, pct: 100, is_colorant: false }] };
   $("#reg-progress").textContent = `${regDone + 1} / ${regTotal}`;
-  $("#reg-name").value = item.name; $("#reg-maker").value = ""; $("#reg-note").value = "";
+  $("#reg-name").value = item.name; $("#reg-maker").value = ""; $("#reg-note").value = ""; $("#reg-natural").value = "";
   renderRegComponents();
   setTimeout(() => $("#reg-comp-table tbody tr input")?.focus(), 0);
 }
@@ -124,7 +124,7 @@ $("#reg-comp-add-btn").addEventListener("click", () => addComponentRow(regEdit.c
 $("#reg-save-btn").addEventListener("click", () => {
   const fb = $("#reg-feedback"); fb.replaceChildren();
   try {
-    const saved = store.save({ name: $("#reg-name").value, maker: $("#reg-maker").value, note: $("#reg-note").value, components: regEdit.components });
+    const saved = store.save({ name: $("#reg-name").value, maker: $("#reg-maker").value, note: $("#reg-note").value, natural_index: $("#reg-natural").value, components: regEdit.components });
     ingredients.absorb(saved.components);
     regDone++; regQueue.shift();
     renderMaterialList(); renderMaterialDatalist();
@@ -284,7 +284,9 @@ function renderLabel() {
   {
     const infoMap = ingredients.infoMap();
     const info = (n) => infoMap.get(normKey(n)) || null;
-    const noi = naturalOriginIndex(res.entries, info);
+    // 自然由来指数は原料単位 (原料メーカー申告値)。無い原料は成分側の値から合成、それも無ければ幅で表示
+    const niOf = (name) => { const m = store.getByName(name); return m ? materialNaturalIndex(m, (inci) => info(inci)?.natural_index ?? null) : null; };
+    const noi = naturalOriginIndexByMaterial(rows, materials, niOf);
     const ic = ingredientClaims(res.entries, info);
     const fmtIdx = (r) => r.low == null ? "-" : (r.coverage >= 99.9 ? `${r.high.toFixed(1)}%` : `${r.low.toFixed(1)}〜${r.high.toFixed(1)}%`);
     const purposeOf = (n) => info(n)?.purpose || null;
@@ -311,7 +313,7 @@ function renderLabel() {
         ...ic.purposeLines.map((l) => row(l.purpose, l.names.join("・"))),
         ...ic.originLines.map((l) => row(l.origin, `${l.names.length} 種：${l.names.join("・")}`)),
         row("自然由来指数", el("span", {}, `水を含む ${fmtIdx(noi.withWater)}　水を除く ${fmtIdx(noi.withoutWater)}`,
-          noi.withWater.coverage < 99.9 ? el("div", { class: "muted small" }, `天然由来率が未登録の成分が ${(100 - noi.withWater.coverage).toFixed(1)}% 分あります (${noi.withWater.missing.join("、")})。幅は未登録分を 0 と 100 で置いた場合です。`) : null)),
+          noi.withWater.coverage < 99.9 ? el("div", { class: "muted small" }, `天然由来率が未登録の原料が ${(100 - noi.withWater.coverage).toFixed(1)}% 分あります (${noi.withWater.missing.join("、")})。原料登録で原料メーカーの値を入れると幅が消えます。`) : null)),
         row("フリー表示", okClaims.length ? okClaims.map((x) => x.replace(/\s*\(.*\)$/, "")).join("・") : el("span", { class: "muted" }, "(該当なし)")))),
       ic.otherLines.length ? el("p", { class: "muted small" }, `訴求にしない目的: ${ic.otherLines.join("、")}`) : null,
       ic.unknown.length ? el("p", { class: "muted small" }, `配合目的・由来が未登録: ${ic.unknown.join("、")}（成分登録タブで登録すると候補に入ります）`) : null,
@@ -421,13 +423,13 @@ $("#mat-search").addEventListener("input", renderMaterialList);
 
 function loadMaterial(m) {
   edit = { id: m.id, components: m.components.map((c) => ({ ...c })) };
-  $("#mat-name").value = m.name; $("#mat-maker").value = m.maker || ""; $("#mat-note").value = m.note || "";
+  $("#mat-name").value = m.name; $("#mat-maker").value = m.maker || ""; $("#mat-note").value = m.note || ""; $("#mat-natural").value = m.natural_index ?? "";
   $("#mat-edit-title").textContent = "原料の編集"; $("#mat-edit-feedback").replaceChildren();
   renderComponents();
 }
 function newMaterial() {
   edit = { id: null, components: [] }; selectedId = null;
-  $("#mat-name").value = ""; $("#mat-maker").value = ""; $("#mat-note").value = "";
+  $("#mat-name").value = ""; $("#mat-maker").value = ""; $("#mat-note").value = ""; $("#mat-natural").value = "";
   $("#mat-edit-title").textContent = "原料の新規登録"; $("#mat-edit-feedback").replaceChildren();
   renderComponents(); renderMaterialList();
 }
@@ -469,7 +471,7 @@ $("#comp-add-btn").addEventListener("click", () => addComponentRow(edit.componen
 $("#mat-save-btn").addEventListener("click", () => {
   const fb = $("#mat-edit-feedback"); fb.replaceChildren();
   try {
-    const saved = store.save({ id: edit.id, name: $("#mat-name").value, maker: $("#mat-maker").value, note: $("#mat-note").value, components: edit.components });
+    const saved = store.save({ id: edit.id, name: $("#mat-name").value, maker: $("#mat-maker").value, note: $("#mat-note").value, natural_index: $("#mat-natural").value, components: edit.components });
     const absorbed = ingredients.absorb(saved.components);
     selectedId = saved.id; loadMaterial(saved); renderMaterialList(); renderInciDatalist();
     fb.append(alertBox(`保存しました: ${saved.name} (${saved.components.length} 成分, 構成計 ${totalPct(saved).toFixed(2)}%)` +

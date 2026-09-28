@@ -100,16 +100,16 @@ server.registerTool("check_free_claims", {
 
 server.registerTool("natural_origin_index", {
   title: "自然由来指数 (ISO 16128 の考え方)",
-  description: "成分表 [{inci, pct}] と成分ごとの天然由来率 {INCI: 0-100} から、処方の自然由来指数を水含む/除くで返す。未登録成分は 0 と 100 で置いた幅で返す。",
+  description: "処方 {原料名: 配合%} と原料構成、原料ごとの天然由来率 {原料名: 0-100} (原料メーカー申告値) から、処方の自然由来指数を水含む/除くで返す。天然由来率が未登録の原料は 0 と 100 で置いた幅で返す。水を除く値は原料構成の水 (Water/Aqua) を差し引く。",
   inputSchema: {
-    entries: z.array(z.object({ inci: z.string(), pct: z.number() })),
-    natural_index: z.record(z.string(), z.number().min(0).max(100)).describe("{INCI: 天然由来率}"),
+    formula: formulaSchema, materials: materialsSchema,
+    natural_index: z.record(z.string(), z.number().min(0).max(100)).describe("{原料名: 天然由来率}"),
   },
-}, async ({ entries, natural_index }) => {
+}, async ({ formula, materials, natural_index }) => {
   const norm = (n) => String(n).normalize("NFKC").trim().toLowerCase().replace(/[\s\-‐‑–—]+/g, " ");
   const map = new Map(Object.entries(natural_index).map(([k, v]) => [norm(k), v]));
-  const info = (n) => (map.has(norm(n)) ? { natural_index: map.get(norm(n)) } : null);
-  return text(naturalOriginIndex(entries.map((e) => ({ inciName: e.inci, pct: e.pct })), info));
+  const rows = Object.entries(formula).map(([material, pct]) => ({ material, pct }));
+  return text(naturalOriginIndexByMaterial(rows, materials, (m) => (map.has(norm(m)) ? map.get(norm(m)) : null)));
 });
 
 server.registerTool("claim_candidates", {

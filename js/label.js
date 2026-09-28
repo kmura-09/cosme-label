@@ -457,6 +457,46 @@ export const NON_PROMOTABLE_PURPOSES = new Set(["基剤", "溶剤", "pH調整剤
   "皮膜形成剤", "着色剤", "香料", "パール剤", "感触調整剤", "酸化防止剤"]);
 export const NON_PROMOTABLE_ORIGINS = new Set(["水", "合成", "石油由来", "動物由来"]);
 
+/**
+ * 原料ベースの自然由来指数 (ISO 16128 の考え方)。天然由来率は原料メーカーが原料ごとに申告する値。
+ * rows: [{material, pct}]、materials: {原料名: {INCI: 原料中%}}、niOf(原料名) → 0-100 | null。
+ * 未登録の原料は 0 と 100 で置いた幅で返す。水を除く値は、原料の構成にある水 (Water/Aqua) の分を
+ * 差し引いて出す (原料の天然由来率は水込みで申告されている前提)。
+ */
+export function naturalOriginIndexByMaterial(rows, materials, niOf) {
+  const isWater = (n) => /^(water|aqua|eau)$/i.test(String(n).trim()) || String(n).trim() === "水";
+  const matIndex = new Map(Object.keys(materials || {}).map((k) => [normKey(k), k]));
+  let total = 0, known = 0, nat = 0, totalNW = 0, knownNW = 0, natNW = 0; const missing = [];
+  for (const r of rows) {
+    const pct = Number(r.pct) || 0; if (pct <= 0) continue;
+    const comp = materials[matIndex.get(normKey(r.material))] || {};
+    const compTotal = Object.values(comp).reduce((s, v) => s + Number(v), 0) || 100;
+    const wf = Object.entries(comp).filter(([k]) => isWater(k)).reduce((s, [, v]) => s + Number(v), 0) / compTotal;
+    const nonwater = pct * (1 - wf);
+    total += pct; totalNW += nonwater;
+    const ni = niOf(r.material);
+    if (ni == null) { missing.push(r.material); continue; }
+    known += pct; knownNW += nonwater;
+    nat += pct * ni / 100;
+    natNW += Math.max(0, pct * ni / 100 - pct * wf);
+  }
+  const pack = (t, k, n) => t <= 0 ? { low: null, high: null, coverage: 0, missing }
+    : { low: round(100 * n / t, 1), high: round(100 * (n + (t - k)) / t, 1), coverage: round(100 * k / t, 1), missing };
+  return { withWater: pack(total, known, nat), withoutWater: pack(totalNW, knownNW, natNW) };
+}
+
+/** 原料の天然由来率: 申告値があればそれ、無ければ構成成分すべてに成分側の値があるときだけ合成 (無ければ null)。 */
+export function materialNaturalIndex(material, ingredientNiOf) {
+  if (material.natural_index != null && material.natural_index !== "") return Number(material.natural_index);
+  const comps = material.components || []; if (!comps.length) return null;
+  let sum = 0, tot = 0;
+  for (const c of comps) {
+    const ni = ingredientNiOf(c.inci); if (ni == null) return null;
+    sum += Number(c.pct) * ni / 100; tot += Number(c.pct);
+  }
+  return tot > 0 ? round(100 * sum / tot, 1) : null;
+}
+
 /** 配合目的・由来ごとに成分をまとめ、「目的：成分・成分」型の候補を作る。 */
 export function ingredientClaims(entries, info, { skipPurposes = NON_PROMOTABLE_PURPOSES, skipOrigins = NON_PROMOTABLE_ORIGINS } = {}) {
   const byPurpose = new Map(), byOrigin = new Map(), other = new Map(), unknown = [];
